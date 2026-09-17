@@ -1,0 +1,30 @@
+# Dépendances
+node_modules/
+vendor/
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Éditeurs / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Cache
+.cache/
+*.tsbuildinfo
