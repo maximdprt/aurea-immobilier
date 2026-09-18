@@ -1,0 +1,502 @@
+{
+  "url": "https://www.aurea-immobilier.fr/catalog/gdpr.php",
+  "profondeur": 1,
+  "recupere_le": "2026-09-18T09:00:37",
+  "meta": {
+    "title": "RGPD - AUREA IMMOBILIER",
+    "description": "AUREA IMMOBILIER",
+    "robots": "index, follow",
+    "theme-color": "#FFFFFF",
+    "msapplication-navbutton-color": "#FFFFFF",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "#FFFFFF",
+    "google-site-verification": "Kx9pGKJ2C561y8uNJ6pIXxT6G1gI5VLJAZS5ujilnfs",
+    "viewport": "width=device-width, initial-scale=1",
+    "format-detection": "telephone=no",
+    "og:description": "AUREA IMMOBILIER",
+    "og:site_name": "AUREA IMMOBILIER",
+    "og:type": "company",
+    "og:title": "RGPD - AUREA IMMOBILIER"
+  },
+  "titre": "RGPD - AUREA IMMOBILIER",
+  "description": "AUREA IMMOBILIER",
+  "titres": [
+    {
+      "niveau": 1,
+      "texte": "RGPD"
+    },
+    {
+      "niveau": 3,
+      "texte": "L'Agence"
+    },
+    {
+      "niveau": 3,
+      "texte": "Nos services"
+    },
+    {
+      "niveau": 3,
+      "texte": "Liens utiles"
+    },
+    {
+      "niveau": 3,
+      "texte": "Nos annonces"
+    },
+    {
+      "niveau": 4,
+      "texte": "Nous respectons votre vie privée."
+    }
+  ],
+  "paragraphes": [
+    "POLITIQUE DE PROTECTION DES DONNÉES",
+    "Dernière mise à jour : Février 2023",
+    "POURQUOI AVOIR ADOPTÉ UNE POLITIQUE DE PROTECTION DES DONNÉES ?",
+    "La société AUREA IMMOBILIER (ou « la société ») accorde une grande\nimportance à la protection de vos données et met tout en œuvre pour les protéger.",
+    "AUREA IMMOBILIER agit en toute transparence et en conformité avec la réglementation applicable, en\nparticulier le Règlement (UE) 2016/679 du Parlement\neuropéen et du Conseil du 27 avril 2016 relatif à la protection des personnes physiques à\nl'égard du traitement des données à caractère personnel (ci-après «\nRGPD ») et à la Loi\nn°78-17 du 6 janvier 1978 relative à l'informatique, aux fichiers et aux libertés .",
+    "La présente Politique Vie Privée (ci-après également « la Présente »)\ns'applique aux traitements de données à caractère personnel effectués par la\nsociété. Dans le cadre de sa relation client. Elle n'est en rien responsable de la collecte et du\ntraitement des données faites par le client auprès de ses clients finaux.",
+    "La société dans le cas des solutions « logiciel Cloud » ( ou « SAAS ») est\nsous-traitante au sens RGPD du client et se doit d'appliquer les mesures nécessaires à maintenir la\nsécurité, la confidentialité, l'intégrité et la disponibilité des\ndonnées que le client lui confie par le « logiciel Cloud».",
+    "Nous nous gardons la possibilité de modifier la présente Politique à tout moment, notamment\npour tenir compte des éventuelles évolutions réglementaires, législatives,\njurisprudentielles ou de nos services. Dans la mesure du possible, nous vous informerons par tout moyen des\nmodifications substantielles apportées à la Présente. Nous vous encourageons à\nconsulter régulièrement la Présente afin de vous tenir à jour sur la manière\ndont nous traitons vos données.",
+    "QUI EST CONCERNÉ PAR LE TRAITEMENT DES DONNÉES À CARACTÈRE PERSONNEL ?",
+    "Les personnes concernées (ci-après également désigné par l'appellation «\nvous ») par les traitements effectués par la société sont toutes les personnes dont les\ndonnées à caractère personnel sont traitées dans le cadre de la contractualisation de\nla solution logicielle.",
+    "Les données personnelles des « clients finaux » peuvent faire l'objet de traitement automatique\ncomme l'envoi de mail mais uniquement après gestion du consentement par le client.",
+    "La consultation des données personnelles des clients finaux ne se fait qu'avec l'accord du client et\nuniquement à des fins de maintenance et par du personnel dument habilité.",
+    "INFORMATIONS SUR NOS TRAITEMENTS DE VOS DONNÉES",
+    "QUI EST LE RESPONSABLE DE TRAITEMENT ?",
+    "Le responsable du traitement est AUREA IMMOBILIER, société de droit français, au capital social\nde\n1000 euros, immatriculée au Registre de Commerce et des Sociétés sous le\nnuméro 931635924, numéro TVA FR30931635924 et dont le siège social est basé à\n2 ROUTE DE LA GRAND MARE 95420 MAUDETOUR-EN-VEXIN (article 4.7 RGPD).",
+    "DÉSIGNATION D'UN DÉLÉGUÉ EXTERNE À LA PROTECTION DES DONNÉES\n(CI-APRÈS « DPO »)",
+    "Le DPO de AUREA IMMOBILIER est M Hélène VERMEIRE BENZ, ce dernier peut être\ncontacté par mail à\nl'adresse helene.vermeire@aurea-immobilier.fr.",
+    "QUELLES CATÉGORIES DE DONNÉES TRAITONS-NOUS ET POURQUOI ?",
+    "Nous vous détaillons ci-dessous les données personnelles que nous traitons en fonction des\nfinalités que nous poursuivons ainsi que leur mode de collecte. Nous ne traitons les données\nsuivantes que lorsqu'elles sont pertinentes et strictement nécessaires au traitement.",
+    "Opérations liées à la gestion de nos relations avec nos prospects",
+    "Bases légales",
+    "Art. 6.1.b) : Exécution de mesures précontractuelles\nArt. 6.1.f) : Intérêt légitime de la société",
+    "Finalités",
+    "Source et catégories de données traitées",
+    "Opérations liées à la gestion de nos relations avec nos clients",
+    "Bases légales",
+    "Art. 6.1.b) : exécution du contrat",
+    "Finalités",
+    "Source et catégories de données traitées",
+    "Opérations liées à la gestion de nos relations avec nos partenaires\n(potentiels)",
+    "Bases légales",
+    "Art. 6.1.b) : exécution de mesures précontractuelles ou contractuelles",
+    "Finalités",
+    "Source et catégories de données traitées",
+    "Gestion de la messagerie générale",
+    "Bases légales",
+    "Art. 6.1.f) : Intérêt légitime",
+    "Finalités",
+    "Source et catégories de données traitées",
+    "Autres opérations liées à la fréquentation du logiciel",
+    "Bases légales",
+    "Art. 6.1.a) : consentement\nArt. 6.1.f) : Intérêt légitime de la société",
+    "Finalités",
+    "Source et catégories de données traitées",
+    "Opérations liées aux demandes d'exercice de droit, aux litiges et au contentieux",
+    "Bases légales",
+    "Art. 6.1.c) : respect d'une obligation légale\nArt. 6.1.f) : Intérêt légitime de la société",
+    "Finalités",
+    "Source et catégories de données traitées",
+    "Nous n'utilisons pas de techniques de prise de décision fondée sur un traitement automatisé\nproduisant des effets juridiques concernant la personne concernée ou l'affectant de manière\nsignificative.",
+    "COMBIEN DE TEMPS CONSERVONS-NOUS VOS DONNÉES ?",
+    "Vos données personnelles sont conservées uniquement pendant le temps nécessaire à la\nréalisation de la finalité pour laquelle nous les détenons. Nous faisons en sorte que les\ndurées de conservation soient pertinentes et respectent les délais légaux.",
+    "En ce qui concerne les durées spécifiques de conservation des données, nous avons défini\nles durées qui suivent :",
+    "Le temps nécessaire au traitement pour :",
+    "Les durées de conservation de vos données récoltées par l'intermédiaire de\ncookies sont détaillées dans notre #Politique en matière de cookie#.",
+    "A l'issue des durées de conservation mentionnées ci-dessus, les données personnelles seront\nsupprimées ou nous procéderons à leur anonymisation.",
+    "À QUI VOS DONNÉES SONT-ELLES TRANSMISES ?",
+    "Dans le cadre de la prestation de nos services, il peut nous arriver de partager vos données. En toutes\ncirconstances, nous assurons un niveau élevé de protection de vos données.",
+    "Destinataires internes au responsable de traitement",
+    "Nous donnons accès à vos données à caractère personnel uniquement aux personnes\ninternes dont la fonction le nécessite. Nous contrôlons régulièrement ces accès\net sécurisons les informations communiquées, dans la mesure du possible.",
+    "Destinataires externes au responsable de traitement",
+    "Sous-traitants, co-responsable du traitement et responsable distinct",
+    "Conformément à l'article 28 du RGPD, l'accès de nos sous-traitants à vos\ndonnées se fait sur la base de contrats signés faisant mention des obligations leur incombant en\nmatière de protection de la sécurité et de la confidentialité des données.",
+    "Dans le cadre de nos activités, il peut nous arriver de partager vos données avec les destinataires\nsuivants :",
+    "Tiers",
+    "Peuvent, dans la limite de leurs attributions, avoir accès aux données à caractère\npersonnel différents acteurs de la justice et autorités publiques, tels que les cours et tribunaux,\nautorités administratives, mandataires de justice sur demande légale uniquement.",
+    "MESURES DE SÉCURITÉ MISES EN PLACE AUTOUR DE VOS DONNÉES",
+    "En tant que responsable de traitement, nous prenons toutes les précautions utiles pour préserver la\nsécurité et la confidentialité de vos données. Cela inclut la sécurité\nphysique des bâtiments abritant nos systèmes et la sécurité du système\ninformatique pour empêcher l'accès externe à vos données. L'accès à vos\ndonnées est limité aux seules personnes ayant la nécessité d'en prendre connaissance.",
+    "QUELS SONT VOS DROITS SUR VOS DONNÉES PERSONNELLES ?",
+    "En application des articles 15 à 22 du RGPD, toute personne physique utilisant le service a la faculté\nd'exercer les droits suivants :",
+    "COMMENT POUVEZ-VOUS EXERCER VOS DROITS ?",
+    "NOUS CONTACTER ?",
+    "Vous avez une suggestion ou une question quant à la manière dont nous traitons vos données ou\nà l'égard de notre Politique, n'hésitez pas à prendre contact avec nous !",
+    "Nos coordonnées sont disponibles sur la page de mentions légales du site.",
+    "VOUS SOUHAITEZ INTRODUIRE UNE RÉCLAMATION AUPRÈS D'UNE AUTORITÉ DE CONTRÔLE\n?",
+    "Si vous estimez que vos droits ne sont pas respectés, vous pouvez également déposer une\nréclamation auprès de la Commission nationale de l'informatique et des libertés\n(ci-après la « CNIL »), dont les coordonnées sont les suivantes :",
+    "Vous avez également toujours la possibilité de former un recours juridictionnel."
+  ],
+  "listes": [
+    [
+      "Notre agence",
+      "Nos biens Acheter Louer",
+      "Nos réussites",
+      "Gestion locative",
+      "Nos services",
+      "Nous contacter"
+    ],
+    [
+      "Acheter",
+      "Louer"
+    ],
+    [
+      "Notre agence",
+      "Nos biens Acheter Louer",
+      "Nos réussites",
+      "Gestion locative",
+      "Nos services",
+      "Nous contacter"
+    ],
+    [
+      "Acheter",
+      "Louer"
+    ],
+    [
+      "Accueil",
+      "RGPD"
+    ],
+    [
+      "Fourniture, sur demande, de démonstrations d'outils et de solutions à nos prospects.",
+      "Gestion de la relation avec les prospects manifestant un intérêt pour les outils et\nsolutions.",
+      "Fourniture de conseils, renseignements ou réponse aux questions de tout ordre adressées\npar les prospects."
+    ],
+    [
+      "Données d'identification personnelle (nom, prénom, numéro de\ntéléphone, adresse e-mail);",
+      "Données professionnelles (agence, société et adresse professionnelle);",
+      "Toute autre information que vous nous auriez communiquée."
+    ],
+    [
+      "Données d'identification personnelle (nom, prénom, numéro de\ntéléphone, adresse e-mail);",
+      "Données professionnelles (agence, société et adresse professionnelle);",
+      "Toute autre information que vous nous auriez communiquée."
+    ],
+    [
+      "Gestion des procédures de sélection de nos partenaires potentiels.",
+      "Gestion de nos conventions avec nos partenaires.",
+      "Réalisation de projets communs."
+    ],
+    [
+      "Données d'identification personnelle (e-mail);",
+      "Données professionnelles (agence);",
+      "Toute autre information que vous nous auriez communiquée."
+    ],
+    [
+      "Données d'identification personnelle (nom, prénom, e-mail);",
+      "Toute autre donnée que vous nous auriez communiquée."
+    ],
+    [
+      "Amélioration de nos services par l'analyse de l'utilisation du site. Cette analyse nous permet\nd'améliorer l'intérêt et l'ergonomie de nos services.",
+      "Assurer la sécurité et le bon fonctionnement du site"
+    ],
+    [
+      "Données d'identification personnelle (nom, prénom, e-mail, copie de la carte\nd'identité);",
+      "Toute autre information relative à votre demande;",
+      "Dans le cadre de la finalité 24. : toute autre information issue du litige ou du contentieux\nl'entourant."
+    ],
+    [
+      "Les données ou images récoltées dans le cadre d'un contrat, qui sont conservées\npour la durée fixée dans le cadre qui nous lie à vous;",
+      "Les messages reçus sur la boîte e-mail générale qui sont, en principe,\nconservés le temps nécessaire pour y répondre. Ils sont effacés ensuite."
+    ],
+    [
+      "Prestataires de services de stockage et de partage de fichiers dans le Cloud;",
+      "Outil de gestion de la relation clients et prospects (CRM);",
+      "Prestataires de services assurant une partie de la maintenance logicielle"
+    ],
+    [
+      "Sur le site web de la CNIL via le téléservice\nde plainte en ligne ;",
+      "Par courrier Postal :\nCNIL Service de Plaintes 3 Place de Fontenoy TSA 8071 75334 Paris Cedex 07"
+    ],
+    [
+      "44 rue Nationale,\n78200\nMantes-la-Jolie",
+      "Nous contacter",
+      "Présentation"
+    ],
+    [
+      "Estimation",
+      "Nos outils",
+      "Nos biens vendus",
+      "Gestion locative",
+      "Nos actualités"
+    ],
+    [
+      "Mon compte",
+      "Nos honoraires",
+      "Mentions légales",
+      "Politique de confidentialité",
+      "Politique des cookies",
+      "Plan du site"
+    ],
+    [
+      "Appartement à vendre, Mantes la jolie",
+      "Maison à vendre, Mantes la jolie",
+      "Maison à vendre, Mantes la ville",
+      "Maison à vendre, Vienne en arthies",
+      "Maison à vendre, Follainville dennemont",
+      "Maison à vendre, Bonnieres sur seine"
+    ]
+  ],
+  "tableaux": [],
+  "texte_principal": "POLITIQUE DE PROTECTION DES DONNÉES\nDernière mise à jour : Février 2023\nPOURQUOI AVOIR ADOPTÉ UNE POLITIQUE DE PROTECTION DES DONNÉES ?\nLa société AUREA IMMOBILIER (ou « la société ») accorde une grande\nimportance à la protection de vos données et met tout en œuvre pour les protéger.\nAUREA IMMOBILIER agit en toute transparence et en conformité avec la réglementation applicable, en\nparticulier le\nRèglement (UE) 2016/679 du Parlement\neuropéen et du Conseil du 27 avril 2016 relatif à la protection des personnes physiques à\nl'égard du traitement des données à caractère personnel\n(ci-après «\nRGPD ») et à la\nLoi\nn°78-17 du 6 janvier 1978 relative à l'informatique, aux fichiers et aux libertés\n.\nLa présente Politique Vie Privée (ci-après également « la Présente »)\ns'applique aux traitements de données à caractère personnel effectués par la\nsociété. Dans le cadre de sa relation client. Elle n'est en rien responsable de la collecte et du\ntraitement des données faites par le client auprès de ses clients finaux.\nLa société dans le cas des solutions « logiciel Cloud » ( ou « SAAS ») est\nsous-traitante au sens RGPD du client et se doit d'appliquer les mesures nécessaires à maintenir la\nsécurité, la confidentialité, l'intégrité et la disponibilité des\ndonnées que le client lui confie par le « logiciel Cloud».\nNous nous gardons la possibilité de modifier la présente Politique à tout moment, notamment\npour tenir compte des éventuelles évolutions réglementaires, législatives,\njurisprudentielles ou de nos services. Dans la mesure du possible, nous vous informerons par tout moyen des\nmodifications substantielles apportées à la Présente. Nous vous encourageons à\nconsulter régulièrement la Présente afin de vous tenir à jour sur la manière\ndont nous traitons vos données.\nQUI EST CONCERNÉ PAR LE TRAITEMENT DES DONNÉES À CARACTÈRE PERSONNEL ?\nLes personnes concernées (ci-après également désigné par l'appellation «\nvous ») par les traitements effectués par la société sont toutes les personnes dont les\ndonnées à caractère personnel sont traitées dans le cadre de la contractualisation de\nla solution logicielle.\nLes données personnelles des « clients finaux » peuvent faire l'objet de traitement automatique\ncomme l'envoi de mail mais uniquement après gestion du consentement par le client.\nLa consultation des données personnelles des clients finaux ne se fait qu'avec l'accord du client et\nuniquement à des fins de maintenance et par du personnel dument habilité.\nINFORMATIONS SUR NOS TRAITEMENTS DE VOS DONNÉES\nQUI EST LE RESPONSABLE DE TRAITEMENT ?\nLe responsable du traitement est AUREA IMMOBILIER, société de droit français, au capital social\nde\n1000 euros, immatriculée au Registre de Commerce et des Sociétés sous le\nnuméro 931635924, numéro TVA FR30931635924 et dont le siège social est basé à\n2 ROUTE DE LA GRAND MARE 95420 MAUDETOUR-EN-VEXIN (article 4.7 RGPD).\nDÉSIGNATION D'UN DÉLÉGUÉ EXTERNE À LA PROTECTION DES DONNÉES\n(CI-APRÈS « DPO »)\nLe DPO de AUREA IMMOBILIER est M Hélène VERMEIRE BENZ, ce dernier peut être\ncontacté par mail à\nl'adresse helene.vermeire@aurea-immobilier.fr.\nQUELLES CATÉGORIES DE DONNÉES TRAITONS-NOUS ET POURQUOI ?\nNous vous détaillons ci-dessous les données personnelles que nous traitons en fonction des\nfinalités que nous poursuivons ainsi que leur mode de collecte. Nous ne traitons les données\nsuivantes que lorsqu'elles sont pertinentes et strictement nécessaires au traitement.\nOpérations liées à la gestion de nos relations avec nos prospects\nBases légales\nArt. 6.1.b) : Exécution de mesures précontractuelles\nArt. 6.1.f) : Intérêt légitime de la société\nFinalités\nFourniture, sur demande, de démonstrations d'outils et de solutions à nos prospects.\nGestion de la relation avec les prospects manifestant un intérêt pour les outils et\nsolutions.\nFourniture de conseils, renseignements ou réponse aux questions de tout ordre adressées\npar les prospects.\nCette finalité se base sur l'intérêt légitime de la société de traiter\nles données personnelles des prospects s'adressant à elle afin d'être en mesure de\nrépondre à leurs demandes/questions.\nSource et catégories de données traitées\nAuprès de vous, via nos formulaires, par téléphone ou par\ne-mail :\nDonnées d'identification personnelle (nom, prénom, numéro de\ntéléphone, adresse e-mail);\nDonnées professionnelles (agence, société et adresse professionnelle);\nToute autre information que vous nous auriez communiquée.\nOpérations liées à la gestion de nos relations avec nos clients\nBases légales\nArt. 6.1.b) : exécution du contrat\nFinalités\nService client sur demande par téléphone, e-mail et tout autre moyen\nde communication suite à votre sollicitation.\nSource et catégories de données traitées\nAuprès de vous, via nos formulaires, par téléphone ou par\ne-mail :\nDonnées d'identification personnelle (nom, prénom, numéro de\ntéléphone, adresse e-mail);\nDonnées professionnelles (agence, société et adresse professionnelle);\nToute autre information que vous nous auriez communiquée.\nOpérations liées à la gestion de nos relations avec nos partenaires\n(potentiels)\nBases légales\nArt. 6.1.b) : exécution de mesures précontractuelles ou contractuelles\nFinalités\nGestion des procédures de sélection de nos partenaires potentiels.\nGestion de nos conventions avec nos partenaires.\nRéalisation de projets communs.\nSource et catégories de données traitées\nAuprès de vous, par e-mail :\nDonnées d'identification personnelle (e-mail);\nDonnées professionnelles (agence);\nToute autre information que vous nous auriez communiquée.\nGestion de la messagerie générale\nBases légales\nArt. 6.1.f) : Intérêt légitime\nFinalités\nGestion des messages reçus.\nLa société a un intérêt légitime à traiter les données des\npersonnes qui prennent contact avec elle afin d'être en mesure d'y répondre adéquatement.\nSource et catégories de données traitées\nAuprès de vous :\nDonnées d'identification personnelle (nom, prénom, e-mail);\nToute autre donnée que vous nous auriez communiquée.\nAutres opérations liées à la fréquentation du logiciel\nBases légales\nArt. 6.1.a) : consentement\nArt. 6.1.f) : Intérêt légitime de la société\nFinalités\nAmélioration de nos services par l'analyse de l'utilisation du site. Cette analyse nous permet\nd'améliorer l'intérêt et l'ergonomie de nos services.\nAssurer la sécurité et le bon fonctionnement du site\nLa société a un intérêt légitime à garantir la sécurité\nde l'information et le bon fonctionnement de sa solution logicielle.\nSource et catégories de données traitées\nAuprès de vous :\nDonnées d'identification électronique relevées par nos cookies (adresse IP,\nrelevé des connexions, localisation, date et heures de connexion et autres\nmétadonnées).\nOpérations liées aux demandes d'exercice de droit, aux litiges et au contentieux\nBases légales\nArt. 6.1.c) : respect d'une obligation légale\nArt. 6.1.f) : Intérêt légitime de la société\nFinalités\nGestion des demandes d'exercice de droit reçues par voie électronique ou voie postale.\nAfin de veiller à la sauvegarde et à la défense des intérêts de la\nsociété, nous avons un intérêt légitime à traiter vos données\ndans le cadre de tout litige ou contentieux qui nous opposerait à vous.\nSource et catégories de données traitées\nAuprès de vous ou auprès d'un tiers :\nDonnées d'identification personnelle (nom, prénom, e-mail, copie de la carte\nd'identité);\nToute autre information relative à votre demande;\nDans le cadre de la finalité 24. : toute autre information issue du litige ou du contentieux\nl'entourant.\nNous n'utilisons pas de techniques de prise de décision fondée sur un traitement automatisé\nproduisant des effets juridiques concernant la personne concernée ou l'affectant de manière\nsignificative.\nCOMBIEN DE TEMPS CONSERVONS-NOUS VOS DONNÉES ?\nVos données personnelles sont conservées uniquement pendant le temps nécessaire à la\nréalisation de la finalité pour laquelle nous les détenons. Nous faisons en sorte que les\ndurées de conservation soient pertinentes et respectent les délais légaux.\nEn ce qui concerne les durées spécifiques de conservation des données, nous avons défini\nles durées qui suivent :\nLe temps nécessaire au traitement pour :\nLes données ou images récoltées dans le cadre d'un contrat, qui sont conservées\npour la durée fixée dans le cadre qui nous lie à vous;\nLes messages reçus sur la boîte e-mail générale qui sont, en principe,\nconservés le temps nécessaire pour y répondre. Ils sont effacés ensuite.\nLes durées de conservation de vos données récoltées par l'intermédiaire de\ncookies sont détaillées dans notre #Politique en matière de cookie#.\nA l'issue des durées de conservation mentionnées ci-dessus, les données personnelles seront\nsupprimées ou nous procéderons à leur anonymisation.\nÀ QUI VOS DONNÉES SONT-ELLES TRANSMISES ?\nDans le cadre de la prestation de nos services, il peut nous arriver de partager vos données. En toutes\ncirconstances, nous assurons un niveau élevé de protection de vos données.\nDestinataires internes au responsable de traitement\nNous donnons accès à vos données à caractère personnel uniquement aux personnes\ninternes dont la fonction le nécessite. Nous contrôlons régulièrement ces accès\net sécurisons les informations communiquées, dans la mesure du possible.\nDestinataires externes au responsable de traitement\nSous-traitants, co-responsable du traitement et responsable distinct\nConformément à l'article 28 du RGPD, l'accès de nos sous-traitants à vos\ndonnées se fait sur la base de contrats signés faisant mention des obligations leur incombant en\nmatière de protection de la sécurité et de la confidentialité des données.\nDans le cadre de nos activités, il peut nous arriver de partager vos données avec les destinataires\nsuivants :\nPrestataires de services de stockage et de partage de fichiers dans le Cloud;\nOutil de gestion de la relation clients et prospects (CRM);\nPrestataires de services assurant une partie de la maintenance logicielle\nTiers\nPeuvent, dans la limite de leurs attributions, avoir accès aux données à caractère\npersonnel différents acteurs de la justice et autorités publiques, tels que les cours et tribunaux,\nautorités administratives, mandataires de justice sur demande légale uniquement.\nMESURES DE SÉCURITÉ MISES EN PLACE AUTOUR DE VOS DONNÉES\nEn tant que responsable de traitement, nous prenons toutes les précautions utiles pour préserver la\nsécurité et la confidentialité de vos données. Cela inclut la sécurité\nphysique des bâtiments abritant nos systèmes et la sécurité du système\ninformatique pour empêcher l'accès externe à vos données. L'accès à vos\ndonnées est limité aux seules personnes ayant la nécessité d'en prendre connaissance.\nQUELS SONT VOS DROITS SUR VOS DONNÉES PERSONNELLES ?\nEn application des articles 15 à 22 du RGPD, toute personne physique utilisant le service a la faculté\nd'exercer les droits suivants :\nCOMMENT POUVEZ-VOUS EXERCER VOS DROITS ?\nNOUS CONTACTER ?\nVous avez une suggestion ou une question quant à la manière dont nous traitons vos données ou\nà l'égard de notre Politique, n'hésitez pas à prendre contact avec nous !\nNos coordonnées sont disponibles sur la page de mentions légales du site.\nVOUS SOUHAITEZ INTRODUIRE UNE RÉCLAMATION AUPRÈS D'UNE AUTORITÉ DE CONTRÔLE\n?\nSi vous estimez que vos droits ne sont pas respectés, vous pouvez également déposer une\nréclamation auprès de la Commission nationale de l'informatique et des libertés\n(ci-après la « CNIL »), dont les coordonnées sont les suivantes :\nSur le site web de la CNIL via\nle téléservice\nde plainte en ligne\n;\nPar courrier Postal :\nCNIL\nService de Plaintes\n3 Place de Fontenoy\nTSA 8071\n75334 Paris Cedex 07\nVous avez également toujours la possibilité de former un recours juridictionnel.",
+  "texte_navigation": [
+    "RGPD"
+  ],
+  "texte_integral": "RGPD - AUREA IMMOBILIER\nNotre agence\nNos biens\nAcheter\nLouer\nNos réussites\nGestion locative\nNos services\nNous contacter\nNotre agence\nNos biens\nAcheter\nLouer\nNos réussites\nGestion locative\nNos services\nNous contacter\nAccueil\nRGPD\nRGPD\nPOLITIQUE DE PROTECTION DES DONNÉES\nDernière mise à jour : Février 2023\nPOURQUOI AVOIR ADOPTÉ UNE POLITIQUE DE PROTECTION DES DONNÉES ?\nLa société AUREA IMMOBILIER (ou « la société ») accorde une grande\nimportance à la protection de vos données et met tout en œuvre pour les protéger.\nAUREA IMMOBILIER agit en toute transparence et en conformité avec la réglementation applicable, en\nparticulier le\nRèglement (UE) 2016/679 du Parlement\neuropéen et du Conseil du 27 avril 2016 relatif à la protection des personnes physiques à\nl'égard du traitement des données à caractère personnel\n(ci-après «\nRGPD ») et à la\nLoi\nn°78-17 du 6 janvier 1978 relative à l'informatique, aux fichiers et aux libertés\n.\nLa présente Politique Vie Privée (ci-après également « la Présente »)\ns'applique aux traitements de données à caractère personnel effectués par la\nsociété. Dans le cadre de sa relation client. Elle n'est en rien responsable de la collecte et du\ntraitement des données faites par le client auprès de ses clients finaux.\nLa société dans le cas des solutions « logiciel Cloud » ( ou « SAAS ») est\nsous-traitante au sens RGPD du client et se doit d'appliquer les mesures nécessaires à maintenir la\nsécurité, la confidentialité, l'intégrité et la disponibilité des\ndonnées que le client lui confie par le « logiciel Cloud».\nNous nous gardons la possibilité de modifier la présente Politique à tout moment, notamment\npour tenir compte des éventuelles évolutions réglementaires, législatives,\njurisprudentielles ou de nos services. Dans la mesure du possible, nous vous informerons par tout moyen des\nmodifications substantielles apportées à la Présente. Nous vous encourageons à\nconsulter régulièrement la Présente afin de vous tenir à jour sur la manière\ndont nous traitons vos données.\nQUI EST CONCERNÉ PAR LE TRAITEMENT DES DONNÉES À CARACTÈRE PERSONNEL ?\nLes personnes concernées (ci-après également désigné par l'appellation «\nvous ») par les traitements effectués par la société sont toutes les personnes dont les\ndonnées à caractère personnel sont traitées dans le cadre de la contractualisation de\nla solution logicielle.\nLes données personnelles des « clients finaux » peuvent faire l'objet de traitement automatique\ncomme l'envoi de mail mais uniquement après gestion du consentement par le client.\nLa consultation des données personnelles des clients finaux ne se fait qu'avec l'accord du client et\nuniquement à des fins de maintenance et par du personnel dument habilité.\nINFORMATIONS SUR NOS TRAITEMENTS DE VOS DONNÉES\nQUI EST LE RESPONSABLE DE TRAITEMENT ?\nLe responsable du traitement est AUREA IMMOBILIER, société de droit français, au capital social\nde\n1000 euros, immatriculée au Registre de Commerce et des Sociétés sous le\nnuméro 931635924, numéro TVA FR30931635924 et dont le siège social est basé à\n2 ROUTE DE LA GRAND MARE 95420 MAUDETOUR-EN-VEXIN (article 4.7 RGPD).\nDÉSIGNATION D'UN DÉLÉGUÉ EXTERNE À LA PROTECTION DES DONNÉES\n(CI-APRÈS « DPO »)\nLe DPO de AUREA IMMOBILIER est M Hélène VERMEIRE BENZ, ce dernier peut être\ncontacté par mail à\nl'adresse helene.vermeire@aurea-immobilier.fr.\nQUELLES CATÉGORIES DE DONNÉES TRAITONS-NOUS ET POURQUOI ?\nNous vous détaillons ci-dessous les données personnelles que nous traitons en fonction des\nfinalités que nous poursuivons ainsi que leur mode de collecte. Nous ne traitons les données\nsuivantes que lorsqu'elles sont pertinentes et strictement nécessaires au traitement.\nOpérations liées à la gestion de nos relations avec nos prospects\nBases légales\nArt. 6.1.b) : Exécution de mesures précontractuelles\nArt. 6.1.f) : Intérêt légitime de la société\nFinalités\nFourniture, sur demande, de démonstrations d'outils et de solutions à nos prospects.\nGestion de la relation avec les prospects manifestant un intérêt pour les outils et\nsolutions.\nFourniture de conseils, renseignements ou réponse aux questions de tout ordre adressées\npar les prospects.\nCette finalité se base sur l'intérêt légitime de la société de traiter\nles données personnelles des prospects s'adressant à elle afin d'être en mesure de\nrépondre à leurs demandes/questions.\nSource et catégories de données traitées\nAuprès de vous, via nos formulaires, par téléphone ou par\ne-mail :\nDonnées d'identification personnelle (nom, prénom, numéro de\ntéléphone, adresse e-mail);\nDonnées professionnelles (agence, société et adresse professionnelle);\nToute autre information que vous nous auriez communiquée.\nOpérations liées à la gestion de nos relations avec nos clients\nBases légales\nArt. 6.1.b) : exécution du contrat\nFinalités\nService client sur demande par téléphone, e-mail et tout autre moyen\nde communication suite à votre sollicitation.\nSource et catégories de données traitées\nAuprès de vous, via nos formulaires, par téléphone ou par\ne-mail :\nDonnées d'identification personnelle (nom, prénom, numéro de\ntéléphone, adresse e-mail);\nDonnées professionnelles (agence, société et adresse professionnelle);\nToute autre information que vous nous auriez communiquée.\nOpérations liées à la gestion de nos relations avec nos partenaires\n(potentiels)\nBases légales\nArt. 6.1.b) : exécution de mesures précontractuelles ou contractuelles\nFinalités\nGestion des procédures de sélection de nos partenaires potentiels.\nGestion de nos conventions avec nos partenaires.\nRéalisation de projets communs.\nSource et catégories de données traitées\nAuprès de vous, par e-mail :\nDonnées d'identification personnelle (e-mail);\nDonnées professionnelles (agence);\nToute autre information que vous nous auriez communiquée.\nGestion de la messagerie générale\nBases légales\nArt. 6.1.f) : Intérêt légitime\nFinalités\nGestion des messages reçus.\nLa société a un intérêt légitime à traiter les données des\npersonnes qui prennent contact avec elle afin d'être en mesure d'y répondre adéquatement.\nSource et catégories de données traitées\nAuprès de vous :\nDonnées d'identification personnelle (nom, prénom, e-mail);\nToute autre donnée que vous nous auriez communiquée.\nAutres opérations liées à la fréquentation du logiciel\nBases légales\nArt. 6.1.a) : consentement\nArt. 6.1.f) : Intérêt légitime de la société\nFinalités\nAmélioration de nos services par l'analyse de l'utilisation du site. Cette analyse nous permet\nd'améliorer l'intérêt et l'ergonomie de nos services.\nAssurer la sécurité et le bon fonctionnement du site\nLa société a un intérêt légitime à garantir la sécurité\nde l'information et le bon fonctionnement de sa solution logicielle.\nSource et catégories de données traitées\nAuprès de vous :\nDonnées d'identification électronique relevées par nos cookies (adresse IP,\nrelevé des connexions, localisation, date et heures de connexion et autres\nmétadonnées).\nOpérations liées aux demandes d'exercice de droit, aux litiges et au contentieux\nBases légales\nArt. 6.1.c) : respect d'une obligation légale\nArt. 6.1.f) : Intérêt légitime de la société\nFinalités\nGestion des demandes d'exercice de droit reçues par voie électronique ou voie postale.\nAfin de veiller à la sauvegarde et à la défense des intérêts de la\nsociété, nous avons un intérêt légitime à traiter vos données\ndans le cadre de tout litige ou contentieux qui nous opposerait à vous.\nSource et catégories de données traitées\nAuprès de vous ou auprès d'un tiers :\nDonnées d'identification personnelle (nom, prénom, e-mail, copie de la carte\nd'identité);\nToute autre information relative à votre demande;\nDans le cadre de la finalité 24. : toute autre information issue du litige ou du contentieux\nl'entourant.\nNous n'utilisons pas de techniques de prise de décision fondée sur un traitement automatisé\nproduisant des effets juridiques concernant la personne concernée ou l'affectant de manière\nsignificative.\nCOMBIEN DE TEMPS CONSERVONS-NOUS VOS DONNÉES ?\nVos données personnelles sont conservées uniquement pendant le temps nécessaire à la\nréalisation de la finalité pour laquelle nous les détenons. Nous faisons en sorte que les\ndurées de conservation soient pertinentes et respectent les délais légaux.\nEn ce qui concerne les durées spécifiques de conservation des données, nous avons défini\nles durées qui suivent :\nLe temps nécessaire au traitement pour :\nLes données ou images récoltées dans le cadre d'un contrat, qui sont conservées\npour la durée fixée dans le cadre qui nous lie à vous;\nLes messages reçus sur la boîte e-mail générale qui sont, en principe,\nconservés le temps nécessaire pour y répondre. Ils sont effacés ensuite.\nLes durées de conservation de vos données récoltées par l'intermédiaire de\ncookies sont détaillées dans notre #Politique en matière de cookie#.\nA l'issue des durées de conservation mentionnées ci-dessus, les données personnelles seront\nsupprimées ou nous procéderons à leur anonymisation.\nÀ QUI VOS DONNÉES SONT-ELLES TRANSMISES ?\nDans le cadre de la prestation de nos services, il peut nous arriver de partager vos données. En toutes\ncirconstances, nous assurons un niveau élevé de protection de vos données.\nDestinataires internes au responsable de traitement\nNous donnons accès à vos données à caractère personnel uniquement aux personnes\ninternes dont la fonction le nécessite. Nous contrôlons régulièrement ces accès\net sécurisons les informations communiquées, dans la mesure du possible.\nDestinataires externes au responsable de traitement\nSous-traitants, co-responsable du traitement et responsable distinct\nConformément à l'article 28 du RGPD, l'accès de nos sous-traitants à vos\ndonnées se fait sur la base de contrats signés faisant mention des obligations leur incombant en\nmatière de protection de la sécurité et de la confidentialité des données.\nDans le cadre de nos activités, il peut nous arriver de partager vos données avec les destinataires\nsuivants :\nPrestataires de services de stockage et de partage de fichiers dans le Cloud;\nOutil de gestion de la relation clients et prospects (CRM);\nPrestataires de services assurant une partie de la maintenance logicielle\nTiers\nPeuvent, dans la limite de leurs attributions, avoir accès aux données à caractère\npersonnel différents acteurs de la justice et autorités publiques, tels que les cours et tribunaux,\nautorités administratives, mandataires de justice sur demande légale uniquement.\nMESURES DE SÉCURITÉ MISES EN PLACE AUTOUR DE VOS DONNÉES\nEn tant que responsable de traitement, nous prenons toutes les précautions utiles pour préserver la\nsécurité et la confidentialité de vos données. Cela inclut la sécurité\nphysique des bâtiments abritant nos systèmes et la sécurité du système\ninformatique pour empêcher l'accès externe à vos données. L'accès à vos\ndonnées est limité aux seules personnes ayant la nécessité d'en prendre connaissance.\nQUELS SONT VOS DROITS SUR VOS DONNÉES PERSONNELLES ?\nEn application des articles 15 à 22 du RGPD, toute personne physique utilisant le service a la faculté\nd'exercer les droits suivants :\nCOMMENT POUVEZ-VOUS EXERCER VOS DROITS ?\nNOUS CONTACTER ?\nVous avez une suggestion ou une question quant à la manière dont nous traitons vos données ou\nà l'égard de notre Politique, n'hésitez pas à prendre contact avec nous !\nNos coordonnées sont disponibles sur la page de mentions légales du site.\nVOUS SOUHAITEZ INTRODUIRE UNE RÉCLAMATION AUPRÈS D'UNE AUTORITÉ DE CONTRÔLE\n?\nSi vous estimez que vos droits ne sont pas respectés, vous pouvez également déposer une\nréclamation auprès de la Commission nationale de l'informatique et des libertés\n(ci-après la « CNIL »), dont les coordonnées sont les suivantes :\nSur le site web de la CNIL via\nle téléservice\nde plainte en ligne\n;\nPar courrier Postal :\nCNIL\nService de Plaintes\n3 Place de Fontenoy\nTSA 8071\n75334 Paris Cedex 07\nVous avez également toujours la possibilité de former un recours juridictionnel.\nL'Agence\n44 rue Nationale,\n78200\nMantes-la-Jolie\nNous contacter\nPrésentation\nNos services\nEstimation\nNos outils\nNos biens vendus\nGestion locative\nNos actualités\nLiens utiles\nMon compte\nNos honoraires\nMentions légales\nPolitique de confidentialité\nPolitique des cookies\nPlan du site\nNos annonces\nAppartement à vendre, Mantes la jolie\nMaison à vendre, Mantes la jolie\nMaison à vendre, Mantes la ville\nMaison à vendre, Vienne en arthies\nMaison à vendre, Follainville dennemont\nMaison à vendre, Bonnieres sur seine\n© AUREA IMMOBILIER 2026\nRéalisation\n×\nFermer ×\nNous respectons votre vie privée.\nEn cliquant sur «Accepter», vous acceptez l'utilisation de cookies et autres traceurs servant à mesurer l'audience et à vous permettre de gérer vos biens en favoris. Les cookies sont des données qui sont téléchargées ou stockées sur votre ordinateur ou sur tout autre appareil.\nLe bouton «Paramétrer» vous permet de choisir quels cookies vous souhaitez activer ou refuser. Vous pouvez revenir sur votre choix à tout moment en cliquant sur la page mentions légales et le bouton «Paramétrer vos cookies».\nEn savoir plus\n-\nParamétrer vos cookies\nREFUSER\nACCEPTER",
+  "nb_mots": 1993,
+  "images": [
+    {
+      "url": "https://www.aurea-immobilier.fr/office5/aureaimmo_140824/catalog/images/aurea-logoe-ok.png",
+      "alt": "AUREA IMMOBILIER",
+      "title": "AUREA IMMOBILIER"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/office5/aureaimmo_140824/catalog/images/aurea-logoe-ok.png",
+      "alt": "AUREA IMMOBILIER",
+      "title": "AUREA IMMOBILIER"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/images/rgpd/droits_donnees_personnelles.png",
+      "alt": "",
+      "title": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/images/rgpd/exercer_ses_droits.png",
+      "alt": "",
+      "title": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/office5/aureaimmo_140824/catalog/images/aurea-logoe-ok.png",
+      "alt": "",
+      "title": ""
+    }
+  ],
+  "medias": [],
+  "liens_internes": [
+    {
+      "url": "https://www.aurea-immobilier.fr/",
+      "texte": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/content/5/notre-agence.html",
+      "texte": "Notre agence"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/annonces/transaction/Vente.html",
+      "texte": "Acheter"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/annonces/transaction/Location.html",
+      "texte": "Louer"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/products_selled.php",
+      "texte": "Nos réussites"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/contact_us.php?form=3",
+      "texte": "Gestion locative"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/estimation.php",
+      "texte": "Nos services"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/contact_us.php?form=1",
+      "texte": "Nous contacter"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/selection.php",
+      "texte": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/account.php",
+      "texte": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/",
+      "texte": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/content/5/notre-agence.html",
+      "texte": "Notre agence"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/annonces/transaction/Vente.html",
+      "texte": "Acheter"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/annonces/transaction/Location.html",
+      "texte": "Louer"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/products_selled.php",
+      "texte": "Nos réussites"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/contact_us.php?form=3",
+      "texte": "Gestion locative"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/estimation.php",
+      "texte": "Nos services"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/contact_us.php?form=1",
+      "texte": "Nous contacter"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/",
+      "texte": "Accueil"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/images/rgpd/droits_donnees_personnelles.png",
+      "texte": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/images/rgpd/exercer_ses_droits.png",
+      "texte": ""
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/contact_us.php?form=1",
+      "texte": "Nous contacter"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/content/1/notre-agence.html",
+      "texte": "Présentation"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/estimation.php",
+      "texte": "Estimation"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/outils.php",
+      "texte": "Nos outils"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/products_selled.php",
+      "texte": "Nos biens vendus"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/contact_us.php?form=3",
+      "texte": "Gestion locative"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/news.php",
+      "texte": "Nos actualités"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/account.php",
+      "texte": "Mon compte"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/mentions.php",
+      "texte": "Mentions légales"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/gdpr.php",
+      "texte": "Politique de confidentialité"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/cookies-policy.php",
+      "texte": "Politique des cookies"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/site_plan.php",
+      "texte": "Plan du site"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+      "texte": "Appartement à vendre, Mantes la jolie"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+      "texte": "Maison à vendre, Mantes la jolie"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+      "texte": "Maison à vendre, Mantes la ville"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+      "texte": "Maison à vendre, Vienne en arthies"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+      "texte": "Maison à vendre, Follainville dennemont"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+      "texte": "Maison à vendre, Bonnieres sur seine"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/mentions.php",
+      "texte": "En savoir plus"
+    },
+    {
+      "url": "https://www.aurea-immobilier.fr/catalog/cookies.php",
+      "texte": "Paramétrer vos cookies"
+    }
+  ],
+  "liens_externes": [
+    {
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "texte": "Règlement (UE) 2016/679 du Parlement\neuropéen et du Conseil du 27 avril 2016 relatif à la protection des personnes physiques à\nl'égard du traitement des données à caractère personnel"
+    },
+    {
+      "url": "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000886460",
+      "texte": "Loi\nn°78-17 du 6 janvier 1978 relative à l'informatique, aux fichiers et aux libertés"
+    },
+    {
+      "url": "https://www.cnil.fr/fr/plaintes",
+      "texte": "le téléservice\nde plainte en ligne"
+    },
+    {
+      "url": "https://realestate.orisha.com/",
+      "texte": ""
+    }
+  ],
+  "fichiers": [
+    {
+      "url": "https://www.aurea-immobilier.fr/segments/immo/catalog/images/manufacturers_bareme/385554.pdf",
+      "texte": "Nos honoraires"
+    }
+  ],
+  "emails": [
+    "helene.vermeire@aurea-immobilier.fr"
+  ],
+  "telephones": [
+    "01.14.12.31.29",
+    "01.30.63.50.50",
+    "01.39.33.71.72",
+    "09.05.22.09.28",
+    "0931635924"
+  ],
+  "donnees_structurees": [
+    [
+      {
+        "itemListElement": [
+          {
+            "item": {
+              "name": "https://www.aurea-immobilier.fr",
+              "@type": "Thing"
+            },
+            "position": 1,
+            "name": "Accueil",
+            "@type": "ListItem"
+          },
+          {
+            "item": {
+              "name": "https://www.aurea-immobilier.fr/catalog/gdpr.php",
+              "@type": "Thing"
+            },
+            "position": 2,
+            "name": "RGPD",
+            "@type": "ListItem"
+          }
+        ],
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList"
+      }
+    ]
+  ],
+  "statut": 200,
+  "fichier": "catalog-gdpr"
+}
