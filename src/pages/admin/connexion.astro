@@ -1,0 +1,120 @@
+---
+/**
+ * Connexion au back-office.
+ *
+ * Aucune inscription publique (§20.4) : les comptes sont créés par invitation.
+ * Cette page ne fait que connecter, puis renvoyer vers la validation du second
+ * facteur — la RLS refuse tout accès aux demandes tant que `aal2` n'est pas
+ * atteint.
+ */
+import Admin from '~/layouts/Admin.astro';
+import { sessionClient } from '~/lib/server/supabase-session';
+import { CONTACT } from '~/lib/site';
+
+export const prerender = false;
+
+let message: string | null = null;
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+
+if (Astro.request.method === 'POST') {
+  const supabase = sessionClient(Astro.request, Astro.cookies);
+  if (!supabase) {
+    message = 'Authentification indisponible : la base n’est pas configurée.';
+  } else {
+    const form = await Astro.request.formData();
+    const email = String(form.get('email') ?? '').trim();
+    const password = String(form.get('password') ?? '');
+    const captcha = String(form.get('cf-turnstile-response') ?? '');
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      // Turnstile est vérifié par Supabase Auth lui-même (intégration native)
+      options: captcha ? { captchaToken: captcha } : undefined,
+    });
+
+    if (error) {
+      // Message volontairement identique quelle que soit la cause : ne pas
+      // révéler si l'adresse existe.
+      message = 'Identifiants incorrects.';
+    } else {
+      return Astro.redirect('/admin/', 303);
+    }
+  }
+}
+---
+
+<Admin title="Connexion">
+  <div class="login">
+    <h1>Connexion</h1>
+    <p class="small muted">
+      Accès réservé aux collaborateurs d’AUREA Immobilier. Les comptes sont créés par invitation :
+      il n’existe pas d’inscription.
+    </p>
+
+    {message && <p class="form-status" data-state="error">{message}</p>}
+
+    <form method="post">
+      <p class="field">
+        <label for="email">Adresse professionnelle</label>
+        <input id="email" name="email" type="email" autocomplete="username" required maxlength="254" />
+      </p>
+      <p class="field">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          minlength="12"
+        />
+        <span class="hint">12 caractères minimum.</span>
+      </p>
+
+      {
+        turnstileKey ? (
+          <div class="cf-turnstile" data-sitekey={turnstileKey} data-theme="light" data-language="fr" />
+        ) : (
+          <p class="small muted">Protection anti-robot à activer : clé Turnstile non configurée.</p>
+        )
+      }
+
+      <p>
+        <button class="btn" type="submit">Se connecter</button>
+      </p>
+    </form>
+
+    <p class="small muted">
+      Une authentification à deux facteurs est requise pour consulter les demandes. En cas de
+      perte d’accès, contactez un administrateur de l’agence au{' '}
+      <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>.
+    </p>
+  </div>
+</Admin>
+
+{
+  turnstileKey && (
+    <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+  )
+}
+
+<style>
+  .login {
+    max-width: 26rem;
+    margin-inline: auto;
+    padding: var(--space-l);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  h1 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-2xs);
+  }
+
+  form {
+    margin-block: var(--space-m);
+  }
+</style>

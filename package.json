@@ -1,0 +1,36 @@
+{
+  "name": "aurea-immobilier",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Site AUREA Immobilier — Astro + Supabase + Vercel",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "data": "node scripts/extract-scraping.mjs",
+    "images": "node scripts/build-images.mjs",
+    "prepare:assets": "npm run data && npm run images",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "audit:seo": "node scripts/audit-seo.mjs",
+    "audit:secrets": "node scripts/check-build-secrets.mjs",
+    "verify": "npm run check && npm run build && npm run audit:secrets && npm run audit:seo"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
+    "@astrojs/vercel": "^8.0.7",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.48.1",
+    "astro": "^5.2.5",
+    "jose": "^6.2.12",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "sharp": "^0.33.5",
+    "typescript": "^5.7.3"
+  }
+}

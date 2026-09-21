@@ -1,0 +1,237 @@
+---
+/**
+ * Pied de page — reproduction de `#footer.dark-mode` du site d'origine :
+ * fond marine, texte blanc, quatre colonnes (L'Agence / Nos services / Liens
+ * utiles / Nos annonces), puis une barre basse (reseaux sociaux + credits).
+ * Sur les pages internes, le haut est biseaute (clip-path 14 %) et remonte
+ * de 100 px sur le contenu ; l'accueil est `.no-slope`.
+ */
+import { COMPANY, CONTACT, FOOTER_LEGAL, FOOTER_SERVICES, SOCIAL } from '~/lib/site';
+import { activeListings, logoMedia } from '~/lib/catalog';
+import { listingHeading } from '~/lib/format';
+
+interface Props {
+  path?: string;
+}
+const { path = '/' } = Astro.props;
+const isHome = path === '/';
+const logo = logoMedia();
+const latest = activeListings().slice(0, 6);
+const year = new Date().getFullYear();
+---
+
+<footer id="footer" class:list={['dark-mode', isHome && 'no-slope']}>
+  <div class="footer-top">
+    <div class="wrap cols">
+      <section class="col-agence">
+        <h3>L’Agence</h3>
+        {
+          logo && (
+            <picture class="logo">
+              <source type="image/avif" srcset={`${logo.base}-180.avif 180w, ${logo.base}-360.avif 360w`} sizes="180px" />
+              <img
+                src={`${logo.base}-360.png`}
+                alt={COMPANY.legalName}
+                width="180"
+                height={Math.round(180 / logo.ratio)}
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+          )
+        }
+        <p class="address">
+          {CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}
+        </p>
+        <p class="actions">
+          <a class="btn" href="/contact/">Nous contacter</a>
+          <a class="btn btn-secondary" href="/agence/">Présentation</a>
+        </p>
+      </section>
+
+      <section>
+        <h3>Nos services</h3>
+        <ul>
+          {FOOTER_SERVICES.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </section>
+
+      <section>
+        <h3>Liens utiles</h3>
+        <ul>
+          <li><a href="/selection/">Ma sélection</a></li>
+          {FOOTER_LEGAL.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </section>
+
+      <section>
+        <h3>Nos annonces</h3>
+        <ul>
+          {
+            latest.map((l) => (
+              <li>
+                <a href={`/bien/${l.slug}/`}>
+                  {listingHeading(l)}
+                  {l.commune ? `, ${l.commune}` : ''}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="col-reseaux-sociaux">
+      <ul>
+        {
+          SOCIAL.map((s) => (
+            <li>
+              <a href={s.url} rel="me noopener" target="_blank">
+                {s.label}
+                <span class="visually-hidden"> (nouvel onglet)</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="col-credits">
+      © {COMPANY.legalName} {year}
+    </div>
+  </div>
+</footer>
+
+<style>
+  #footer {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-1);
+    color: #ffffff;
+    font-family: var(--font-body);
+    clip-path: polygon(0 0, 100% 14%, 100% 100%, 0% 100%);
+    margin-top: -100px;
+  }
+
+  #footer.no-slope {
+    clip-path: none;
+    margin-top: 0;
+  }
+
+  .footer-top {
+    padding: 150px 0 50px;
+  }
+
+  #footer.no-slope .footer-top {
+    padding-top: 80px;
+  }
+
+  .cols {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  @media (min-width: 600px) {
+    .cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 992px) {
+    .cols {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  h3 {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 8px;
+  }
+
+  #footer a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  #footer a:hover,
+  #footer a:focus {
+    color: var(--color-2);
+  }
+
+  .logo {
+    display: block;
+    width: 180px;
+    margin-bottom: var(--space-s);
+    background: #ffffff;
+    padding: 8px;
+  }
+
+  .logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .address {
+    margin-bottom: var(--space-s);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: 0;
+  }
+
+  .actions .btn,
+  .actions .btn:hover {
+    color: var(--color-1);
+  }
+
+  .footer-bottom {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  @media (min-width: 768px) {
+    .footer-bottom {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .col-reseaux-sociaux {
+    background: var(--color-1);
+    padding: 14px 30px;
+  }
+
+  .col-reseaux-sociaux ul {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-m);
+  }
+
+  .col-reseaux-sociaux li {
+    margin: 0;
+  }
+
+  .col-credits {
+    padding: 14px 30px;
+    text-align: center;
+    font-size: 14px;
+  }
+</style>

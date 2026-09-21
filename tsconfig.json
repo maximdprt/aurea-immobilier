@@ -1,0 +1,11 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*.ts", "**/*.tsx", "**/*.astro", "*.mjs"],
+  "exclude": ["dist", ".vercel", "node_modules", "scrapper_aurea"],
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": { "~/*": ["src/*"] }
+  }
+}

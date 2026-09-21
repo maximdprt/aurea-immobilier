@@ -1,0 +1,475 @@
+---
+/**
+ * L'agence. Reprend et reecrit le contenu de /content/5/notre-agence.html.
+ * Les fautes de l'original (« Fière de notre métier », « tout à chacun »,
+ * « aux services de tous ») sont corrigees, le texte n'est pas recopie (§4).
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Picture from '~/components/Picture.astro';
+import Todo from '~/components/Todo.astro';
+import PhoneReel from '~/components/PhoneReel.astro';
+import { agentBySlug, agentMedia, allAgents, catalogStats, editorialMedia, logoMedia } from '~/lib/catalog';
+import { toE164 } from '~/lib/format';
+import { COMPANY, CONTACT, MAP_EMBED_URL, SOCIAL } from '~/lib/site';
+
+const stats = catalogStats();
+const facade = editorialMedia('agence');
+const logo = logoMedia();
+/**
+ * Metiers partenaires annonces par l'agence sur l'ancienne page « Notre agence » :
+ * « nos courtiers, nos architectes, nos diagnostiqueurs, nos geometres, nos
+ * paysagistes sont la, a vos cotes ». Les METIERS sont donc sources ; les NOMS
+ * ne le sont pas et restent a fournir.
+ */
+const PARTNER_TRADES = [
+  'Courtiers en financement',
+  'Architectes',
+  'Diagnostiqueurs',
+  'Géomètres',
+  'Paysagistes',
+];
+const instagram = SOCIAL.find((s) => s.label === 'Instagram');
+const helene = agentBySlug('helene-vermeire-benz');
+const vincent = agentBySlug('vincent-maume');
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'L’agence' },
+];
+---
+
+<Base
+  title="AUREA Immobilier, agence indépendante à Mantes-la-Jolie"
+  description="Une agence immobilière indépendante créée en 2024 à Mantes-la-Jolie : même exigence pour un studio que pour une grande maison, et un réseau de partenaires locaux."
+  path="/agence/"
+  crumbs={crumbs}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Notre agence</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="head">
+      <p class="lede">
+        « {COMPANY.tagline} ». Une agence indépendante installée au cœur de Mantes-la-Jolie, qui
+        applique le même niveau de service à un studio de 15 m² qu’à une propriété de 1 000 m².
+      </p>
+    </header>
+
+    <Picture
+      media={facade}
+      alt="Les bureaux d'AUREA Immobilier, 44 rue Nationale à Mantes-la-Jolie"
+      sizes="(min-width: 64rem) 72rem, 100vw"
+      class="facade"
+      priority
+    />
+
+    <div class="columns">
+      <div class="prose">
+        <h2>Notre histoire</h2>
+        <p>
+          AUREA Immobilier a ouvert ses portes en août&nbsp;2024, 44 rue Nationale à
+          Mantes-la-Jolie. Depuis, {stats.archivedTotal} biens ont été vendus ou loués par
+          l’équipe, dans le Mantois et jusqu’aux communes voisines du Val-d’Oise et de l’Eure.
+        </p>
+        <p>
+          Le nom vient du latin <i lang="la">aurea</i>, « dorée ». Il dit ce que nous cherchons à
+          apporter : une qualité d’exécution constante, quel que soit le montant de la transaction.
+          Une maison, un appartement, c’est un foyer et des projets de vie — pas une ligne dans un
+          fichier.
+        </p>
+
+        <h2>Ce qui nous distingue</h2>
+        <ul>
+          <li>
+            <strong>Une estimation argumentée</strong> — quatre méthodes croisées, et l’explication
+            de ce qui fait le prix.
+          </li>
+          <li>
+            <strong>Une présentation soignée</strong> — reportage photo professionnel, visite
+            virtuelle, vidéo par drone selon le bien.
+          </li>
+          <li>
+            <strong>Un réseau intégré</strong> — courtiers, notaires, diagnostiqueurs, architectes,
+            géomètres et paysagistes, tous du secteur.
+          </li>
+          <li>
+            <strong>Une assistance juridique</strong> — sur les points de droit qui retardent ou
+            font échouer une vente.
+          </li>
+          <li>
+            <strong>Une forte part de mandats exclusifs</strong> — la confiance de nos vendeurs nous
+            permet d’engager tous nos moyens sur chaque bien.
+          </li>
+        </ul>
+
+        <h2 class="main-title">Notre équipe</h2>
+        <ul class="membres_equipe">
+          {
+            allAgents().map((a) => (
+              <li class="membre_equipe">
+                <figure>
+                  <a href={`/equipe/${a.slug}/`} tabindex="-1" aria-hidden="true">
+                    <Picture media={agentMedia(a.slug)} alt="" sizes="(min-width: 992px) 260px, 45vw" aspect="2 / 3" />
+                  </a>
+                </figure>
+                <div class="membre_equipe_details">
+                  <h3><a href={`/equipe/${a.slug}/`}>{a.name}</a></h3>
+                  <h4>{a.role}</h4>
+                  <p><a href={`/equipe/${a.slug}/`}>Consulter ses annonces</a></p>
+                  {toE164(a.phone) && (
+                    <p class="tel">
+                      <a href={`tel:${toE164(a.phone)}`}>{a.phone}</a>
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h2 class="main-title">Nous trouver</h2>
+        <div class="plan_agence facade" data-map-facade>
+          <p>
+            <strong>Plan d’accès</strong>
+            <br />
+            <span class="small muted">
+              La carte Google n’est chargée qu’après votre clic : aucun traceur tiers n’est
+              déposé à l’ouverture de la page.
+            </span>
+          </p>
+          <button type="button" class="btn btn-navy" data-load-map={MAP_EMBED_URL}>
+            Afficher la carte
+          </button>
+        </div>
+
+        <h2>Nous suivre</h2>
+        <div class="reel-block">
+          <PhoneReel
+            poster={facade}
+            alt="L’équipe d’AUREA Immobilier dans les bureaux de l’agence"
+            href={instagram?.url}
+            place={`${CONTACT.street}, ${CONTACT.city.toUpperCase()}`}
+            watermark={logo}
+            caption="L’équipe au complet, 44 rue Nationale. La vidéo s’ouvre sur notre compte : rien n’est chargé avant votre clic."
+          />
+          <div class="reel-text">
+            <p>
+              Nous publions les nouveautés, les coulisses des visites et les ventes conclues sur
+              nos deux comptes. C’est le moyen le plus rapide de voir un bien avant sa mise en
+              ligne.
+            </p>
+            <ul class="social-list">
+              {
+                SOCIAL.map((s) => (
+                  <li>
+                    <a href={s.url} rel="me noopener" target="_blank">
+                      {s.label} <span class="muted">{s.handle}</span>
+                      <span class="visually-hidden"> (nouvel onglet)</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="small muted">
+              <Todo label="fichier MP4 vertical de la vidéo d’équipe, pour la lire sur le site sans passer par Instagram" />
+            </p>
+          </div>
+        </div>
+
+        <h2>Nos partenaires</h2>
+        <p>
+          L’immobilier rassemble une multitude de métiers. Plutôt que de vous renvoyer vers des
+          interlocuteurs que nous ne connaissons pas, nous les réunissons autour de l’agence :
+        </p>
+        <ul class="partners">
+          {PARTNER_TRADES.map((t) => <li>{t}</li>)}
+        </ul>
+        <p class="notice">
+          <Todo label="noms des partenaires de chaque métier et leur accord écrit pour figurer sur le site" />
+          <br />
+          Les métiers ci-dessus sont ceux que l’agence annonce déjà. Les nommer individuellement
+          est un levier de référencement local réel, mais suppose leur accord.
+        </p>
+      </div>
+
+      <aside class="side">
+        <div class="panel">
+          <h2>La direction</h2>
+          {
+            [helene, vincent].filter(Boolean).map((a) => (
+              <div class="founder">
+                <Picture
+                  media={agentMedia(a!.slug)}
+                  alt={`Portrait de ${a!.name}`}
+                  sizes="64px"
+                  class="founder-photo"
+                />
+                <div>
+                  <p class="name"><a href={`/equipe/${a!.slug}/`}>{a!.name}</a></p>
+                  <p class="small muted">{a!.role}</p>
+                </div>
+              </div>
+            ))
+          }
+          <p class="small"><a href="/equipe/">Voir toute l’équipe</a></p>
+        </div>
+
+        <div class="panel">
+          <h2>Informations</h2>
+          <dl class="legal">
+            <div><dt>Raison sociale</dt><dd>{COMPANY.legalName}</dd></div>
+            <div><dt>Forme</dt><dd>{COMPANY.legalForm} au capital de {COMPANY.capital}</dd></div>
+            <div><dt>SIRET</dt><dd>{COMPANY.siret}</dd></div>
+            <div><dt>RCS</dt><dd>{COMPANY.rcs} — {COMPANY.rcsCity}</dd></div>
+            <div><dt>TVA</dt><dd>{COMPANY.vatId}</dd></div>
+            <div><dt>Adresse</dt><dd>{CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}</dd></div>
+            <div>
+              <dt>Carte professionnelle</dt>
+              <dd><Todo label="numéro CPI et CCI émettrice" /></dd>
+            </div>
+          </dl>
+          <p class="small"><a href="/mentions-legales/">Mentions légales complètes</a></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-m);
+  }
+
+  .facade :global(img) {
+    border-radius: var(--radius-l);
+    aspect-ratio: 16 / 7;
+    object-fit: cover;
+    width: 100%;
+    margin-bottom: var(--space-l);
+  }
+
+  .columns {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .side .panel + .panel {
+    margin-top: var(--space-m);
+  }
+
+  .side h2 {
+    font-family: var(--font-body);
+    font-size: var(--step-1);
+  }
+
+  .founder {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding-block: var(--space-2xs);
+  }
+
+  .founder :global(.founder-photo img) {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: var(--radius-s);
+    object-fit: cover;
+  }
+
+  .founder .name {
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .founder .name a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .founder p {
+    margin: 0;
+  }
+
+  .legal {
+    margin: 0;
+    font-size: var(--step--1);
+  }
+
+  .legal > div {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: var(--space-2xs);
+    padding-block: 0.3rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .legal dt {
+    color: var(--ink-muted);
+  }
+
+  .legal dd {
+    margin: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .columns {
+      grid-template-columns: minmax(0, 1fr) 22rem;
+      align-items: start;
+    }
+  }
+
+  .reel-block {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    margin-block: var(--space-m) var(--space-l);
+  }
+
+  @media (min-width: 720px) {
+    .reel-block {
+      grid-template-columns: auto 1fr;
+    }
+  }
+
+  .reel-text > * + * {
+    margin-top: var(--space-s);
+  }
+
+  .social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .social-list a {
+    display: inline-block;
+    padding-block: var(--space-3xs);
+    font-weight: 600;
+  }
+
+  .partners {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    list-style: none;
+    margin: 0 0 var(--space-s);
+    padding: 0;
+  }
+
+  .partners li {
+    padding: var(--space-3xs) var(--space-xs);
+    border: 1px solid var(--gold-200);
+    border-radius: var(--radius-pill);
+    background: var(--gold-50);
+    font-size: var(--step--1);
+  }
+
+  /* Grille de l'equipe de la page « Notre agence » d'origine. */
+  .membres_equipe {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    list-style: none;
+    margin: 0 0 var(--space-xl);
+    padding: 0;
+  }
+
+  .membre_equipe {
+    background-color: #ffffff;
+    box-shadow: 0 3px 15px rgb(0 0 0 / 16%);
+    padding: 20px;
+  }
+
+  .membre_equipe figure {
+    margin: 0;
+    text-align: center;
+  }
+
+  .membre_equipe figure :global(img) {
+    max-width: 100%;
+    display: block;
+  }
+
+  .membre_equipe_details {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .membre_equipe_details h3 {
+    color: var(--color-1);
+    font-weight: 700;
+    font-size: 22px;
+    margin: 0 0 4px;
+  }
+
+  .membre_equipe_details h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .membre_equipe_details h4 {
+    color: var(--color-2-darken);
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0 0 10px;
+  }
+
+  .membre_equipe_details p {
+    margin: 0 0 6px;
+  }
+
+  .membre_equipe_details .tel a {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .plan_agence {
+    display: grid;
+    gap: var(--space-s);
+    place-items: center;
+    text-align: center;
+    padding: var(--space-l) var(--space-m);
+    background: var(--canvas-alt);
+    border: 1px dashed var(--line-strong);
+    margin-bottom: var(--space-xl);
+  }
+
+  .plan_agence p {
+    margin: 0;
+  }
+
+  .plan_agence iframe {
+    width: 100%;
+    height: 400px;
+    border: 0;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-load-map]').forEach((btn) => {
+    btn.addEventListener(
+      'click',
+      () => {
+        const box = btn.closest<HTMLElement>('[data-map-facade]');
+        const url = btn.dataset.loadMap;
+        if (!box || !url) return;
+        const f = document.createElement('iframe');
+        f.src = url;
+        f.title = 'Plan d’accès à l’agence, 44 rue Nationale, Mantes-la-Jolie';
+        f.loading = 'lazy';
+        f.referrerPolicy = 'no-referrer-when-downgrade';
+        f.allowFullscreen = true;
+        box.replaceChildren(f);
+      },
+      { once: true }
+    );
+  });
+</script>

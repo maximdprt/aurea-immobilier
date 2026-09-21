@@ -1,0 +1,629 @@
+---
+/**
+ * Fiche bien.
+ *
+ * Applique le §8 du brief : un seul H1 (type + pieces + surface + commune, en
+ * casse normale), resume factuel en haut (c'est ce que les moteurs generatifs
+ * extraient), DPE/GES avec depenses energetiques, mention ERP + Georisques,
+ * honoraires et leur charge, bloc quartier, conseiller, biens similaires.
+ *
+ * Cycle de vie : un bien vendu reste en ligne avec le statut « Vendu » — il
+ * conserve ses liens entrants et sert de preuve sociale — mais passe en
+ * `noindex` au-dela de six mois. Jamais de 404 en masse.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Gallery from '~/components/Gallery.astro';
+import Picture from '~/components/Picture.astro';
+import EnergyLabel from '~/components/EnergyLabel.astro';
+import ListingCard from '~/components/ListingCard.astro';
+import LeadForm from '~/components/LeadForm.astro';
+import Todo from '~/components/Todo.astro';
+import {
+  allListings,
+  listingMedia,
+  agentBySlug,
+  agentMedia,
+  communeBySlug,
+  hasCommunePage,
+  similarListings,
+} from '~/lib/catalog';
+import {
+  area,
+  clampDescription,
+  composeTitle,
+  descriptionBlocks,
+  feesPayerLabel,
+  frDate,
+  isEnergySieve,
+  listingHeading,
+  money,
+  plural,
+  priceLine,
+  pricePerSqm,
+  propertyTypeLabel,
+  statusLabel,
+  stripContacts,
+} from '~/lib/format';
+import { listingSchema } from '~/lib/schema';
+import { CONTACT } from '~/lib/site';
+import { toE164 } from '~/lib/format';
+import type { Listing } from '~/lib/types';
+
+export function getStaticPaths() {
+  return allListings().map((listing) => ({
+    params: { slug: listing.slug },
+    props: { listing },
+  }));
+}
+
+interface Props {
+  listing: Listing;
+}
+const { listing } = Astro.props;
+
+const media = listingMedia(listing.reference);
+const agent = listing.agentSlug ? agentBySlug(listing.agentSlug) : undefined;
+const commune = listing.communeSlug ? communeBySlug(listing.communeSlug) : undefined;
+// La page commune n'existe que la ou l'agence a une presence reelle (§8) :
+// on ne lie que si elle a ete generee.
+const communeHasPage = hasCommunePage(listing.communeSlug);
+const similar = similarListings(listing);
+const heading = listingHeading(listing);
+const archived = listing.status === 'sold' || listing.status === 'rented';
+const description = stripContacts(listing.description);
+const blocks = descriptionBlocks(description);
+const sqm = pricePerSqm(listing);
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  listing.transaction === 'location'
+    ? { label: 'Louer', href: '/louer/' }
+    : { label: 'Acheter', href: '/acheter/' },
+  ...(commune
+    ? [
+        {
+          label: commune.name,
+          href: communeHasPage ? `/agence-immobiliere/${commune.slug}/` : undefined,
+        },
+      ]
+    : []),
+  { label: `Réf. ${listing.reference}` },
+];
+
+/** Faits structures : c'est ce bloc que les IA extraient en priorite (§8). */
+const facts: [string, string][] = [
+  ['Type', propertyTypeLabel(listing.propertyType)],
+  ...(listing.livingArea ? ([['Surface habitable', area(listing.livingArea)]] as [string, string][]) : []),
+  ...(listing.landArea ? ([['Terrain', area(listing.landArea)]] as [string, string][]) : []),
+  ...(listing.rooms ? ([['Pièces', String(listing.rooms)]] as [string, string][]) : []),
+  ...(listing.bedrooms ? ([['Chambres', String(listing.bedrooms)]] as [string, string][]) : []),
+  ...(listing.floor != null
+    ? ([['Étage', listing.floor === 0 ? 'Rez-de-chaussée' : String(listing.floor)]] as [string, string][])
+    : []),
+  ...(listing.yearBuilt ? ([['Année de construction', String(listing.yearBuilt)]] as [string, string][]) : []),
+  ...(listing.heating ? ([['Chauffage', listing.heating]] as [string, string][]) : []),
+  ...(listing.exposure ? ([['Exposition', listing.exposure]] as [string, string][]) : []),
+  ...(listing.propertyTax ? ([['Taxe foncière', `${money(listing.propertyTax)} / an`]] as [string, string][]) : []),
+  ...(listing.isCondo && listing.condoLots
+    ? ([['Copropriété', `${plural(listing.condoLots, 'lot')}`]] as [string, string][])
+    : []),
+  ...(listing.condoAnnualCharges
+    ? ([['Charges de copropriété', `${money(listing.condoAnnualCharges)} / an`]] as [string, string][])
+    : []),
+  ...(sqm ? ([['Prix au m²', `${money(sqm)} / m²`]] as [string, string][]) : []),
+  ...(listing.transitAccess ? ([['Transports', listing.transitAccess]] as [string, string][]) : []),
+];
+
+const title = `${heading}${archived ? ` — ${statusLabel(listing)}` : ''}`;
+const metaDescription = clampDescription(
+  `${heading}. ${listing.price ? priceLine(listing) + '. ' : ''}${description.replace(/\n/g, ' ')}`
+);
+---
+
+<Base
+  title={composeTitle(heading)}
+  brand={false}
+  description={metaDescription}
+  path={`/bien/${listing.slug}/`}
+  crumbs={crumbs}
+  image={media?.og ?? null}
+  noindex={archived}
+  ogType="article"
+  schemas={[listingSchema(listing, media?.og ?? null)]}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <article class="listing">
+    <div class="wrap">
+      {
+        archived && (
+          <p class="archived-note">
+            Ce bien a été {listing.status === 'sold' ? 'vendu' : 'loué'} par AUREA Immobilier. La
+            page reste en ligne à titre de référence.{' '}
+            <a href={listing.transaction === 'location' ? '/louer/' : '/acheter/'}>
+              Voir les biens disponibles
+            </a>
+            .
+          </p>
+        )
+      }
+
+      <header class="head">
+        <p class="eyebrow cluster">
+          <span class:list={['badge', archived ? 'badge-sold' : 'badge-gold']}>
+            {statusLabel(listing)}
+          </span>
+          {listing.isExclusive && !archived && <span class="badge badge-gold">Exclusivité</span>}
+          <span class="small muted">Réf. {listing.reference}</span>
+        </p>
+        <h1>{title}</h1>
+        <p class="price">{priceLine(listing)}</p>
+        {
+          feesPayerLabel(listing.feesPayer) && (
+            <p class="small muted fees">
+              {feesPayerLabel(listing.feesPayer)}
+              {listing.transaction === 'vente' && ' — prix affiché honoraires inclus'}.{' '}
+              <a href="/honoraires/">Voir le barème</a>
+            </p>
+          )
+        }
+      </header>
+
+      <Gallery media={media} heading={heading} />
+
+      <div class="columns">
+        <div class="main">
+          <section class="facts-block" aria-labelledby="caracteristiques">
+            <h2 id="caracteristiques">Caractéristiques</h2>
+            <dl class="facts">
+              {
+                facts.map(([k, v]) => (
+                  <div>
+                    <dt>{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </section>
+
+          {
+            listing.transaction === 'location' && (
+              <section class="rent" aria-labelledby="loyer">
+                <h2 id="loyer">Détail du loyer</h2>
+                <div class="table-wrap">
+                  <table>
+                    <tbody>
+                      {listing.rentBase && (
+                        <tr>
+                          <th scope="row">Loyer hors charges</th>
+                          <td>{money(listing.rentBase)} / mois</td>
+                        </tr>
+                      )}
+                      {listing.rentCharges && (
+                        <tr>
+                          <th scope="row">Provision sur charges</th>
+                          <td>{money(listing.rentCharges)} / mois</td>
+                        </tr>
+                      )}
+                      {listing.rentTotal && (
+                        <tr>
+                          <th scope="row">Loyer charges comprises</th>
+                          <td><strong>{money(listing.rentTotal)} / mois</strong></td>
+                        </tr>
+                      )}
+                      {listing.tenantFees && (
+                        <tr>
+                          <th scope="row">Honoraires à la charge du locataire</th>
+                          <td>{money(listing.tenantFees)}</td>
+                        </tr>
+                      )}
+                      {/* La loi ALUR impose d'afficher la part « etat des
+                          lieux » separement du total des honoraires. */}
+                      {listing.inventoryFees && (
+                        <tr>
+                          <th scope="row">dont établissement de l’état des lieux</th>
+                          <td>{money(listing.inventoryFees)}</td>
+                        </tr>
+                      )}
+                      {listing.deposit && (
+                        <tr>
+                          <th scope="row">Dépôt de garantie</th>
+                          <td>{money(listing.deposit)}</td>
+                        </tr>
+                      )}
+                      <tr>
+                        <th scope="row">Encadrement des loyers</th>
+                        <td>{listing.rentControlled ? 'Oui' : 'Non'}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )
+          }
+
+          <section class="description" aria-labelledby="description">
+            <h2 id="description">Description</h2>
+            <div class="prose">
+              {
+                blocks.map((b) =>
+                  b.type === 'heading' ? (
+                    <h3>{b.text}</h3>
+                  ) : b.type === 'list' ? (
+                    <ul>{b.items?.map((i) => <li>{i}</li>)}</ul>
+                  ) : (
+                    <p>{b.text}</p>
+                  )
+                )
+              }
+            </div>
+          </section>
+
+          <section class="diagnostics" aria-labelledby="diagnostics">
+            <h2 id="diagnostics">Diagnostics énergétiques</h2>
+            <div class="energy-grid">
+              <EnergyLabel
+                kind="dpe"
+                value={listing.dpeClass}
+                amount={listing.dpeValue}
+                unit="kWh/m²/an"
+              />
+              <EnergyLabel
+                kind="ges"
+                value={listing.gesClass}
+                amount={listing.gesValue}
+                unit="kg CO₂/m²/an"
+              />
+            </div>
+
+            {
+              listing.energyCostMin && listing.energyCostMax && (
+                <p class="energy-cost">
+                  <strong>Dépenses annuelles d’énergie estimées :</strong> entre{' '}
+                  {money(listing.energyCostMin)} et {money(listing.energyCostMax)} par an pour un
+                  usage standard, abonnement compris, prix indexés sur les années 2021, 2022 et
+                  2023.
+                </p>
+              )
+            }
+
+            {
+              isEnergySieve(listing.dpeClass) && (
+                <p class="notice">
+                  Logement classé {listing.dpeClass}. La loi encadre la mise en location des
+                  logements les plus énergivores selon un calendrier progressif :{' '}
+                  <a href="/guides/dpe-location-obligations-proprietaires/">
+                    voir le calendrier applicable
+                  </a>
+                  .
+                </p>
+              )
+            }
+
+            {
+              listing.dpeDate && (
+                <p class="small muted">
+                  Diagnostic établi le {frDate(listing.dpeDate)}.
+                </p>
+              )
+            }
+
+            {
+              listing.erp && (
+                <p class="small">
+                  Ce bien est soumis à un diagnostic ERP (État des Risques et Pollutions)
+                  {listing.erpDate && ` établi le ${frDate(listing.erpDate)}`}. Informations sur{' '}
+                  <a href="https://www.georisques.gouv.fr/" rel="noopener">
+                    georisques.gouv.fr
+                  </a>
+                  .
+                </p>
+              )
+            }
+          </section>
+
+          {
+            commune && (
+              <section class="quartier" aria-labelledby="quartier">
+                <h2 id="quartier">Le quartier</h2>
+                <p>
+                  Ce bien se situe à {commune.name}
+                  {commune.postalCode && ` (${commune.postalCode})`}
+                  {listing.transitAccess && `, ${listing.transitAccess.toLowerCase()}`}. AUREA
+                  Immobilier y a déjà accompagné {plural(commune.soldCount, 'transaction')}.
+                </p>
+                {communeHasPage && (
+                  <p class="small muted">
+                    Détail des quartiers, transports, écoles et prix au m² :{' '}
+                    <a href={`/agence-immobiliere/${commune.slug}/`}>
+                      notre page sur {commune.name}
+                    </a>
+                    .
+                  </p>
+                )}
+              </section>
+            )
+          }
+
+          <section class="media-tiers">
+            <h2>Visite virtuelle et vidéo</h2>
+            <p class="notice">
+              <Todo label="URL de la visite virtuelle et de la vidéo drone de ce bien" />
+              <br />
+              Aucun média enrichi n’a été trouvé dans le site existant. Dès que l’agence fournit les
+              liens, ils s’affichent ici derrière une façade cliquable : le lecteur tiers n’est
+              chargé qu’après une action de votre part, pour ne déposer aucun traceur à l’ouverture
+              de la page.
+            </p>
+          </section>
+        </div>
+
+        <aside class="side">
+          <div class="side-inner">
+            {
+              (
+                <section class="vcard-agence">
+                  <div class="vcard-agence__title">Agence</div>
+                  <div class="vcard-agence__body">
+                    <span class="street-address">{CONTACT.street}</span>
+                    <br />
+                    <span class="postal-code">{CONTACT.postalCode}</span>{' '}
+                    <span class="locality">{CONTACT.city}</span>
+                  </div>
+                  <div class="vcard-agence__footer">
+                    <a href="#contact" class="btn btn-navy">Nous écrire</a>
+                    <button type="button" class="btn btn-secondary" data-reveal-phone={CONTACT.phoneE164}>
+                      Voir le numéro
+                    </button>
+                  </div>
+                  {agent && (
+                    <div class="conseiller">
+                      <Picture
+                        media={agentMedia(agent.slug)}
+                        alt={`Portrait de ${agent.name}`}
+                        sizes="90px"
+                        class="conseiller-photo"
+                        aspect="2 / 3"
+                      />
+                      <div>
+                        <p class="fonction-nego">
+                          Votre Conseiller :{' '}
+                          <a href={`/equipe/${agent.slug}/`}>{agent.name}</a>, {agent.role}
+                        </p>
+                        <p class="link-contact">
+                          <a href="#contact" class="btn btn-navy">Contacter par mail</a>
+                          {toE164(agent.phone) && (
+                            <button type="button" class="btn btn-secondary" data-reveal-phone={toE164(agent.phone)}>
+                              Voir le numéro
+                            </button>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </section>
+              )
+            }
+
+            <LeadForm
+              type="visite"
+              reference={listing.reference}
+              title="Demander une visite"
+              intro={`Votre message part directement au conseiller en charge de la référence ${listing.reference}.`}
+              compact
+            />
+          </div>
+        </aside>
+      </div>
+
+      {
+        similar.length > 0 && (
+          <section class="section-tight similar">
+            <h2>Biens similaires</h2>
+            <div class="grid-cards">
+              {similar.map((l) => (
+                <ListingCard listing={l} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+    </div>
+  </article>
+</Base>
+
+<style>
+  .listing {
+    padding-block: var(--space-l) var(--space-xl);
+  }
+
+  .archived-note {
+    padding: var(--space-s) var(--space-m);
+    background: var(--canvas-alt);
+    border-left: 3px solid var(--ink-muted);
+    border-radius: var(--radius-s);
+    font-size: var(--step--1);
+  }
+
+  .head {
+    margin-bottom: var(--space-m);
+  }
+
+  .eyebrow {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .head h1 {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .price {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 0 0 var(--space-3xs);
+  }
+
+  .fees {
+    margin: 0;
+  }
+
+  .columns {
+    display: grid;
+    gap: var(--space-xl);
+    margin-top: var(--space-l);
+  }
+
+  .main > section + section {
+    margin-top: var(--space-l);
+  }
+
+  .main h2 {
+    font-size: var(--step-2);
+  }
+
+  .energy-grid {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-s);
+  }
+
+  .energy-cost {
+    padding: var(--space-s);
+    background: var(--canvas-alt);
+    border-radius: var(--radius-s);
+    font-size: var(--step--1);
+  }
+
+  .advisor {
+    margin-bottom: var(--space-m);
+  }
+
+  .advisor h2 {
+    font-size: var(--step-1);
+    font-family: var(--font-body);
+  }
+
+  .advisor-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    margin-bottom: var(--space-s);
+  }
+
+  .advisor :global(.advisor-photo img) {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: var(--radius-m);
+    object-fit: cover;
+  }
+
+  .advisor-name {
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .advisor-name a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .similar {
+    margin-top: var(--space-2xl);
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-l);
+  }
+
+  @media (min-width: 64rem) {
+    .columns {
+      grid-template-columns: minmax(0, 1fr) 22rem;
+    }
+    .side-inner {
+      position: sticky;
+      top: 5.5rem;
+    }
+    .energy-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Carte agence + conseiller de la fiche d'origine (.vcard-agence). */
+  .vcard-agence {
+    background-color: #ffffff;
+    color: var(--color-1);
+    padding: 15px 30px;
+    font-size: 14px;
+    min-height: 160px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--space-m);
+  }
+
+  .vcard-agence__title,
+  .fonction-nego {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-1);
+  }
+
+  .vcard-agence__body {
+    margin: 6px 0 14px;
+    font-size: 15px;
+    color: #000000;
+  }
+
+  .vcard-agence__footer,
+  .link-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .conseiller {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .conseiller :global(.conseiller-photo) {
+    flex: 0 0 90px;
+    width: 90px;
+  }
+
+  .conseiller :global(.conseiller-photo img) {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+  }
+
+  .fonction-nego {
+    margin-bottom: 10px;
+  }
+</style>
+
+<script>
+  /* « Voir le numero » : le numero n'apparait qu'au clic, comme sur la fiche
+     d'origine, puis le bouton devient un lien d'appel. */
+  document.querySelectorAll<HTMLButtonElement>('[data-reveal-phone]').forEach((btn) => {
+    btn.addEventListener(
+      'click',
+      () => {
+        const tel = btn.dataset.revealPhone ?? '';
+        const a = document.createElement('a');
+        a.className = btn.className;
+        a.href = `tel:${tel}`;
+        a.textContent = tel.replace(/^\+33/, '0').replace(/(\d{2})(?=\d)/g, '$1 ').trim();
+        btn.replaceWith(a);
+        a.focus();
+      },
+      { once: true }
+    );
+  });
+</script>

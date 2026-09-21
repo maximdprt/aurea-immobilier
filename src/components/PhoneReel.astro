@@ -1,0 +1,326 @@
+---
+/**
+ * Video verticale (format « reel ») presentee dans un cadre de telephone.
+ *
+ * Deux regles gouvernent ce composant :
+ *
+ * 1. FACADE (prompt v3, meme principe que la carte de /contact/). Rien de tiers
+ *    n'est charge a l'ouverture de la page : on affiche une image d'apercu, et
+ *    la video — ou le permalien Instagram / TikTok — n'est atteinte qu'apres un
+ *    clic explicite. Aucun traceur, aucun cout reseau tant que l'utilisateur
+ *    n'a rien demande.
+ *
+ * 2. AUCUNE INVENTION (prompt v3 §0 et §19). Sans video fournie par l'agence,
+ *    le composant affiche un placeholder visible plutot qu'un faux contenu.
+ *
+ * Une fois lancee, la lecture utilise les CONTROLES NATIFS du navigateur :
+ * c'est ce qui donne la barre « pause / duree / plein ecran » de la maquette,
+ * et c'est la seule facon d'heriter gratuitement du clavier, du plein ecran,
+ * des sous-titres et des lecteurs d'ecran.
+ */
+import Picture from '~/components/Picture.astro';
+import Todo from '~/components/Todo.astro';
+import type { MediaVariant } from '~/lib/types';
+
+interface Props {
+  /** Image d'apercu (premiere image de la video). */
+  poster: MediaVariant | null;
+  /** Description de l'image d'apercu, pour les lecteurs d'ecran. */
+  alt: string;
+  /**
+   * Video verticale auto-hebergee (`/media/...mp4`). Prioritaire : c'est la
+   * seule option qui ne depose aucun cookie tiers.
+   */
+  src?: string;
+  /** Type MIME de `src`, si ce n'est pas du MP4. */
+  type?: string;
+  /**
+   * A defaut de video hebergee : permalien Instagram / TikTok. Ouvre la
+   * publication dans un nouvel onglet — on n'incruste pas l'iframe du reseau,
+   * qui chargerait ses traceurs.
+   */
+  href?: string;
+  /** Repere affiche en haut de la video (ex. l'adresse de l'agence). */
+  place?: string;
+  /** Legende sous le telephone. */
+  caption?: string;
+  /** Filigrane de marque en bas de la video. */
+  watermark?: MediaVariant | null;
+  class?: string;
+}
+
+const {
+  poster,
+  alt,
+  src,
+  type = 'video/mp4',
+  href,
+  place,
+  caption,
+  watermark = null,
+  class: className,
+} = Astro.props;
+
+/** Ce que le clic declenche : lire sur place, sortir vers le reseau, ou rien. */
+const mode: 'video' | 'link' | 'missing' = src ? 'video' : href ? 'link' : 'missing';
+---
+
+<figure class:list={['phone-reel', className]}>
+  <div class="phone">
+    {/* Boutons lateraux : decor pur, jamais annonces. */}
+    <span class="btn-side btn-volume" aria-hidden="true"></span>
+    <span class="btn-side btn-power" aria-hidden="true"></span>
+
+    <div class="screen">
+      {
+        mode === 'missing' ? (
+          <div class="missing">
+            <Todo label="vidéo de présentation de l’équipe (fichier MP4 vertical) ou permalien du reel Instagram / TikTok" />
+          </div>
+        ) : (
+          <div class="stage" data-reel data-src={src} data-type={type}>
+            <Picture
+              media={poster}
+              alt={alt}
+              class="poster"
+              aspect="9 / 16"
+              sizes="(max-width: 600px) 80vw, 320px"
+            />
+
+            {place && (
+              <p class="place">
+                <span class="pin" aria-hidden="true" />
+                {place}
+              </p>
+            )}
+
+            {watermark && (
+              <Picture media={watermark} alt="" class="watermark" sizes="160px" />
+            )}
+
+            {
+              mode === 'video' ? (
+                <button type="button" class="play" data-reel-play>
+                  <span class="play-icon" aria-hidden="true" />
+                  <span class="visually-hidden">Lire la vidéo de présentation de l’équipe</span>
+                </button>
+              ) : (
+                <a class="play" href={href} rel="noopener" target="_blank">
+                  <span class="play-icon" aria-hidden="true" />
+                  <span class="visually-hidden">
+                    Voir la vidéo sur le compte de l’agence (nouvel onglet)
+                  </span>
+                </a>
+              )
+            }
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<script>
+  /**
+   * Remplace l'apercu par un vrai <video> au premier clic, une seule fois.
+   * `controls` fournit la barre native ; `autoplay` est legitime ici car il
+   * fait suite a un geste de l'utilisateur.
+   */
+  document.querySelectorAll<HTMLElement>('[data-reel]').forEach((stage) => {
+    const trigger = stage.querySelector<HTMLButtonElement>('[data-reel-play]');
+    const src = stage.dataset.src;
+    if (!trigger || !src) return;
+
+    trigger.addEventListener(
+      'click',
+      () => {
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        video.className = 'reel-video';
+        // Le poster evite l'image noire entre le clic et la premiere frame.
+        const posterImg = stage.querySelector('img');
+        if (posterImg) video.poster = posterImg.currentSrc || posterImg.src;
+
+        stage.replaceChildren(video);
+        video.focus();
+      },
+      { once: true }
+    );
+  });
+</script>
+
+<style>
+  .phone-reel {
+    margin: 0;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-s);
+  }
+
+  /* --- Le cadre du telephone : decor, entierement en CSS ------------------ */
+  .phone {
+    position: relative;
+    width: min(320px, 78vw);
+    aspect-ratio: 9 / 19.5;
+    padding: 10px;
+    border-radius: 44px;
+    background: linear-gradient(160deg, var(--navy-700), var(--navy-900) 55%);
+    box-shadow:
+      var(--shadow-l),
+      inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+
+  .btn-side {
+    position: absolute;
+    left: -2px;
+    width: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--navy-700);
+  }
+
+  .btn-volume {
+    top: 128px;
+    height: 58px;
+  }
+
+  .btn-power {
+    left: auto;
+    right: -2px;
+    top: 150px;
+    height: 76px;
+  }
+
+  .screen {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 35px;
+    background: var(--navy-900);
+  }
+
+  /* --- Contenu ----------------------------------------------------------- */
+  .stage {
+    position: relative;
+    height: 100%;
+  }
+
+  .stage :global(.poster),
+  .stage :global(.poster img),
+  .stage :global(.reel-video) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .missing {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: var(--space-m);
+    text-align: center;
+    background: var(--canvas-alt);
+  }
+
+  /* Repere d'adresse. L'ombre portee garantit la lisibilite quelle que soit
+     la photo dessous — on ne peut pas s'appuyer sur un contraste calcule
+     contre une image inconnue. */
+  .place {
+    position: absolute;
+    inset-inline: var(--space-xs);
+    top: var(--space-l);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    color: #fff;
+    font-size: var(--step--1);
+    font-weight: 600;
+    line-height: 1.25;
+    text-shadow: 0 1px 4px rgb(0 0 0 / 0.75);
+  }
+
+  .pin {
+    flex: none;
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: var(--radius-pill);
+    background: var(--danger);
+    box-shadow: 0 0 0 2px rgb(255 255 255 / 0.5);
+  }
+
+  .watermark {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 14%;
+    width: 60%;
+    margin-inline: auto;
+    opacity: 0.9;
+    filter: drop-shadow(0 1px 6px rgb(0 0 0 / 0.5));
+    pointer-events: none;
+  }
+
+  /* --- Declencheur de lecture -------------------------------------------- */
+  .play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .play-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-pill);
+    background: var(--gold-400);
+    box-shadow: var(--shadow-m);
+    transition: transform var(--dur) var(--ease-out);
+    /* Pas de clip-path ici : il rognerait le box-shadow. Le rayon suffit. */
+    display: grid;
+    place-items: center;
+  }
+
+  .play-icon::after {
+    content: '';
+    border-style: solid;
+    border-width: 11px 0 11px 18px;
+    border-color: transparent transparent transparent var(--navy-800);
+    margin-left: 5px;
+  }
+
+  .play:hover .play-icon {
+    transform: scale(1.06);
+  }
+
+  .play:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: -5px;
+    border-radius: 35px;
+  }
+
+  figcaption {
+    max-width: 34ch;
+    text-align: center;
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .play-icon {
+      transition: none;
+    }
+
+    .play:hover .play-icon {
+      transform: none;
+    }
+  }
+</style>

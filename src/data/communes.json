@@ -1,0 +1,274 @@
+[
+  {
+    "name": "Mantes-la-Jolie",
+    "slug": "mantes-la-jolie",
+    "postalCode": "78200",
+    "activeCount": 4,
+    "soldCount": 33,
+    "total": 37
+  },
+  {
+    "name": "Mantes-la-Ville",
+    "slug": "mantes-la-ville",
+    "postalCode": "78711",
+    "activeCount": 1,
+    "soldCount": 9,
+    "total": 10
+  },
+  {
+    "name": "Juziers",
+    "slug": "juziers",
+    "postalCode": "78820",
+    "activeCount": 0,
+    "soldCount": 3,
+    "total": 3
+  },
+  {
+    "name": "Limay",
+    "slug": "limay",
+    "postalCode": "78520",
+    "activeCount": 0,
+    "soldCount": 3,
+    "total": 3
+  },
+  {
+    "name": "Cergy",
+    "slug": "cergy",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 3,
+    "total": 3
+  },
+  {
+    "name": "L'Isle-Adam",
+    "slug": "l-isle-adam",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 2,
+    "total": 2
+  },
+  {
+    "name": "Porcheville",
+    "slug": "porcheville",
+    "postalCode": "78440",
+    "activeCount": 0,
+    "soldCount": 2,
+    "total": 2
+  },
+  {
+    "name": "Bonnières-sur-Seine",
+    "slug": "bonnieres-sur-seine",
+    "postalCode": "78270",
+    "activeCount": 0,
+    "soldCount": 2,
+    "total": 2
+  },
+  {
+    "name": "Arthies",
+    "slug": "arthies",
+    "postalCode": "95420",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Andrésy",
+    "slug": "andresy",
+    "postalCode": "78570",
+    "activeCount": 1,
+    "soldCount": 0,
+    "total": 1
+  },
+  {
+    "name": "Le Cormier",
+    "slug": "le-cormier",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Méricourt",
+    "slug": "mericourt",
+    "postalCode": "78270",
+    "activeCount": 1,
+    "soldCount": 0,
+    "total": 1
+  },
+  {
+    "name": "La Couture-Boussey",
+    "slug": "la-couture-boussey",
+    "postalCode": null,
+    "activeCount": 1,
+    "soldCount": 0,
+    "total": 1
+  },
+  {
+    "name": "Chatou",
+    "slug": "chatou",
+    "postalCode": null,
+    "activeCount": 1,
+    "soldCount": 0,
+    "total": 1
+  },
+  {
+    "name": "Évreux",
+    "slug": "evreux",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Verneuil-sur-Seine",
+    "slug": "verneuil-sur-seine",
+    "postalCode": "78480",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Maule",
+    "slug": "maule",
+    "postalCode": "78580",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Pontoise",
+    "slug": "pontoise",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Éragny",
+    "slug": "eragny",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Illiers-l'Évêque",
+    "slug": "illiers-l-eveque",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Flacourt",
+    "slug": "flacourt",
+    "postalCode": "78200",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Saint-Cyr-en-Arthies",
+    "slug": "saint-cyr-en-arthies",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Follainville-Dennemont",
+    "slug": "follainville-dennemont",
+    "postalCode": "78520",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Vernon",
+    "slug": "vernon",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Gargenville",
+    "slug": "gargenville",
+    "postalCode": "78440",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Bray-et-Lû",
+    "slug": "bray-et-lu",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Saint-Rémy-sur-Avre",
+    "slug": "saint-remy-sur-avre",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Montrouge",
+    "slug": "montrouge",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Aubergenville",
+    "slug": "aubergenville",
+    "postalCode": "78410",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Les Mureaux",
+    "slug": "les-mureaux",
+    "postalCode": "78130",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Jumeauville",
+    "slug": "jumeauville",
+    "postalCode": "78580",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Maudétour-en-Vexin",
+    "slug": "maudetour-en-vexin",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Rosny-sur-Seine",
+    "slug": "rosny-sur-seine",
+    "postalCode": "78710",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Oinville-sur-Montcient",
+    "slug": "oinville-sur-montcient",
+    "postalCode": "78250",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  }
+]

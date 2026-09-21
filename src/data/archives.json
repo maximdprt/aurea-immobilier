@@ -1,0 +1,672 @@
+[
+  {
+    "reference": 966,
+    "title": "Studio à Mantes-la-Ville de 26.71 m²",
+    "commune": "Mantes-la-Ville",
+    "status": "rented",
+    "rooms": 1,
+    "area": 27,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 869,
+    "title": "Maison - Mantes-la-Jolie - Martraits - 6 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 6,
+    "area": 104,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 802,
+    "title": "Appartement 4 pièces de 71 m² à Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 4,
+    "area": 71,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 794,
+    "title": "Appartement de 2 pièces sur Maule",
+    "commune": "Maule",
+    "status": "rented",
+    "rooms": 2,
+    "area": 36,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 775,
+    "title": "Appartement - Gare de paramain l'isle adam - 3 pièces",
+    "commune": "L'Isle-Adam",
+    "status": "sold",
+    "rooms": 3,
+    "area": 52,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 771,
+    "title": "Studio de 30 m² avec jardin sur Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 1,
+    "area": 30,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 744,
+    "title": "Appartement - Pontoise centre ville - 5 pièces",
+    "commune": "Pontoise",
+    "status": "sold",
+    "rooms": 5,
+    "area": 80,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 741,
+    "title": "Appartement 3 pièces Mantes-la-Ville",
+    "commune": "Mantes-la-Ville",
+    "status": "rented",
+    "rooms": 3,
+    "area": 62,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 726,
+    "title": "Immeuble de rapport - Juziers",
+    "commune": "Juziers",
+    "status": "sold",
+    "rooms": 7,
+    "area": 134,
+    "isExclusive": false,
+    "propertyType": "immeuble"
+  },
+  {
+    "reference": 681,
+    "title": "Appartement - Gare - 3 pièces",
+    "commune": "L'Isle-Adam",
+    "status": "sold",
+    "rooms": 3,
+    "area": 52,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 672,
+    "title": "Appartement 2 pièces à Éragny SUR OISE",
+    "commune": "Éragny",
+    "status": "sold",
+    "rooms": 2,
+    "area": 41,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 671,
+    "title": "Immeuble de rapport - Mantes-la-Ville - Gare",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 8,
+    "area": 160,
+    "isExclusive": false,
+    "propertyType": "immeuble"
+  },
+  {
+    "reference": 670,
+    "title": "Appartement 2 pièces sur Limay",
+    "commune": "Limay",
+    "status": "rented",
+    "rooms": 2,
+    "area": 36,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 667,
+    "title": "Maison Illiers-l'Évêque 3 pièces 57 m²",
+    "commune": "Illiers-l'Évêque",
+    "status": "sold",
+    "rooms": 3,
+    "area": 57,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 627,
+    "title": "Appartement 4 pièces 80 m² à Cergy",
+    "commune": "Cergy",
+    "status": "rented",
+    "rooms": 4,
+    "area": 80,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 623,
+    "title": "Maison Flacourt 7 pièce(s) 169 m²",
+    "commune": "Flacourt",
+    "status": "sold",
+    "rooms": 7,
+    "area": 167,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 620,
+    "title": "Maison - Saint-Cyr-en-Arthies - 6 pièces",
+    "commune": "Saint-Cyr-en-Arthies",
+    "status": "sold",
+    "rooms": 6,
+    "area": 125,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 618,
+    "title": "Appartement 2 pièces sur Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 34,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 610,
+    "title": "Maison - Limay - 4 pièces",
+    "commune": "Limay",
+    "status": "sold",
+    "rooms": 4,
+    "area": 81,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 580,
+    "title": "Maison - Follainville-Dennemont 5 pièces",
+    "commune": "Follainville-Dennemont",
+    "status": "sold",
+    "rooms": 5,
+    "area": 100,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 571,
+    "title": "Maison Vernon 5 pièce(s) 120 m²",
+    "commune": "Vernon",
+    "status": "rented",
+    "rooms": 5,
+    "area": 120,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 566,
+    "title": "Maison 5 pièces 105 m²",
+    "commune": "Porcheville",
+    "status": "sold",
+    "rooms": 5,
+    "area": 105,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 544,
+    "title": "Appartement Mantes-la-Jolie 2 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 47,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 537,
+    "title": "Appartement 2 pièces 39.69 m²",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 40,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 533,
+    "title": "Appartement 2 pièces à Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 32,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 528,
+    "title": "Maison de 5 pièces 96 m² à Mantes-la-Ville",
+    "commune": "Mantes-la-Ville",
+    "status": "rented",
+    "rooms": 5,
+    "area": 96,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 527,
+    "title": "APPARTEMENT Gargenville 5 pièces 123 m²",
+    "commune": "Gargenville",
+    "status": "sold",
+    "rooms": 5,
+    "area": 123,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 526,
+    "title": "Appartement F4 à Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 4,
+    "area": 71,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 523,
+    "title": "Maison - Vexin - 5 pièces",
+    "commune": "Bray-et-Lû",
+    "status": "sold",
+    "rooms": 5,
+    "area": 101,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 513,
+    "title": "Maison de ville - Porcheville",
+    "commune": "Porcheville",
+    "status": "sold",
+    "rooms": 3,
+    "area": 88,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 511,
+    "title": "Appartement Mantes-la-Jolie 3 pièce(s) 52 m²",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 3,
+    "area": 51,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 505,
+    "title": "Appartement Bonnières-sur-Seine 2 pièce 29.44 m²",
+    "commune": "Bonnières-sur-Seine",
+    "status": "rented",
+    "rooms": 2,
+    "area": 29,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 502,
+    "title": "Local commercial Mantes-la-Jolie sur 2 étages de 95 m²",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 95,
+    "isExclusive": false,
+    "propertyType": "local"
+  },
+  {
+    "reference": 499,
+    "title": "Studio disponible à Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 1,
+    "area": 32,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 483,
+    "title": "Studio - Mantes-la-Ville - 1 pièce",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 1,
+    "area": 37,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 470,
+    "title": "Appartement Mantes-la-Jolie 3 pièces 70m²",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 3,
+    "area": 70,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 453,
+    "title": "Maison - Saint-Rémy-sur-Avre - 4 pièces",
+    "commune": "Saint-Rémy-sur-Avre",
+    "status": "sold",
+    "rooms": 4,
+    "area": 85,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 448,
+    "title": "Appartement de 2 pièces avec balcon à Montrouge",
+    "commune": "Montrouge",
+    "status": "sold",
+    "rooms": 2,
+    "area": 44,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 434,
+    "title": "Appartement - Mantes-la-Jolie - Gare",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 3,
+    "area": 69,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 433,
+    "title": "Appartement - Mantes-la-Jolie - Centre ville - 4 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 4,
+    "area": 76,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 417,
+    "title": "Appartement - Aubergenville - Centre ville",
+    "commune": "Aubergenville",
+    "status": "sold",
+    "rooms": 4,
+    "area": 82,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 413,
+    "title": "Maison Mantes-la-Jolie 4 pièces avec jardin",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 4,
+    "area": 92,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 410,
+    "title": "MAISON - Mantes-la-Ville - 10 Pièces , Mantes-la-Ville",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 10,
+    "area": 147,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 395,
+    "title": "Appartement - Limay - 3 pièces 65 m²",
+    "commune": "Limay",
+    "status": "sold",
+    "rooms": 3,
+    "area": 65,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 376,
+    "title": "Maison Cergy 4 pièces de 76,37 m²",
+    "commune": "Cergy",
+    "status": "sold",
+    "rooms": 4,
+    "area": 76,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 368,
+    "title": "Appartement de 2 pièces de 41 m² sur Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 41,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 343,
+    "title": "Bureaux Les Mureaux 1 pièce(s) 25.74 m²",
+    "commune": "Les Mureaux",
+    "status": "sold",
+    "rooms": 1,
+    "area": 26,
+    "isExclusive": false,
+    "propertyType": "local"
+  },
+  {
+    "reference": 338,
+    "title": "Appartement PREMIUM 4 pièces à Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 4,
+    "area": 88,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 337,
+    "title": "Maison de ville Mantes-la-Jolie 3 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 4,
+    "area": 68,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 324,
+    "title": "Maison de 5 pièces disponible à la location !",
+    "commune": "Jumeauville",
+    "status": "rented",
+    "rooms": 5,
+    "area": 80,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 289,
+    "title": "Maison - Mantes-la-Ville - 6 pièces",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 6,
+    "area": 115,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 274,
+    "title": "Appartement T3 sur Cergy (72 m²)",
+    "commune": "Cergy",
+    "status": "sold",
+    "rooms": 3,
+    "area": 72,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 269,
+    "title": "Appartement 2 pièces de 53.84 m² à Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 54,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 251,
+    "title": "Appartement - Mantes-la-Jolie - Gare - 4 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 4,
+    "area": 87,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 241,
+    "title": "Terrain constructible à Mantes-la-Ville",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": null,
+    "area": 507,
+    "isExclusive": false,
+    "propertyType": "terrain"
+  },
+  {
+    "reference": 221,
+    "title": "Immeuble de rapport - Bonnières-sur-Seine - 4 appartements",
+    "commune": "Bonnières-sur-Seine",
+    "status": "sold",
+    "rooms": 9,
+    "area": 140,
+    "isExclusive": false,
+    "propertyType": "immeuble"
+  },
+  {
+    "reference": 166,
+    "title": "Parking / box Mantes-la-Jolie 15 m²",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 1,
+    "area": 11,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 146,
+    "title": "Maison de ville 125m² - Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 7,
+    "area": 125,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 139,
+    "title": "Maison - Mantes-la-Jolie - Centre ville - 3 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 3,
+    "area": 78,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 96,
+    "title": "Maison - Maudétour-en-Vexin - 6 pièces",
+    "commune": "Maudétour-en-Vexin",
+    "status": "sold",
+    "rooms": 6,
+    "area": 159,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 81,
+    "title": "Maison Rosny-sur-Seine 6 pièce(s) 120 m²",
+    "commune": "Rosny-sur-Seine",
+    "status": "sold",
+    "rooms": 6,
+    "area": 120,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 59,
+    "title": "Appartement - Mantes-la-Jolie - Centre ville - 5 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 4,
+    "area": 91,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 58,
+    "title": "Appartement - Mantes-la-Jolie - Bords de seine - 4 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 4,
+    "area": 80,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 57,
+    "title": "Appartement - Mantes-la-Jolie - 2 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 2,
+    "area": 52,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 56,
+    "title": "Appartement - Mantes-la-Jolie - Bords de seine - 2 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 2,
+    "area": 41,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 39,
+    "title": "Appartement - Mantes-la-Jolie - Centre ville - 4 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 4,
+    "area": 77,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 36,
+    "title": "Maison - Oinville-sur-Montcient - 8 pièces",
+    "commune": "Oinville-sur-Montcient",
+    "status": "sold",
+    "rooms": 8,
+    "area": 216,
+    "isExclusive": false,
+    "propertyType": "maison"
+  }
+]

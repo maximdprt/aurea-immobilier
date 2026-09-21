@@ -1,0 +1,567 @@
+---
+/**
+ * Accueil — reproduction de https://www.aurea-immobilier.fr/ (template Orisha
+ * « camus », page `page_home dark-mode`), dans l'ordre exact de l'original :
+ *
+ *   #header.no-slope        hero plein ecran (HOME1a), moteur de recherche en
+ *                           bas de l'ecran, apparition `appears` sur 2 s
+ *   #box_selection          « Nos nouveautes » : carrousel 3/2/1,5/1 par vue,
+ *                           defilement auto toutes les 10 s, puces, fleches
+ *   #box_home_disclaimer    4 blocs : Recherche personnalisee / Estimation en
+ *                           ligne / Alerte des nouveautes / AUREA Immobilier
+ *   #box_home_content       presentation de l'agence + visuel lateral
+ *                           (apparition au defilement)
+ *   #footer.no-slope        pied de page
+ *
+ * Le corps de page est sable (--color-2), les cartes et blocs blancs.
+ */
+import Base from '~/layouts/Base.astro';
+import Picture from '~/components/Picture.astro';
+import SearchBar from '~/components/SearchBar.astro';
+import ListingCard from '~/components/ListingCard.astro';
+import { activeListings, editorialMedia } from '~/lib/catalog';
+import { COMPANY, CONTACT } from '~/lib/site';
+
+const featured = activeListings().slice(0, 9);
+const hero = editorialMedia('hero-accueil');
+const content = editorialMedia('content1') ?? editorialMedia('agence');
+---
+
+<Base
+  title="Agence immobilière Mantes-la-Jolie – AUREA Immobilier"
+  description="AUREA Immobilier, agence immobilière à Mantes-la-Jolie : vente, location, estimation gratuite et gestion locative dans le Mantois. Une agence haut de gamme au service de tous."
+  path="/"
+  crumbs={[{ label: 'Accueil', href: '/' }]}
+>
+  <!-- #header : hero plein ecran + moteur de recherche -->
+  <section id="header" class="no-slope">
+    <div class="container-slider-home" aria-hidden="true">
+      <Picture
+        media={hero}
+        alt=""
+        sizes="100vw"
+        priority
+        class="slide"
+      />
+    </div>
+    <div class="container caption">
+      <h1>{COMPANY.name}</h1>
+    </div>
+    <div class="header-main">
+      <div class="wrap">
+        <p class="main-title hero-title">Trouvez votre bien à Mantes-la-Jolie et dans le Mantois</p>
+        <SearchBar />
+      </div>
+    </div>
+  </section>
+
+  <!-- #box_selection : Nos nouveautes -->
+  <section id="box_selection" class="even box_product-selection">
+    <div class="wrap">
+      <h2 class="main-title">Nos nouveautés</h2>
+
+      {
+        featured.length ? (
+          <div class="box-home-products-slider" data-slider>
+            <div id="home-products-selection" class="swiper" data-track tabindex="0" aria-label="Nos nouveautés, carrousel">
+              <div class="swiper-wrapper">
+                {featured.map((l, i) => (
+                  <div class="swiper-slide">
+                    <ListingCard listing={l} priority={i < 3} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="swiper-pagination" data-bullets role="tablist" aria-label="Pages du carrousel"></div>
+            <div class="swiper-navigation">
+              <button type="button" class="swiper-button-prev" data-prev aria-label="Biens précédents"></button>
+              <button type="button" class="swiper-button-next" data-next aria-label="Biens suivants"></button>
+            </div>
+          </div>
+        ) : (
+          <p class="notice">Aucun bien actif dans le catalogue pour le moment.</p>
+        )
+      }
+
+      <p class="cta">
+        <a class="btn btn-navy" href="/acheter/">Voir tous nos biens</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- #box_home_disclaimer : 4 blocs -->
+  <section id="box_home_disclaimer" class="even disclaimer dark-mode">
+    <div class="wrap blocs">
+      <div class="bloc">
+        <div class="bloc__wrapper">
+          <h3 class="title-bloc">Recherche personnalisée</h3>
+          <p>
+            Vous cherchez un bien ? Trouvez celui qui vous correspond, grâce à notre recherche
+            personnalisée, en vente ou location.
+          </p>
+          <a class="btn btn-light" href="/acheter/">Voir les biens</a>
+        </div>
+      </div>
+      <div class="bloc estimation">
+        <div class="bloc__wrapper">
+          <h3 class="title-bloc">Estimation en ligne</h3>
+          <p>
+            Vous souhaitez vendre votre bien ? La première étape est d’estimer le prix de votre
+            bien afin de le vendre au plus vite.
+          </p>
+          <a class="btn btn-navy" href="/estimation/">Estimer</a>
+        </div>
+      </div>
+      <div class="bloc">
+        <div class="bloc__wrapper">
+          <h3 class="title-bloc">Alerte des nouveautés</h3>
+          <p>
+            Restez à l’affût des nouveautés ! Recevez en avant-première l’information des biens
+            qui correspondent à vos critères.
+          </p>
+          <a class="btn btn-light" href="/alerte/">Créer une alerte</a>
+        </div>
+      </div>
+      <div class="bloc">
+        <div class="bloc__wrapper">
+          <h3 class="title-bloc">{COMPANY.name}</h3>
+          <p>
+            Une maison, un foyer et des projets pour la vie, voilà ce que représente l’immobilier
+            pour AUREA.
+          </p>
+          <a class="btn btn-light" href="/agence/">En savoir plus</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- #box_home_content : presentation de l'agence -->
+  <section id="box_home_content" class="odd">
+    <div class="wrap content-bloc">
+      <div class="text-content">
+        <h2 class="main-title">{COMPANY.name}</h2>
+        <p>
+          Une maison, un foyer et des projets pour la vie, voilà ce que représente l’immobilier
+          pour AUREA.
+        </p>
+        <p>
+          Vous offrir les meilleures prestations, un service personnalisé, afin de faire de votre
+          vente ou votre acquisition un moment agréable dont vous vous souviendrez.
+        </p>
+        <p>
+          Grâce à notre modernité, nous offrons à nos clients tous les avantages que notre
+          société peut nous apporter : la visite virtuelle, les vidéos par drone, des reportages
+          photos professionnels et une disponibilité pour tous à chaque instant.
+        </p>
+        <p class="actions">
+          <a class="btn btn-navy" href="/agence/">En savoir plus</a>
+          <a class="btn btn-secondary" href="/honoraires/">Nos honoraires</a>
+        </p>
+        <p class="address small">
+          {CONTACT.street}, {CONTACT.postalCode} {CONTACT.city} ·{' '}
+          <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
+        </p>
+      </div>
+      <div class="bg-content-side xyz-appear">
+        <Picture
+          media={content}
+          alt="AUREA Immobilier, agence immobilière à Mantes-la-Jolie"
+          sizes="(min-width: 992px) 45vw, 100vw"
+        />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  /* Carrousel « Nos nouveautes » : reglages du sliders.js d'origine
+     (Swiper 8) — 1 / 1,5 / 2 / 3 par vue, vitesse 600 ms, autoplay 10 s,
+     puces cliquables, fleches, arret de l'autoplay au clic sur un bien. */
+  document.querySelectorAll<HTMLElement>('[data-slider]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-track]');
+    const bullets = root.querySelector<HTMLElement>('[data-bullets]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-next]');
+    if (!track || !bullets) return;
+    const slides = [...track.querySelectorAll<HTMLElement>('.swiper-slide')];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const perView = () => {
+      const w = window.innerWidth;
+      return w >= 992 ? 3 : w >= 768 ? 2 : w >= 576 ? 1.5 : 1;
+    };
+    const perGroup = () => Math.max(1, Math.floor(perView()));
+    const pages = () => Math.max(1, Math.ceil(slides.length / perGroup()));
+    const current = () => {
+      const w = slides[0]?.offsetWidth || 1;
+      return Math.round(track.scrollLeft / (w * perGroup()));
+    };
+
+    const go = (p: number) => {
+      const n = pages();
+      const target = ((p % n) + n) % n;
+      const w = slides[0]?.offsetWidth || 0;
+      track.scrollTo({ left: target * w * perGroup(), behavior: reduce ? 'auto' : 'smooth' });
+    };
+
+    const paint = () => {
+      const n = pages();
+      const c = Math.min(current(), n - 1);
+      bullets.replaceChildren();
+      for (let i = 0; i < n; i++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'swiper-pagination-bullet' + (i === c ? ' swiper-pagination-bullet-active' : '');
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', `Page ${i + 1}`);
+        b.setAttribute('aria-selected', String(i === c));
+        b.addEventListener('click', () => {
+          stop();
+          go(i);
+        });
+        bullets.append(b);
+      }
+    };
+
+    let timer: number | undefined;
+    const start = () => {
+      if (reduce || slides.length <= perGroup()) return;
+      timer = window.setInterval(() => go(current() + 1), 10000);
+    };
+    const stop = () => {
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+    };
+
+    prev?.addEventListener('click', () => {
+      stop();
+      go(current() - 1);
+    });
+    next?.addEventListener('click', () => {
+      stop();
+      go(current() + 1);
+    });
+    track.addEventListener('scroll', () => window.requestAnimationFrame(paint), { passive: true });
+    track.addEventListener('pointerdown', stop, { passive: true });
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(current() + 1);
+      if (e.key === 'ArrowLeft') go(current() - 1);
+    });
+    track.querySelectorAll('a').forEach((a) => a.addEventListener('click', stop));
+    window.addEventListener('resize', paint);
+
+    paint();
+    start();
+  });
+</script>
+
+<style>
+  /* ---------------------------------------------------------- Hero ------ */
+  #header {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    background: var(--color-1);
+  }
+
+  .container-slider-home {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .container-slider-home :global(picture),
+  .container-slider-home :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Le site d'origine masque le H1 du hero (caption display:none) ; il
+     reste dans le DOM pour les moteurs et les lecteurs d'ecran. */
+  .caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .header-main {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 10vh;
+    animation: appears 2s;
+  }
+
+  .hero-title {
+    color: #ffffff;
+    text-shadow: -1px -1px 6px #969696;
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  .hero-title::after {
+    background-color: #ffffff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header-main {
+      animation: none;
+    }
+  }
+
+  /* ---------------------------------------------------- Sections -------- */
+  .even,
+  .odd {
+    padding: 100px 0 130px;
+  }
+
+  #box_selection .main-title {
+    margin-bottom: 10px;
+  }
+
+  .cta {
+    margin: 30px 0 0;
+    text-align: center;
+  }
+
+  /* --------------------------------------------------- Carrousel -------- */
+  .box-home-products-slider {
+    position: relative;
+    margin-top: 30px;
+  }
+
+  .swiper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 10px 0;
+  }
+
+  .swiper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .swiper-wrapper {
+    display: flex;
+    gap: 15px;
+  }
+
+  .swiper-slide {
+    flex: 0 0 calc((100% - 30px) / 3);
+    scroll-snap-align: start;
+  }
+
+  @media (max-width: 991px) {
+    .swiper-slide {
+      flex-basis: calc((100% - 15px) / 2);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .swiper-slide {
+      flex-basis: calc((100% - 7.5px) / 1.5);
+    }
+  }
+
+  @media (max-width: 575px) {
+    .swiper-slide {
+      flex-basis: 100%;
+    }
+  }
+
+  .swiper-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .swiper-pagination :global(.swiper-pagination-bullet) {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-1);
+    opacity: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .swiper-pagination :global(.swiper-pagination-bullet-active) {
+    background: var(--color-2-darken);
+    transform: scale(1.2);
+  }
+
+  .swiper-button-prev,
+  .swiper-button-next {
+    position: absolute;
+    top: 45%;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: var(--color-1);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .swiper-button-prev {
+    left: -56px;
+  }
+
+  .swiper-button-next {
+    right: -56px;
+  }
+
+  .swiper-button-prev::after,
+  .swiper-button-next::after {
+    content: '';
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin: auto;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .swiper-button-prev::after {
+    transform: rotate(-135deg);
+  }
+
+  .swiper-button-prev:hover,
+  .swiper-button-next:hover {
+    background: var(--color-2);
+    color: var(--color-1);
+  }
+
+  @media (max-width: 1279px) {
+    .swiper-button-prev {
+      left: -8px;
+    }
+
+    .swiper-button-next {
+      right: -8px;
+    }
+  }
+
+  /* -------------------------------------------------- Disclaimer -------- */
+  #box_home_disclaimer {
+    background: var(--color-1);
+    color: #ffffff;
+  }
+
+  .blocs {
+    display: grid;
+    gap: 20px;
+  }
+
+  @media (min-width: 600px) {
+    .blocs {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 992px) {
+    .blocs {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .bloc {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    padding: 30px 24px;
+    display: flex;
+  }
+
+  .bloc__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .bloc__wrapper p {
+    flex: 1;
+    margin: 0;
+  }
+
+  .title-bloc {
+    color: #ffffff;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .bloc.estimation {
+    background: var(--color-2);
+    color: #000000;
+  }
+
+  .bloc.estimation .title-bloc {
+    color: var(--color-1);
+  }
+
+  .bloc .btn {
+    align-self: flex-start;
+  }
+
+  /* ------------------------------------------------- Bloc agence -------- */
+  #box_home_content {
+    padding-bottom: 100px;
+  }
+
+  .content-bloc {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+
+  @media (min-width: 992px) {
+    .content-bloc {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .text-content p {
+    margin-bottom: 14px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .address {
+    color: var(--ink-muted);
+  }
+
+  .bg-content-side {
+    height: 500px;
+  }
+
+  .bg-content-side :global(picture),
+  .bg-content-side :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  @media (max-width: 991px) {
+    .bg-content-side {
+      height: auto;
+    }
+  }
+</style>

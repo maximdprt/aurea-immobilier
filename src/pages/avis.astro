@@ -1,0 +1,169 @@
+---
+/**
+ * Avis clients.
+ *
+ * Le scraping ne contient aucun avis : l'ancien site n'en affichait pas. Les
+ * cinq avis retenus par le brief sont listes avec leur auteur et leur sujet ;
+ * leur texte doit etre copie mot pour mot depuis la fiche Google, sans
+ * reecriture ni correction (§13).
+ *
+ * Aucun balisage Review / AggregateRating : consigne explicite du §12.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Todo from '~/components/Todo.astro';
+import { GOOGLE_REVIEWS, isMissing } from '~/lib/site';
+
+const reviews = [
+  {
+    author: 'Melissa Dantin',
+    topic:
+      'Vente d’une maison après de mauvaises expériences avec d’autres agences : qualité des photos, communication, accompagnement',
+    advisor: 'Aimée Vaillant',
+  },
+  { author: 'Estelle Broussard', topic: 'Efficacité, écoute, professionnalisme', advisor: 'Aimée Vaillant' },
+  {
+    author: 'Bilel B. Khalifa',
+    topic: 'Visite d’une maison : professionnalisme, réactivité, disponibilité',
+    advisor: 'Oriane Cherel',
+  },
+  { author: 'Carlo Depellegrin', topic: 'Suivi acheteur et vendeur, sérieux, ponctualité', advisor: null },
+  { author: 'Chris B', topic: 'Accompagnement efficace et déterminé d’une vente', advisor: 'Vincent Maume' },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Avis clients' },
+];
+---
+
+<Base
+  title="Avis clients sur AUREA Immobilier à Mantes-la-Jolie"
+  description="Ce que disent les vendeurs, acquéreurs et locataires accompagnés par AUREA Immobilier. Avis publiés sur Google, reproduits sans modification."
+  path="/avis/"
+  crumbs={crumbs}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap section">
+    <header class="head">
+      <h1>Avis de nos clients</h1>
+      <p class="lede">
+        Nous reproduisons les avis tels qu’ils sont publiés sur Google, sans les retoucher ni les
+        corriger. Chaque avis mentionne, quand c’est le cas, le conseiller qui a suivi le dossier.
+      </p>
+      <p class="rating">
+        {isMissing(GOOGLE_REVIEWS.rating) ? <Todo label="note globale Google" /> : GOOGLE_REVIEWS.rating}
+        {' / 5 — '}
+        {isMissing(GOOGLE_REVIEWS.count) ? <Todo label="nombre d’avis" /> : GOOGLE_REVIEWS.count}
+        {' avis, relevés le '}
+        {
+          isMissing(GOOGLE_REVIEWS.surveyedAt) ? (
+            <Todo label="date du relevé" />
+          ) : (
+            GOOGLE_REVIEWS.surveyedAt
+          )
+        }
+      </p>
+      <p class="cluster">
+        {
+          isMissing(GOOGLE_REVIEWS.profileUrl) ? (
+            <Todo label="URL de la fiche Google Maps pour le bouton « Voir tous nos avis »" />
+          ) : (
+            <a class="btn" href={GOOGLE_REVIEWS.profileUrl} rel="noopener">
+              Voir tous nos avis sur Google
+            </a>
+          )
+        }
+        {
+          isMissing(GOOGLE_REVIEWS.reviewUrl) ? (
+            <Todo label="lien court « Demander des avis » du Google Business Profile" />
+          ) : (
+            <a class="btn btn-secondary" href={GOOGLE_REVIEWS.reviewUrl} rel="noopener">
+              Laisser un avis
+            </a>
+          )
+        }
+      </p>
+    </header>
+
+    <ul class="reviews">
+      {
+        reviews.map((r) => (
+          <li class="panel">
+            <p class="stars" aria-label="5 étoiles sur 5">
+              <span aria-hidden="true">★★★★★</span>
+            </p>
+            <blockquote>
+              <p>
+                <Todo label={`texte intégral de l’avis de ${r.author}, à copier depuis Google`} />
+              </p>
+            </blockquote>
+            <footer class="small">
+              <strong>{r.author}</strong>
+              <span class="muted"> — {r.topic}</span>
+              {r.advisor && <div class="muted">Conseiller cité : {r.advisor}</div>}
+              <div class="muted">
+                <Todo label="mois et année de publication" />
+              </div>
+            </footer>
+          </li>
+        ))
+      }
+    </ul>
+
+    <section class="section-tight prose">
+      <h2>Pourquoi ces avis n’affichent pas d’étoiles dans Google</h2>
+      <p>
+        Les consignes de Google considèrent comme auto-promotionnels les avis qu’une entreprise
+        affiche sur son propre site, y compris lorsqu’ils proviennent de sa fiche Google. Les
+        baliser pour obtenir des étoiles dans les résultats de recherche expose à une action
+        manuelle sur l’ensemble du domaine. Nous les publions donc en texte, sans balisage, et nous
+        renvoyons vers la fiche Google pour la note officielle.
+      </p>
+      <p class="small muted">
+        Mention à valider avec l’agence :
+        <Todo label="formulation retenue pour la reproduction des avis" />
+      </p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .rating {
+    font-size: var(--step-1);
+  }
+
+  .reviews {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .stars {
+    /* Les etoiles portent l'information : 3:1 minimum (WCAG 1.4.11). */
+    color: var(--gold-600);
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-2xs);
+  }
+
+  blockquote {
+    margin: 0 0 var(--space-s);
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-2xs);
+  }
+</style>

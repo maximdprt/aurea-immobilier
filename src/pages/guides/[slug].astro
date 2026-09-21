@@ -1,0 +1,271 @@
+---
+/**
+ * Page de guide.
+ *
+ * Structure imposee par le §11 : une vraie question en titre, une reponse
+ * directe de 40 a 60 mots en premier paragraphe, puis le detail. L'auteur est
+ * un membre identifie de l'equipe, les sources sont listees et liees, et la
+ * date de mise a jour est visible.
+ */
+import { getCollection, render } from 'astro:content';
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Picture from '~/components/Picture.astro';
+import { agentBySlug, agentMedia, linkedCommune } from '~/lib/catalog';
+import { frDate } from '~/lib/format';
+import { articleSchema, faqSchema } from '~/lib/schema';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides', ({ data }) => !data.draft);
+  return guides.map((guide) => ({ params: { slug: guide.id }, props: { guide } }));
+}
+
+interface Props {
+  guide: CollectionEntry<'guides'>;
+}
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+
+const author = agentBySlug(guide.data.author);
+const path = `/guides/${guide.id}/`;
+
+const related = (await getCollection('guides', ({ data }) => !data.draft))
+  .filter((g) => g.id !== guide.id && g.data.cluster === guide.data.cluster)
+  .slice(0, 3);
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Guides', href: '/guides/' },
+  { label: guide.data.title },
+];
+---
+
+<Base
+  title={guide.data.title}
+  description={guide.data.description}
+  path={path}
+  crumbs={crumbs}
+  ogType="article"
+  brand={false}
+  schemas={[
+    articleSchema({
+      title: guide.data.title,
+      description: guide.data.description,
+      path,
+      published: guide.data.published.toISOString(),
+      modified: guide.data.updated.toISOString(),
+      authorSlug: author?.slug ?? null,
+    }),
+    faqSchema([{ question: guide.data.question, answer: guide.data.answer }]),
+  ]}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <article class="guide">
+    <div class="wrap-narrow">
+      <header class="head">
+        <h1>{guide.data.title}</h1>
+        <p class="updated">
+          Publié le {frDate(guide.data.published)} · Mis à jour le {frDate(guide.data.updated)}
+        </p>
+      </header>
+
+      {/* Reponse directe : c'est ce bloc que les moteurs generatifs extraient */}
+      <div class="answer">
+        <h2>{guide.data.question}</h2>
+        <p>{guide.data.answer}</p>
+      </div>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <section class="sources">
+        <h2>Sources</h2>
+        <ul>
+          {
+            guide.data.sources.map((s) => (
+              <li>
+                <a href={s.url} rel="noopener">
+                  {s.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="small muted">
+          Les informations réglementaires évoluent. Vérifiez la date de mise à jour de cette page
+          et, en cas de doute, la source officielle.
+        </p>
+      </section>
+
+      {
+        author && (
+          <section class="author">
+            <Picture
+              media={agentMedia(author.slug)}
+              alt={`Portrait de ${author.name}`}
+              sizes="80px"
+              class="author-photo"
+            />
+            <div>
+              <p class="author-name">
+                <a href={`/equipe/${author.slug}/`}>{author.name}</a>
+              </p>
+              <p class="small muted">{author.role} chez AUREA Immobilier</p>
+              <p class="small">
+                Une question sur votre situation ?{' '}
+                <a href="/contact/">Écrivez-nous</a> ou appelez le{' '}
+                <a href="tel:+33130635050">01 30 63 50 50</a>.
+              </p>
+            </div>
+          </section>
+        )
+      }
+
+      {
+        guide.data.communes.length > 0 && (
+          <section class="communes">
+            <h2>Communes concernées</h2>
+            <ul class="cluster">
+              {guide.data.communes.map((name) => {
+                const commune = linkedCommune(
+                  name
+                    .normalize('NFD')
+                    .replace(/[̀-ͯ]/g, '')
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                );
+                return commune ? (
+                  <li>
+                    <a class="badge" href={`/agence-immobiliere/${commune.slug}/`}>
+                      {commune.name}
+                    </a>
+                  </li>
+                ) : null;
+              })}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        related.length > 0 && (
+          <section class="related">
+            <h2>À lire aussi</h2>
+            <ul>
+              {related.map((g) => (
+                <li>
+                  <a href={`/guides/${g.id}/`}>{g.data.title}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </article>
+</Base>
+
+<style>
+  .guide {
+    padding-block: var(--space-l) var(--space-xl);
+  }
+
+  .head {
+    margin-bottom: var(--space-m);
+  }
+
+  .answer {
+    padding: var(--space-m);
+    margin-bottom: var(--space-l);
+    background: var(--gold-50);
+    border-left: 3px solid var(--gold-500);
+    border-radius: var(--radius-s);
+  }
+
+  .answer h2 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 650;
+    margin-bottom: var(--space-2xs);
+  }
+
+  .answer p {
+    margin: 0;
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+  }
+
+  .prose :global(table) {
+    margin-block: var(--space-m);
+  }
+
+  .prose :global(blockquote) {
+    margin: var(--space-m) 0;
+    padding: var(--space-s) var(--space-m);
+    border-left: 3px solid var(--warn);
+    background: var(--warn-bg);
+    border-radius: var(--radius-s);
+  }
+
+  .prose :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .sources,
+  .author,
+  .communes,
+  .related {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--line);
+  }
+
+  .sources h2,
+  .author h2,
+  .communes h2,
+  .related h2 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+
+  .author {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    align-items: start;
+  }
+
+  .author :global(.author-photo img) {
+    width: 5rem;
+    height: 5rem;
+    border-radius: var(--radius-m);
+    object-fit: cover;
+  }
+
+  .author-name {
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .author-name a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .author p {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .communes ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .communes .badge {
+    text-decoration: none;
+  }
+</style>

@@ -1,0 +1,349 @@
+---
+/**
+ * Page donnees « Prix immobilier Mantes-la-Jolie ».
+ *
+ * Pensee pour etre citee par les moteurs generatifs (§8, §11) : tableaux HTML,
+ * chiffres sourcés et datés, commentaire d'expert signé, révision trimestrielle.
+ *
+ * Les prix de marché ne sont pas inventés. Tant que l'extraction DVF n'a pas
+ * été faite, les cellules restent des placeholders visibles : publier une
+ * moyenne approximative sur une page destinée à être citée serait exactement
+ * le contraire de l'objectif.
+ *
+ * Ce que nous pouvons publier dès maintenant, en revanche, ce sont NOS chiffres :
+ * les biens que nous avons réellement traités, avec leurs surfaces et leurs prix.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Todo from '~/components/Todo.astro';
+import Faq, { type FaqItem } from '~/components/Faq.astro';
+import Picture from '~/components/Picture.astro';
+import {
+  agentBySlug,
+  agentMedia,
+  allListings,
+  archivedByCommune,
+} from '~/lib/catalog';
+import { area, money, plural, propertyTypeLabel } from '~/lib/format';
+import { faqSchema } from '~/lib/schema';
+
+const listings = allListings().filter((l) => l.communeSlug === 'mantes-la-jolie');
+const archived = archivedByCommune('Mantes-la-Jolie');
+const expert = agentBySlug('helene-vermeire-benz');
+
+/** Statistiques calculees sur NOS transactions : verifiables, donc publiables. */
+const withPrice = listings
+  .filter((l) => l.price && l.livingArea && l.transaction === 'vente')
+  .map((l) => ({ listing: l, perSqm: Math.round((l.price ?? 0) / (l.livingArea ?? 1)) }));
+const pricesPerSqm = withPrice.map((row) => row.perSqm).sort((a, b) => a - b);
+const median = (arr: number[]) =>
+  arr.length ? arr[Math.floor(arr.length / 2)] : null;
+
+const ourMedian = median(pricesPerSqm);
+const ourMin = pricesPerSqm[0] ?? null;
+const ourMax = pricesPerSqm[pricesPerSqm.length - 1] ?? null;
+
+const byType = (['maison', 'appartement'] as const).map((type) => {
+  const subset = withPrice.filter((row) => row.listing.propertyType === type);
+  const values = subset.map((row) => row.perSqm).sort((a, b) => a - b);
+  return { type, count: subset.length, median: median(values) };
+});
+
+const totalTransactions = listings.filter((l) => l.status !== 'published').length + archived.length;
+
+const faq: FaqItem[] = [
+  {
+    question: 'Quel est le prix au m² à Mantes-la-Jolie en 2026 ?',
+    answer:
+      'Le prix médian de marché est établi à partir des ventes réellement enregistrées par l’administration fiscale, publiées dans la base DVF. Nous publions ce chiffre avec sa date d’extraction dès qu’elle est réalisée, plutôt qu’une moyenne d’annonces qui refléterait les prix demandés et non les prix conclus.',
+  },
+  {
+    question: 'Pourquoi les prix d’annonce diffèrent-ils des prix de vente ?',
+    answer:
+      'Un prix d’annonce est une demande, un prix DVF est un accord. L’écart entre les deux mesure la négociation réelle du marché : il se creuse quand l’offre dépasse la demande, et se referme sur les biens rares ou bien préparés.',
+  },
+  {
+    question: 'Le DPE influence-t-il le prix à Mantes-la-Jolie ?',
+    answer:
+      'Oui, et de plus en plus nettement. Un logement classé F ou G subit une décote à l’achat, parce que l’acquéreur intègre le coût des travaux et l’impossibilité prochaine de le louer. À l’inverse, un bien classé A à C se négocie moins.',
+  },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Prix immobilier à Mantes-la-Jolie' },
+];
+---
+
+<Base
+  title="Prix immobilier à Mantes-la-Jolie"
+  description="Prix au m² à Mantes-la-Jolie, quartier par quartier, à partir des ventes réellement enregistrées. Analyse commentée par AUREA Immobilier, mise à jour trimestrielle."
+  path="/prix-immobilier-mantes-la-jolie/"
+  crumbs={crumbs}
+  schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap section">
+    <header class="head">
+      <h1>Prix de l’immobilier à Mantes-la-Jolie</h1>
+      <p class="lede">
+        Cette page rassemble deux séries de chiffres distinctes : les prix de marché issus des
+        ventes enregistrées par l’administration fiscale, et les prix que nous constatons nous-mêmes
+        sur les biens que nous commercialisons.
+      </p>
+      <p class="updated">
+        Dernière mise à jour : 21 septembre 2026 · Révision trimestrielle
+      </p>
+    </header>
+
+    <section class="section-tight">
+      <h2>Prix de marché — source DVF</h2>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">
+            Prix médian au m² à Mantes-la-Jolie selon la base DVF
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Type de bien</th>
+              <th scope="col">Prix médian au m²</th>
+              <th scope="col">Nombre de transactions</th>
+              <th scope="col">Évolution sur 3 ans</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Maisons</th>
+              <td><Todo label="prix médian maisons, DVF" /></td>
+              <td><Todo label="nb de transactions" /></td>
+              <td><Todo label="évolution" /></td>
+            </tr>
+            <tr>
+              <th scope="row">Appartements</th>
+              <td><Todo label="prix médian appartements, DVF" /></td>
+              <td><Todo label="nb de transactions" /></td>
+              <td><Todo label="évolution" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        Source à renseigner :
+        <a href="https://app.dvf.etalab.gouv.fr/" rel="noopener">base DVF</a>, publiée par la
+        direction générale des finances publiques, extraction à dater. Ces cellules restent vides
+        tant que l’extraction n’est pas faite : une page destinée à être citée ne peut pas contenir
+        d’estimation approximative.
+      </p>
+    </section>
+
+    <section class="section-tight">
+      <h2>Prix par quartier</h2>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Prix au m² par quartier de Mantes-la-Jolie</caption>
+          <thead>
+            <tr>
+              <th scope="col">Quartier</th>
+              <th scope="col">Appartements</th>
+              <th scope="col">Maisons</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" colspan="3">
+                <Todo label="découpage par quartier de Mantes-la-Jolie et prix DVF associés" />
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        Le découpage retenu doit correspondre à des périmètres réels et reproductibles — IRIS de
+        l’Insee ou quartiers administratifs — et non à des appellations commerciales.
+      </p>
+    </section>
+
+    <section class="section-tight">
+      <h2>Ce que nous constatons sur nos propres ventes</h2>
+      <p>
+        Ces chiffres portent sur les {plural(listings.length, 'bien')} que nous avons commercialisés
+        à Mantes-la-Jolie et dont nous connaissons à la fois le prix et la surface. L’échantillon
+        est petit : il illustre, il ne mesure pas le marché.
+      </p>
+      <dl class="facts">
+        <div>
+          <dt>Prix médian au m² constaté</dt>
+          <dd>{ourMedian ? `${money(ourMedian)} / m²` : '—'}</dd>
+        </div>
+        <div>
+          <dt>Fourchette observée</dt>
+          <dd>{ourMin && ourMax ? `${money(ourMin)} à ${money(ourMax)} / m²` : '—'}</dd>
+        </div>
+        <div>
+          <dt>Biens dans l’échantillon</dt>
+          <dd>{withPrice.length}</dd>
+        </div>
+        <div>
+          <dt>Transactions réalisées dans la commune</dt>
+          <dd>{totalTransactions}</dd>
+        </div>
+      </dl>
+
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Prix médian au m² par type, sur notre portefeuille</caption>
+          <thead>
+            <tr>
+              <th scope="col">Type</th>
+              <th scope="col">Biens</th>
+              <th scope="col">Prix médian au m² constaté</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              byType.map((row) => (
+                <tr>
+                  <th scope="row">{propertyTypeLabel(row.type)}</th>
+                  <td>{row.count}</td>
+                  <td>{row.median ? `${money(row.median)} / m²` : '—'}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Les biens de l’échantillon</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Réf.</th>
+              <th scope="col">Bien</th>
+              <th scope="col">Surface</th>
+              <th scope="col">Prix</th>
+              <th scope="col">Prix au m²</th>
+              <th scope="col">DPE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              withPrice.map(({ listing, perSqm }) => (
+                <tr>
+                  <td>{listing.reference}</td>
+                  <td>
+                    <a href={`/bien/${listing.slug}/`}>{listing.title}</a>
+                  </td>
+                  <td>{area(listing.livingArea)}</td>
+                  <td>{money(listing.price)}</td>
+                  <td>{money(perSqm)}</td>
+                  <td>{listing.dpeClass ?? '—'}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {
+      expert && (
+        <section class="section-tight comment">
+          <h2>Le commentaire de l’agence</h2>
+          <div class="expert">
+            <Picture
+              media={agentMedia(expert.slug)}
+              alt={`Portrait de ${expert.name}`}
+              sizes="72px"
+              class="expert-photo"
+            />
+            <div>
+              <blockquote>
+                <p>
+                  <Todo label="analyse trimestrielle du marché de Mantes-la-Jolie, rédigée et signée par la direction" />
+                </p>
+                <p class="small muted">
+                  Ce commentaire est le cœur de la valeur de cette page : c’est lui qui distingue
+                  une page de données d’un simple tableau. Il doit être écrit par un membre de
+                  l’équipe, daté, et révisé chaque trimestre.
+                </p>
+              </blockquote>
+              <p class="expert-name">
+                <a href={`/equipe/${expert.slug}/`}>{expert.name}</a>
+                <span class="small muted"> — {expert.role}</span>
+              </p>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="section-tight">
+      <Faq items={faq} title="Prix immobilier à Mantes-la-Jolie : vos questions" />
+    </section>
+
+    <section class="section-tight">
+      <h2>Estimer votre bien précisément</h2>
+      <p>
+        Un prix médian ne dit rien de votre logement : son étage, son exposition, son état et son
+        DPE font varier la valeur de plusieurs dizaines de milliers d’euros à surface égale.
+      </p>
+      <p class="cluster">
+        <a class="btn" href="/estimation/">Demander une estimation gratuite</a>
+        <a class="btn btn-secondary" href="/guides/estimation-immobiliere-4-methodes/">
+          Comprendre les méthodes d’estimation
+        </a>
+      </p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .facts {
+    margin-bottom: var(--space-m);
+  }
+
+  .expert {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    align-items: start;
+    padding: var(--space-m);
+    background: var(--canvas-alt);
+    border-radius: var(--radius-m);
+  }
+
+  .expert :global(.expert-photo img) {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: var(--radius-m);
+    object-fit: cover;
+  }
+
+  .expert > div {
+    flex: 1 1 20rem;
+  }
+
+  blockquote {
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .expert-name {
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .expert-name a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  table :global(a) {
+    color: var(--gold-700);
+  }
+</style>

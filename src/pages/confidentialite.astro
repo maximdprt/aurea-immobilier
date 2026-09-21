@@ -1,0 +1,247 @@
+---
+/**
+ * Politique de confidentialité — contenu du §21.2.
+ *
+ * Le tableau des traitements est le cœur du document : une ligne par finalité,
+ * avec sa base légale et sa durée de conservation. Les durées proposées sont
+ * celles du brief et doivent être validées par l'agence.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Todo from '~/components/Todo.astro';
+import { COMPANY, CONTACT, REGULATED, isMissing } from '~/lib/site';
+
+const LEGAL_VERSION = 1;
+const UPDATED = '21 septembre 2026';
+
+const treatments = [
+  {
+    purpose: 'Répondre à une demande de contact ou de visite',
+    data: 'Identité, coordonnées, message, bien concerné',
+    basis: 'Mesures précontractuelles (art. 6.1.b RGPD)',
+    retention: '3 ans après le dernier contact',
+  },
+  {
+    purpose: 'Estimation d’un bien',
+    data: 'Identité, coordonnées, caractéristiques et adresse du bien',
+    basis: 'Mesures précontractuelles (art. 6.1.b)',
+    retention: '3 ans après le dernier contact',
+  },
+  {
+    purpose: 'Alertes email sur les nouveaux biens',
+    data: 'Adresse email, critères de recherche',
+    basis: 'Consentement (art. 6.1.a), avec double opt-in',
+    retention: 'Jusqu’au désabonnement, suppression après 3 ans sans interaction',
+  },
+  {
+    purpose: 'Exécution des mandats (vente, location, gestion)',
+    data: 'Données du mandant, du bien, pièces du dossier',
+    basis: 'Contrat (art. 6.1.b) et obligations légales (art. 6.1.c)',
+    retention: 'Durée du mandat, puis délais légaux de conservation',
+  },
+  {
+    purpose: 'Lutte contre le blanchiment et le financement du terrorisme',
+    data: 'Pièces d’identité, justificatifs d’origine des fonds',
+    basis: 'Obligation légale (art. 6.1.c) — l’agent immobilier y est assujetti',
+    retention: '5 ans après la fin de la relation d’affaires',
+  },
+  {
+    purpose: 'Sécurité du site : anti-spam, limitation de débit, journaux',
+    data: 'Adresse IP sous forme hachée, journaux techniques',
+    basis: 'Intérêt légitime (art. 6.1.f)',
+    retention: '6 mois à 1 an',
+  },
+  {
+    purpose: 'Mesure d’audience',
+    data: 'Statistiques agrégées, sans cookie ni identifiant individuel',
+    basis: 'Intérêt légitime (art. 6.1.f)',
+    retention: 'Données agrégées, non rattachables à une personne',
+  },
+  {
+    purpose: 'Accès au back-office',
+    data: 'Identité des collaborateurs, journaux de connexion et d’action',
+    basis: 'Intérêt légitime (art. 6.1.f)',
+    retention: 'Durée d’emploi, journaux conservés 1 an',
+  },
+];
+
+const processors = [
+  ['Vercel Inc.', 'Hébergement du site', 'États-Unis', 'Data Privacy Framework UE–États-Unis et clauses contractuelles types'],
+  ['Supabase Inc.', 'Base de données et authentification', 'Union européenne (Paris)', 'Contrat de sous-traitance (DPA)'],
+  ['Cloudflare', 'Protection anti-spam des formulaires (Turnstile)', 'Union européenne / États-Unis', 'Clauses contractuelles types'],
+  ['Orisha Real Estate', 'Logiciel métier et diffusion des annonces', 'France', 'Contrat de sous-traitance'],
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Politique de confidentialité' },
+];
+---
+
+<Base
+  title="Politique de confidentialité"
+  description="Données collectées par AUREA Immobilier, finalités, durées de conservation, sous-traitants et exercice de vos droits RGPD."
+  path="/confidentialite/"
+  crumbs={crumbs}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap-narrow section prose">
+    <h1>Politique de confidentialité</h1>
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+
+    <p class="notice">
+      <strong>À faire valider par un juriste avant publication.</strong> Les durées de conservation
+      proposées ci-dessous doivent en outre être confirmées par l’agence.
+    </p>
+
+    <h2>1. Responsable de traitement</h2>
+    <p>
+      {COMPANY.legalName}, {CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}.
+    </p>
+    <p>
+      Pour toute question relative à vos données personnelles ou pour exercer vos droits :{' '}
+      {
+        isMissing(REGULATED.dpoEmail) ? (
+          <Todo label="adresse email professionnelle dédiée, de type rgpd@aurea-immobilier.fr" />
+        ) : (
+          REGULATED.dpoEmail
+        )
+      }
+    </p>
+    <p class="small muted">
+      Le site actuel indique une adresse personnelle chez un fournisseur grand public comme contact
+      RGPD. Elle doit être remplacée par une adresse professionnelle avant la mise en ligne.
+    </p>
+
+    <h2>2. Traitements réalisés</h2>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Finalités, bases légales et durées de conservation</caption>
+        <thead>
+          <tr>
+            <th scope="col">Finalité</th>
+            <th scope="col">Données</th>
+            <th scope="col">Base légale</th>
+            <th scope="col">Conservation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            treatments.map((t) => (
+              <tr>
+                <th scope="row">{t.purpose}</th>
+                <td>{t.data}</td>
+                <td>{t.basis}</td>
+                <td>{t.retention}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">
+      Durées à valider par l’agence : <Todo label="validation des durées de conservation" />
+    </p>
+
+    <h2>3. Destinataires</h2>
+    <p>
+      Vos données sont accessibles aux conseillers et à la gestionnaire locative d’AUREA
+      Immobilier, dans la stricte limite de leurs attributions. Un conseiller n’accède qu’aux
+      demandes qui lui sont assignées ou qui ne le sont pas encore ; la gestionnaire locative
+      n’accède qu’aux demandes de gestion. L’accès au back-office est protégé par une
+      authentification à deux facteurs.
+    </p>
+    <p><strong>Vos données ne sont ni vendues, ni louées, ni cédées à des tiers.</strong></p>
+
+    <h2>4. Sous-traitants</h2>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Sous-traitants et localisation des données</caption>
+        <thead>
+          <tr>
+            <th scope="col">Sous-traitant</th>
+            <th scope="col">Rôle</th>
+            <th scope="col">Localisation</th>
+            <th scope="col">Garanties</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            processors.map(([name, role, location, safeguard]) => (
+              <tr>
+                <th scope="row">{name}</th>
+                <td>{role}</td>
+                <td>{location}</td>
+                <td>{safeguard}</td>
+              </tr>
+            ))
+          }
+          <tr>
+            <th scope="row"><Todo label="service d’emailing transactionnel" /></th>
+            <td>Envoi des emails de confirmation et de notification</td>
+            <td><Todo label="localisation" /></td>
+            <td><Todo label="garanties" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>5. Transferts hors Union européenne</h2>
+    <p>
+      La base de données et les fichiers sont hébergés dans l’Union européenne, en France. Le site
+      lui-même est distribué par un hébergeur dont le siège est aux États-Unis ; les transferts
+      éventuels sont encadrés par le Data Privacy Framework UE–États-Unis ou par des clauses
+      contractuelles types de la Commission européenne.
+    </p>
+
+    <h2>6. Sécurité</h2>
+    <ul>
+      <li>Chiffrement des échanges en transit (HTTPS strict, HSTS)</li>
+      <li>Contrôle d’accès par rôle appliqué au niveau de la base de données</li>
+      <li>Authentification à deux facteurs obligatoire pour tout accès aux demandes</li>
+      <li>Journalisation des accès et des modifications</li>
+      <li>Sauvegardes quotidiennes et procédure de restauration testée</li>
+      <li>Adresses IP conservées uniquement sous forme hachée, jamais en clair</li>
+      <li>Suppression automatique des données dont la durée de conservation est échue</li>
+    </ul>
+
+    <h2>7. Vos droits</h2>
+    <p>Vous disposez des droits suivants sur vos données :</p>
+    <ul>
+      <li>droit d’accès et de copie ;</li>
+      <li>droit de rectification ;</li>
+      <li>droit à l’effacement, dans les limites de nos obligations légales de conservation ;</li>
+      <li>droit à la limitation du traitement ;</li>
+      <li>droit d’opposition, notamment à la prospection commerciale ;</li>
+      <li>droit à la portabilité ;</li>
+      <li>droit de retirer votre consentement à tout moment, sans effet rétroactif ;</li>
+      <li>droit de définir des directives relatives au sort de vos données après votre décès.</li>
+    </ul>
+    <p>
+      Nous répondons dans un délai d’un mois. Si vous estimez que vos droits ne sont pas respectés,
+      vous pouvez introduire une réclamation auprès de la{' '}
+      <a href="https://www.cnil.fr/" rel="noopener">Commission nationale de l’informatique et des
+      libertés (CNIL)</a>.
+    </p>
+
+    <h2>8. Estimation en ligne</h2>
+    <p>
+      Le formulaire d’estimation ne produit aucune décision automatisée ayant des effets juridiques
+      à votre égard. Les informations que vous transmettez servent à préparer la visite d’un
+      conseiller, qui établit l’avis de valeur.
+    </p>
+
+    <h2>9. Démarchage téléphonique</h2>
+    <p>
+      Vous pouvez vous inscrire gratuitement sur la liste d’opposition{' '}
+      <a href="https://www.bloctel.gouv.fr/" rel="noopener">Bloctel</a>.
+    </p>
+
+    <h2>10. Évolution de cette politique</h2>
+    <p>
+      Cette politique peut être modifiée. Chaque version est datée et numérotée ; la version que
+      vous avez acceptée lors de l’envoi d’un formulaire est conservée avec votre demande.
+    </p>
+  </div>
+</Base>

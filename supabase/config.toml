@@ -1,0 +1,56 @@
+# Configuration Supabase locale (`supabase start`, `supabase test db`).
+# La production est configurée depuis le dashboard ; ce fichier ne sert
+# qu'au développement et à la CI.
+
+project_id = "aurea-immobilier"
+
+[db]
+port = 54322
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[api]
+port = 54321
+# `private` n'est PAS exposé : c'est ce qui rend ses tables inatteignables
+# depuis l'API, même en cas d'erreur de politique RLS (prompt v3 §20.2).
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 200
+
+[auth]
+site_url = "http://localhost:4321"
+additional_redirect_urls = ["http://localhost:4321"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+# Aucune inscription publique : les comptes du back-office sont créés par
+# invitation par un administrateur (§20.4).
+enable_signup = false
+enable_manual_linking = false
+minimum_password_length = 12
+password_requirements = "lower_upper_letters_digits_symbols"
+
+[auth.email]
+enable_signup = false
+enable_confirmations = true
+secure_password_change = true
+
+[auth.mfa]
+# MFA TOTP obligatoire. La RLS exige `aal2` sur les tables de demandes :
+# l'interface ne fait que refléter cette exigence, elle ne la garantit pas.
+max_enrolled_factors = 3
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[auth.hook.custom_access_token]
+# Place le rôle métier dans le JWT (claim `app_role`), ce qui évite une
+# sous-requête sur `profiles` à chaque ligne évaluée par une politique.
+enabled = true
+uri = "pg-functions://postgres/private/custom_access_token_hook"
+
+[analytics]
+enabled = false

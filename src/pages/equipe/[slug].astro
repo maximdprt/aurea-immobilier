@@ -1,0 +1,239 @@
+---
+/**
+ * Page conseiller.
+ *
+ * E-E-A-T : une personne reelle, son role, son secteur, ses biens en cours et
+ * ses ventes, balisee `Person` avec `worksFor` vers l'agence (§8, §12).
+ *
+ * Les elements que le scraping ne fournit pas — parcours, langues, avis citant
+ * la personne — restent des placeholders visibles plutot que des biographies
+ * inventees.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Picture from '~/components/Picture.astro';
+import ListingCard from '~/components/ListingCard.astro';
+import LeadForm from '~/components/LeadForm.astro';
+import Todo from '~/components/Todo.astro';
+import { allAgents, agentMedia, listingsByAgent } from '~/lib/catalog';
+import { composeDescription, plural, toE164 } from '~/lib/format';
+import { personSchema } from '~/lib/schema';
+import { CONTACT } from '~/lib/site';
+import type { Agent } from '~/lib/types';
+
+export function getStaticPaths() {
+  return allAgents().map((agent) => ({ params: { slug: agent.slug }, props: { agent } }));
+}
+
+interface Props {
+  agent: Agent;
+}
+const { agent } = Astro.props;
+
+const media = agentMedia(agent.slug);
+const listings = listingsByAgent(agent.slug);
+const active = listings.filter((l) => l.status === 'published' || l.status === 'under_offer');
+const sold = listings.filter((l) => l.status === 'sold' || l.status === 'rented');
+
+const communes = [...new Set(listings.map((l) => l.commune).filter(Boolean))] as string[];
+
+const description = composeDescription([
+  `${agent.name}, ${agent.role.toLowerCase()} chez AUREA Immobilier à Mantes-la-Jolie.`,
+  sold.length > 0
+    ? `${sold.length} transaction${sold.length > 1 ? 's' : ''} réalisée${sold.length > 1 ? 's' : ''}${communes.length ? ` à ${communes.slice(0, 2).join(' et ')}` : ''}.`
+    : null,
+  active.length > 0 ? `${active.length} bien${active.length > 1 ? 's' : ''} en portefeuille.` : null,
+  'Contact direct au 01 30 63 50 50.',
+  'Estimation gratuite sur rendez-vous.',
+]);
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'L’équipe', href: '/equipe/' },
+  { label: agent.name },
+];
+const agentTel = toE164(agent.phone);
+---
+
+<Base
+  title={`${agent.name}, ${agent.role} – AUREA Immobilier`}
+  description={description}
+  path={`/equipe/${agent.slug}/`}
+  crumbs={crumbs}
+  image={media ? `${media.base}-480.webp` : null}
+  schemas={[personSchema(agent, media ? `${media.base}-480.webp` : null)]}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap section">
+    <header class="profile">
+      <Picture
+        media={media}
+        alt={`Portrait de ${agent.name}`}
+        sizes="(min-width: 48rem) 15rem, 45vw"
+        aspect="1"
+        class="portrait"
+        priority
+      />
+      <div>
+        <h1>{agent.name}</h1>
+        <p class="role">{agent.role}</p>
+        <dl class="meta">
+          <div>
+            <dt>Agence</dt>
+            <dd>{CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}</dd>
+          </div>
+          {
+            agentTel && (
+              <div>
+                <dt>Ligne directe</dt>
+                <dd><a href={`tel:${agentTel}`}>{agent.phone}</a></dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>Agence</dt>
+            <dd><a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a></dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>
+              {
+                agent.email && !agent.email.endsWith('gmail.com') ? (
+                  <a href={`mailto:${agent.email}`}>{agent.email}</a>
+                ) : (
+                  <Todo label={`adresse professionnelle de ${agent.name}`} />
+                )
+              }
+            </dd>
+          </div>
+          {
+            communes.length > 0 && (
+              <div>
+                <dt>Secteur</dt>
+                <dd>{communes.slice(0, 5).join(', ')}</dd>
+              </div>
+            )
+          }
+        </dl>
+      </div>
+    </header>
+
+    <section class="section-tight prose">
+      <h2>Parcours</h2>
+      <p class="notice">
+        <Todo label={`parcours, formation et langues parlées de ${agent.name}`} />
+        <br />
+        Le site existant ne publie aucune biographie. Cette section est le principal signal
+        d’expertise pour les moteurs de recherche comme pour les moteurs génératifs : elle sera
+        rédigée à partir des éléments fournis par l’agence, et signée.
+      </p>
+    </section>
+
+    {
+      active.length > 0 && (
+        <section class="section-tight">
+          <h2>Biens actuellement suivis</h2>
+          <div class="grid-cards">
+            {active.map((l) => (
+              <ListingCard listing={l} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      sold.length > 0 && (
+        <section class="section-tight">
+          <h2>Transactions réalisées</h2>
+          <p class="small muted">
+            {plural(sold.length, 'bien vendu ou loué', 'biens vendus ou loués')} par {agent.name}
+            {communes.length > 0 && <> à {communes.slice(0, 4).join(', ')}</>}.
+          </p>
+          <ul class="sold">
+            {sold.map((l) => (
+              <li>
+                <span class="badge badge-sold">{l.status === 'sold' ? 'Vendu' : 'Loué'}</span>
+                <a href={`/bien/${l.slug}/`}>{l.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="section-tight">
+      <h2>Avis clients citant {agent.name}</h2>
+      <p class="notice">
+        <Todo label={`avis Google citant nommément ${agent.name}, à copier mot pour mot`} />
+      </p>
+    </section>
+
+    <section class="section-tight">
+      <LeadForm
+        type="contact"
+        title={`Écrire à ${agent.name}`}
+        intro="Votre message est transmis directement au conseiller."
+      />
+    </section>
+  </div>
+</Base>
+
+<style>
+  .profile {
+    display: grid;
+    gap: var(--space-l);
+    margin-bottom: var(--space-l);
+  }
+
+  .profile :global(.portrait img) {
+    border-radius: var(--radius-l);
+    max-width: 15rem;
+  }
+
+  .role {
+    font-size: var(--step-1);
+    color: var(--gold-700);
+    margin-bottom: var(--space-s);
+  }
+
+  .meta {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    margin: 0;
+  }
+
+  .meta dt {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+
+  .meta dd {
+    margin: 0;
+    font-weight: 550;
+  }
+
+  .sold {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sold li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding-block: 0.55rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (min-width: 48rem) {
+    .profile {
+      grid-template-columns: 15rem 1fr;
+      align-items: start;
+    }
+  }
+</style>

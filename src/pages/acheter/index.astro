@@ -1,0 +1,74 @@
+---
+/**
+ * Liste des biens a vendre. Mot-cle : « maison / appartement à vendre
+ * Mantes-la-Jolie ». Les filtres ne creent aucune URL (voir ListingResults).
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import ListingResults from '~/components/ListingResults.astro';
+import { activeListings, communesWithPage } from '~/lib/catalog';
+
+const listings = activeListings('vente');
+const communes = communesWithPage().filter((c) => c.activeCount > 0);
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Acheter', href: '/acheter/' },
+];
+---
+
+<Base
+  title="Biens à vendre à Mantes-la-Jolie"
+  description="Tous nos biens à vendre dans le Mantois : maisons, appartements, immeubles. Prix honoraires inclus, DPE affiché, conseiller dédié pour chaque visite."
+  path="/acheter/"
+  crumbs={crumbs}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>A vendre</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="head">
+      <p class="lede">
+        {listings.length} bien{listings.length > 1 ? 's' : ''} actuellement proposé{listings.length > 1 ? 's' : ''}
+        à la vente par notre agence. Chaque prix est affiché honoraires inclus, avec le DPE et la
+        part qui les prend en charge.
+      </p>
+    </header>
+
+    <ListingResults listings={listings} />
+
+    {
+      communes.length > 0 && (
+        <section class="section-tight">
+          <h2>Acheter commune par commune</h2>
+          <ul class="links">
+            {communes.map((c) => (
+              <li>
+                <a href={`/agence-immobiliere/${c.slug}/`}>Immobilier à {c.name}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-s);
+    list-style: none;
+    padding: 0;
+    font-size: var(--step--1);
+  }
+</style>

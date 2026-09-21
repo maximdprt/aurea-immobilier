@@ -1,0 +1,419 @@
+---
+/**
+ * Formulaire d'estimation multi-etapes.
+ *
+ * C'est le formulaire le plus rentable du site (§14) : barre de progression,
+ * validation en direct, sauvegarde locale de la saisie, et un evenement
+ * analytics a chaque etape.
+ *
+ * Sans JavaScript, toutes les etapes sont visibles d'un coup et le formulaire
+ * reste entierement utilisable : les `fieldset` ne sont masques que par le
+ * script.
+ *
+ * L'adresse saisie est une donnee personnelle : elle part vers /api/estimation/
+ * et n'est jamais ecrite cote client ailleurs que dans le stockage local du
+ * visiteur, qu'il peut vider.
+ */
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const consentVersion = '2026-09-21';
+---
+
+<form class="estimation" method="post" action="/api/estimation/" data-estimation novalidate>
+  <input type="hidden" name="consent_version" value={consentVersion} />
+
+  <div class="progress" data-progress hidden>
+    <div class="bar"><span data-bar style="width:20%"></span></div>
+    <p class="small muted" data-progress-label>Étape 1 sur 5</p>
+  </div>
+
+  <div class="hp-field" aria-hidden="true">
+    <label for="est-website">Ne pas remplir</label>
+    <input id="est-website" type="text" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <fieldset data-step="1">
+    <legend>Votre bien</legend>
+    <p class="field">
+      <label for="est-type">Type de bien <span aria-hidden="true">*</span></label>
+      <select id="est-type" name="property_type" required>
+        <option value="">Choisir…</option>
+        <option value="maison">Maison</option>
+        <option value="appartement">Appartement</option>
+        <option value="immeuble">Immeuble</option>
+        <option value="terrain">Terrain</option>
+        <option value="local">Local commercial ou professionnel</option>
+      </select>
+    </p>
+    <p class="field">
+      <label for="est-project">Votre projet</label>
+      <select id="est-project" name="project">
+        <option value="vendre">Je souhaite vendre</option>
+        <option value="louer">Je souhaite louer</option>
+        <option value="savoir">Je veux simplement connaître la valeur</option>
+      </select>
+    </p>
+  </fieldset>
+
+  <fieldset data-step="2">
+    <legend>Où se situe-t-il&nbsp;?</legend>
+    <p class="field">
+      <label for="est-address">Adresse <span aria-hidden="true">*</span></label>
+      <input
+        id="est-address"
+        name="address"
+        type="text"
+        autocomplete="street-address"
+        required
+        maxlength="160"
+      />
+      <span class="hint">
+        L’adresse sert uniquement à préparer l’estimation. Elle n’est jamais publiée.
+      </span>
+    </p>
+    <div class="two">
+      <p class="field">
+        <label for="est-postal">Code postal <span aria-hidden="true">*</span></label>
+        <input
+          id="est-postal"
+          name="postal_code"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]{5}"
+          required
+          maxlength="5"
+        />
+      </p>
+      <p class="field">
+        <label for="est-city">Commune <span aria-hidden="true">*</span></label>
+        <input id="est-city" name="city" type="text" required maxlength="80" />
+      </p>
+    </div>
+  </fieldset>
+
+  <fieldset data-step="3">
+    <legend>Surface et pièces</legend>
+    <div class="two">
+      <p class="field">
+        <label for="est-area">Surface habitable (m²) <span aria-hidden="true">*</span></label>
+        <input id="est-area" name="living_area" type="number" min="5" max="2000" required />
+      </p>
+      <p class="field">
+        <label for="est-land">Surface du terrain (m²)</label>
+        <input id="est-land" name="land_area" type="number" min="0" max="100000" />
+      </p>
+    </div>
+    <div class="two">
+      <p class="field">
+        <label for="est-rooms">Nombre de pièces <span aria-hidden="true">*</span></label>
+        <input id="est-rooms" name="rooms" type="number" min="1" max="30" required />
+      </p>
+      <p class="field">
+        <label for="est-bedrooms">Dont chambres</label>
+        <input id="est-bedrooms" name="bedrooms" type="number" min="0" max="20" />
+      </p>
+    </div>
+  </fieldset>
+
+  <fieldset data-step="4">
+    <legend>État du bien</legend>
+    <p class="field">
+      <label for="est-condition">État général</label>
+      <select id="est-condition" name="condition">
+        <option value="">Choisir…</option>
+        <option value="neuf">Neuf ou refait à neuf</option>
+        <option value="bon">Bon état</option>
+        <option value="rafraichir">À rafraîchir</option>
+        <option value="travaux">Travaux importants à prévoir</option>
+      </select>
+    </p>
+    <p class="field">
+      <label for="est-dpe">Classe DPE si vous la connaissez</label>
+      <select id="est-dpe" name="dpe_class">
+        <option value="">Je ne sais pas</option>
+        <option>A</option><option>B</option><option>C</option><option>D</option>
+        <option>E</option><option>F</option><option>G</option>
+      </select>
+    </p>
+    <p class="field">
+      <label for="est-notes">Précisions utiles</label>
+      <textarea id="est-notes" name="notes" rows="3" maxlength="1000"></textarea>
+    </p>
+  </fieldset>
+
+  <fieldset data-step="5">
+    <legend>Pour vous répondre</legend>
+    <div class="two">
+      <p class="field">
+        <label for="est-firstname">Prénom <span aria-hidden="true">*</span></label>
+        <input id="est-firstname" name="firstname" type="text" autocomplete="given-name" required maxlength="80" />
+      </p>
+      <p class="field">
+        <label for="est-lastname">Nom <span aria-hidden="true">*</span></label>
+        <input id="est-lastname" name="lastname" type="text" autocomplete="family-name" required maxlength="80" />
+      </p>
+    </div>
+    <div class="two">
+      <p class="field">
+        <label for="est-email">Email <span aria-hidden="true">*</span></label>
+        <input id="est-email" name="email" type="email" autocomplete="email" required maxlength="254" />
+      </p>
+      <p class="field">
+        <label for="est-phone">Téléphone <span aria-hidden="true">*</span></label>
+        <input id="est-phone" name="phone" type="tel" autocomplete="tel" required maxlength="25" />
+      </p>
+    </div>
+    <p class="field consent">
+      <label>
+        <input type="checkbox" name="consent" value="1" required />
+        <span>
+          J’accepte que mes données soient utilisées pour préparer mon estimation. Elles sont
+          conservées 3 ans après notre dernier contact.
+          <a href="/confidentialite/">Politique de confidentialité</a>.
+        </span>
+      </label>
+    </p>
+    {
+      turnstileKey ? (
+        <div class="cf-turnstile" data-sitekey={turnstileKey} data-theme="light" data-language="fr" />
+      ) : (
+        <p class="small muted">Protection anti-spam à activer : clé Turnstile non configurée.</p>
+      )
+    }
+  </fieldset>
+
+  <div class="nav">
+    <button type="button" class="btn btn-secondary" data-prev hidden>Précédent</button>
+    <button type="button" class="btn" data-next hidden>Suivant</button>
+    <button type="submit" class="btn" data-submit>Envoyer ma demande d’estimation</button>
+  </div>
+
+  <p class="form-status" role="status" hidden data-status></p>
+  <p class="small muted saved" data-saved hidden>
+    Votre saisie est enregistrée dans ce navigateur : vous pouvez fermer la page et revenir.
+  </p>
+</form>
+
+{
+  turnstileKey && (
+    <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+  )
+}
+
+<style>
+  .estimation {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: var(--space-m);
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin-bottom: var(--space-m);
+  }
+
+  legend {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    padding: 0;
+    margin-bottom: var(--space-s);
+  }
+
+  .two {
+    display: grid;
+    gap: 0 var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  }
+
+  .progress {
+    margin-bottom: var(--space-m);
+  }
+
+  .bar {
+    height: 4px;
+    background: var(--canvas-alt);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .bar span {
+    display: block;
+    height: 100%;
+    background: var(--gold-600);
+    transition: width var(--dur) var(--ease-out);
+  }
+
+  .progress p {
+    margin: 0.35rem 0 0;
+  }
+
+  .consent label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2xs);
+    align-items: start;
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+
+  .consent input {
+    margin-top: 0.25rem;
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .saved {
+    margin: var(--space-s) 0 0;
+  }
+</style>
+
+<script>
+  const estimationForm = document.querySelector<HTMLFormElement>('[data-estimation]');
+  if (estimationForm) {
+    const form: HTMLFormElement = estimationForm;
+    const steps = Array.from(form.querySelectorAll<HTMLFieldSetElement>('[data-step]'));
+    const prev = form.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = form.querySelector<HTMLButtonElement>('[data-next]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const progress = form.querySelector<HTMLElement>('[data-progress]')!;
+    const bar = form.querySelector<HTMLElement>('[data-bar]')!;
+    const label = form.querySelector<HTMLElement>('[data-progress-label]')!;
+    const status = form.querySelector<HTMLElement>('[data-status]');
+    const saved = form.querySelector<HTMLElement>('[data-saved]');
+    const KEY = 'aurea:estimation:v1';
+
+    let current = 0;
+    progress.hidden = false;
+    prev.hidden = false;
+    next.hidden = false;
+
+    /** Evenement analytics a chaque etape : c'est le tunnel le plus rentable. */
+    const track = (step: number) => {
+      window.dispatchEvent(
+        new CustomEvent('aurea:estimation-step', { detail: { step: step + 1, total: steps.length } })
+      );
+    };
+
+    const render = () => {
+      steps.forEach((s, i) => (s.hidden = i !== current));
+      prev.disabled = current === 0;
+      next.hidden = current === steps.length - 1;
+      submit.hidden = current !== steps.length - 1;
+      bar.style.width = `${((current + 1) / steps.length) * 100}%`;
+      label.textContent = `Étape ${current + 1} sur ${steps.length}`;
+      steps[current]?.querySelector<HTMLElement>('input, select, textarea')?.focus();
+    };
+
+    /** Ne valide que les champs de l'etape courante. */
+    const stepIsValid = () => {
+      const fields = Array.from(
+        steps[current].querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+          'input, select, textarea'
+        )
+      );
+      for (const field of fields) {
+        if (!field.checkValidity()) {
+          field.reportValidity();
+          return false;
+        }
+      }
+      return true;
+    };
+
+    next.addEventListener('click', () => {
+      if (!stepIsValid()) return;
+      current = Math.min(current + 1, steps.length - 1);
+      render();
+      track(current);
+      persist();
+    });
+
+    prev.addEventListener('click', () => {
+      current = Math.max(current - 1, 0);
+      render();
+    });
+
+    // Sauvegarde locale : le stockage peut etre indisponible, on ne casse rien.
+    function persist() {
+      try {
+        const data = Object.fromEntries(new FormData(form).entries());
+        delete data.consent;
+        localStorage.setItem(KEY, JSON.stringify(data));
+        if (saved) saved.hidden = false;
+      } catch {
+        /* navigation privee ou stockage bloque */
+      }
+    }
+
+    function restore() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw) as Record<string, string>;
+        for (const [name, value] of Object.entries(data)) {
+          const field = form.elements.namedItem(name);
+          if (field instanceof HTMLInputElement && field.type !== 'checkbox') field.value = value;
+          else if (field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement)
+            field.value = value;
+        }
+        if (saved) saved.hidden = false;
+      } catch {
+        /* donnees illisibles : on repart d'un formulaire vierge */
+      }
+    }
+
+    form.addEventListener('change', persist);
+    restore();
+    render();
+    track(0);
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      submit.disabled = true;
+      if (status) {
+        status.hidden = false;
+        status.dataset.state = '';
+        status.textContent = 'Envoi en cours…';
+      }
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = (await response.json().catch(() => ({}))) as { message?: string };
+        if (!response.ok) throw new Error(data.message ?? 'Envoi impossible');
+        if (status) {
+          status.dataset.state = 'ok';
+          status.textContent =
+            'Merci. Un conseiller vous rappelle sous 48 h pour convenir du rendez-vous d’estimation.';
+        }
+        window.dispatchEvent(new CustomEvent('aurea:estimation-sent'));
+        try {
+          localStorage.removeItem(KEY);
+        } catch {
+          /* rien a nettoyer */
+        }
+        form.reset();
+      } catch (error) {
+        if (status) {
+          status.dataset.state = 'error';
+          status.textContent =
+            error instanceof Error && error.message
+              ? error.message
+              : 'Envoi impossible. Vous pouvez nous appeler au 01 30 63 50 50.';
+        }
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+</script>

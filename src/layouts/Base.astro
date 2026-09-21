@@ -1,0 +1,159 @@
+---
+/**
+ * Gabarit commun.
+ *
+ * Applique les regles du §8 : un seul H1 par page (laisse au contenu), title et
+ * meta description uniques et obligatoires, canonical absolue, Open Graph
+ * complet, fil d'Ariane balise, `lang="fr"`.
+ */
+import '~/styles/global.css';
+import Header from '~/components/Header.astro';
+import Footer from '~/components/Footer.astro';
+import MobileActionBar from '~/components/MobileActionBar.astro';
+import CookieNotice from '~/components/CookieNotice.astro';
+import { SITE_URL, COMPANY } from '~/lib/site';
+import { defaultOgImage } from '~/lib/catalog';
+import { breadcrumbSchema, graph, agencySchema, websiteSchema, type Crumb } from '~/lib/schema';
+
+interface Props {
+  /** 50-60 caracteres, mot-cle en tete, marque en fin. */
+  title: string;
+  /** 140-155 caracteres, benefice + preuve + appel a l'action. */
+  description: string;
+  /** Chemin absolu du site, avec slash final. */
+  path: string;
+  crumbs?: Crumb[];
+  image?: string | null;
+  /** Pages non indexables : filtres combines, remerciements, back-office. */
+  noindex?: boolean;
+  /** Nœuds JSON-LD specifiques a la page. */
+  schemas?: Record<string, unknown>[];
+  /** Type Open Graph. */
+  ogType?: 'website' | 'article';
+  /** Affiche la date de derniere mise a jour en pied de contenu. */
+  updated?: string;
+  /**
+   * Suffixe « | AUREA Immobilier ». Desactive sur les contenus editoriaux, dont
+   * le titre long-traine porte deja tout le sens et depasserait 65 caracteres
+   * avec la marque.
+   */
+  brand?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  crumbs = [],
+  image,
+  noindex = false,
+  schemas = [],
+  ogType = 'website',
+  brand = true,
+  bodyClass,
+} = Astro.props;
+
+const canonical = `${SITE_URL}${path}`;
+const ogImage = `${SITE_URL}${image ?? defaultOgImage()}`;
+const fullTitle =
+  !brand || title.includes(COMPANY.name) ? title : `${title} | ${COMPANY.name}`;
+
+const jsonLd = graph(
+  agencySchema({ full: path === '/' || path === '/agence/' }),
+  websiteSchema(),
+  crumbs.length > 1 ? breadcrumbSchema(crumbs) : null,
+  ...schemas
+);
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/icon-180.png" />
+    <meta name="theme-color" content="#001F41" />
+
+    {/* Seule la graisse utilisee au-dessus de la ligne de flottaison est preloadee */}
+    <link
+      rel="preload"
+      href="/fonts/arapey-400-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={COMPANY.name} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {/* `set:html` est une directive d'element, pas une balise : le JSON-LD doit
+        etre injecte dans un vrai <script>, sinon il sort echappe et n'est pas lu. */}
+    <script type="application/ld+json" set:html={jsonLd} is:inline />
+  </head>
+
+  <body class:list={[bodyClass, path === '/' ? 'page_home' : 'page_inner', 'dark-mode']}>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <Header path={path} />
+
+    <main id="contenu" class:list={[path !== '/' && 'inner']}>
+      <slot />
+    </main>
+
+    <Footer path={path} />
+    <MobileActionBar />
+    <CookieNotice />
+  </body>
+</html>
+
+<style is:global>
+  /* Le bandeau est fixe : les pages internes commencent sous lui. Sur
+     l'accueil, le hero occupe l'ecran entier et passe dessous. */
+  main.inner {
+    padding-top: var(--height-menu);
+    /* Le pied de page biseaute remonte de 100 px : on lui laisse la place. */
+    padding-bottom: 130px;
+  }
+</style>
+
+<script>
+  /* Module animate_front de l'ancien site : les elements .xyz-appear recoivent
+     .xyz-in quand ils entrent dans l'ecran (seuil 10 %, une seule fois). */
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll('.xyz-appear');
+  if (reduce || !('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('xyz-in'));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('xyz-in');
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+    targets.forEach((el) => io.observe(el));
+  }
+</script>
+

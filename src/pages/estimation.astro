@@ -1,0 +1,169 @@
+---
+/** Estimation gratuite — formulaire multi-etapes (§7, §14). */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import EstimationForm from '~/components/EstimationForm.astro';
+import Faq, { type FaqItem } from '~/components/Faq.astro';
+import { faqSchema } from '~/lib/schema';
+
+const methods = [
+  {
+    name: 'Comparaison',
+    body: 'Confrontation aux ventes réellement conclues sur des biens comparables du secteur, et non aux prix affichés dans les annonces.',
+  },
+  {
+    name: 'Sol et construction',
+    body: 'Valeur du terrain à laquelle s’ajoute le coût de reconstruction, minoré de la vétusté. Utile sur les maisons individuelles.',
+  },
+  {
+    name: 'Capitalisation',
+    body: 'Le bien est valorisé à partir du loyer qu’il produirait, rapporté au taux de rendement constaté localement. Décisif pour l’investissement.',
+  },
+  {
+    name: 'Actualisation',
+    body: 'Projection des revenus futurs ramenés à leur valeur d’aujourd’hui. Réservée aux immeubles et aux biens de rapport.',
+  },
+];
+
+const faq: FaqItem[] = [
+  {
+    question: 'L’estimation est-elle vraiment gratuite ?',
+    answer:
+      'Oui, et sans engagement. Un conseiller se déplace, relève les caractéristiques de votre bien et vous remet un avis de valeur écrit. Vous n’êtes pas tenu de nous confier la vente ensuite.',
+  },
+  {
+    question: 'Quelle différence entre estimation en ligne et avis de valeur ?',
+    answer:
+      'Une estimation en ligne donne une fourchette indicative à partir de moyennes. Un avis de valeur repose sur une visite, l’état réel du bien, son exposition, son DPE et les ventes comparables : c’est ce document que nous produisons.',
+  },
+  {
+    question: 'Combien de temps faut-il pour obtenir mon estimation ?',
+    answer:
+      'Nous vous rappelons sous 48 heures ouvrées pour fixer le rendez-vous. L’avis de valeur écrit vous est remis dans les jours qui suivent la visite.',
+  },
+  {
+    question: 'Que se passe-t-il avec les informations que je transmets ?',
+    answer:
+      'Elles servent uniquement à préparer votre estimation, ne sont jamais cédées, et sont conservées trois ans après notre dernier échange. Vous pouvez demander leur suppression à tout moment.',
+  },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Estimation' },
+];
+---
+
+<Base
+  title="Estimation gratuite à Mantes-la-Jolie"
+  description="Estimez votre maison ou appartement avec quatre méthodes croisées et un conseiller local. Avis de valeur écrit, gratuit et sans engagement."
+  path="/estimation/"
+  crumbs={crumbs}
+  schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Notre philosophie</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <div class="layout">
+      <div>
+        <header class="head">
+          <p class="lede">
+            Un chiffre ne vaut que par la méthode qui le produit. Nous croisons quatre approches et
+            nous vous expliquons sur quoi repose chacune d’elles.
+          </p>
+        </header>
+
+        <section class="section-tight">
+          <h2>Les quatre méthodes que nous croisons</h2>
+          <dl class="methods">
+            {
+              methods.map((m, i) => (
+                <div>
+                  <dt>
+                    <span class="num" aria-hidden="true">{i + 1}</span>
+                    {m.name}
+                  </dt>
+                  <dd>{m.body}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <p class="small muted">
+            L’estimation en ligne ne produit aucune décision automatisée : elle est systématiquement
+            confirmée par un conseiller après visite.
+          </p>
+        </section>
+
+        <section class="section-tight">
+          <Faq items={faq} title="L’estimation en pratique" />
+        </section>
+      </div>
+
+      <div class="form-col">
+        <EstimationForm />
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .methods {
+    margin: 0;
+  }
+
+  .methods > div {
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .methods dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-weight: 650;
+    margin-bottom: 0.2rem;
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--gold-50);
+    border: 1px solid var(--gold-200);
+    color: var(--gold-700);
+    font-size: var(--step--1);
+  }
+
+  .methods dd {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  @media (min-width: 64rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 30rem;
+      align-items: start;
+    }
+    .form-col {
+      position: sticky;
+      top: 5.5rem;
+    }
+  }
+</style>

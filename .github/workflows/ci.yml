@@ -1,0 +1,111 @@
+name: CI
+
+# Pipeline bloquant avant tout merge sur `main` (prompt v3 §20.7).
+# Ordre : lint/typecheck → tests → RLS → build → scan de secrets → audit SEO.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  qualite:
+    name: Typecheck, build et audits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Les données et les images sont régénérées depuis le scraping :
+      # le dépôt ne doit jamais dépendre d'un artefact produit à la main.
+      - name: Extraction des données du scraping
+        run: npm run data
+
+      - name: Pipeline images
+        run: npm run images
+
+      - name: Typecheck
+        run: npx astro check
+
+      - name: Build
+        run: npm run build
+
+      # Bloquant : une clé secrète dans le bundle client casse tout le modèle
+      # de sécurité (§20.1).
+      - name: Contrôle des secrets dans le build
+        run: npm run audit:secrets
+
+      - name: Audit SEO du HTML produit
+        run: npm run audit:seo
+
+      - name: Génération de vercel.json
+        run: node scripts/build-vercel-config.mjs
+
+      # La table de redirections doit rester synchronisée avec le scraping :
+      # un vercel.json modifié à la main serait écrasé au déploiement suivant.
+      - name: vercel.json à jour
+        run: git diff --exit-code vercel.json
+
+  secrets:
+    name: Scan de secrets du dépôt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependances:
+    name: Vulnérabilités des dépendances
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=high
+
+  base:
+    name: Migrations et tests RLS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Démarrage d'une base éphémère
+        run: supabase start
+
+      - name: Lint SQL
+        run: supabase db lint --level warning
+
+      # Chaque rôle × chaque table × chaque opération (§20.3).
+      # C'est le test qui empêche une fuite de leads.
+      - name: Tests RLS (pgTAP)
+        run: supabase test db
+
+      - name: Arrêt
+        if: always()
+        run: supabase stop --no-backup

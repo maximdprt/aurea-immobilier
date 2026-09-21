@@ -1,0 +1,1658 @@
+[
+  {
+    "source": "/content/5/notre-agence.html",
+    "destination": "/agence/",
+    "statusCode": 301,
+    "note": "page agence"
+  },
+  {
+    "source": "/content/1/notre-agence.html",
+    "destination": "/agence/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site mais liee au footer"
+  },
+  {
+    "source": "/annonces/transaction/Vente.html",
+    "destination": "/acheter/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/transaction/vente.html",
+    "destination": "/acheter/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/transaction_____2/vente.html",
+    "destination": "/acheter/page/2/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/transaction_____3/vente.html",
+    "destination": "/acheter/page/3/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/transaction/Location.html",
+    "destination": "/louer/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/transaction/location.html",
+    "destination": "/louer/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php",
+    "destination": "/biens-vendus/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=2",
+    "destination": "/biens-vendus/page/2/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=3",
+    "destination": "/biens-vendus/page/3/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=4",
+    "destination": "/biens-vendus/page/4/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=5",
+    "destination": "/biens-vendus/page/5/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=6",
+    "destination": "/biens-vendus/page/6/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=7",
+    "destination": "/biens-vendus/page/7/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=8",
+    "destination": "/biens-vendus/page/8/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=9",
+    "destination": "/biens-vendus/page/9/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=10",
+    "destination": "/biens-vendus/page/10/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_selled.php?page=11",
+    "destination": "/biens-vendus/page/11/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/estimation.php",
+    "destination": "/estimation/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/estimation.php",
+    "destination": "/estimation/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site"
+  },
+  {
+    "source": "/catalog/contact_us.php?form=1",
+    "destination": "/contact/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/contact_us.php?form=1",
+    "destination": "/contact/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site"
+  },
+  {
+    "source": "/catalog/contact_us.php?form=3",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/contact_us.php?form=3",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site"
+  },
+  {
+    "source": "/annonces/transaction/contact_us.php?form=3",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/news.php",
+    "destination": "/guides/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/mentions.php",
+    "destination": "/mentions-legales/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/gdpr.php",
+    "destination": "/confidentialite/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/cookies-policy.php",
+    "destination": "/cookies/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/cookies.php",
+    "destination": "/cookies/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/site_plan.php",
+    "destination": "/plan-du-site/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/annonce.php",
+    "destination": "/acheter/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonce.php",
+    "destination": "/acheter/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site"
+  },
+  {
+    "source": "/catalog/outils.php",
+    "destination": "/guides/outils/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/account.php",
+    "destination": "/",
+    "statusCode": 410,
+    "note": "espace compte non repris"
+  },
+  {
+    "source": "/account.php",
+    "destination": "/",
+    "statusCode": 410,
+    "note": "espace compte non repris"
+  },
+  {
+    "source": "/catalog/selection.php",
+    "destination": "/",
+    "statusCode": 410,
+    "note": "selection desormais locale au navigateur"
+  },
+  {
+    "source": "/selection.php",
+    "destination": "/",
+    "statusCode": 410,
+    "note": "selection desormais locale au navigateur"
+  },
+  {
+    "source": "/create_alerte_mail.php",
+    "destination": "/contact/",
+    "statusCode": 301,
+    "note": "alertes email refondues"
+  },
+  {
+    "source": "/catalog/try",
+    "destination": "/",
+    "statusCode": 410,
+    "note": "URL parasite"
+  },
+  {
+    "source": "/segments/immo/catalog/images/manufacturers_bareme/385554.pdf",
+    "destination": "/honoraires/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_61507497/appartement-1-piece-s.html",
+    "destination": "/bien/1013-appartement-1-piece-s/",
+    "statusCode": 301,
+    "note": "réf. 1013"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=61507497",
+    "destination": "/bien/1013-appartement-1-piece-s/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=61507497",
+    "destination": "/bien/1013-appartement-1-piece-s/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/appartement-lumineux-de-4-pieces-a-mantes-la-jolie.html",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "réf. 1002"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/appartement-lumineux-de-4-pieces-a-mantes-la-jolie.html?cPath=3_32_37&products_id=61483159",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=61483159",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=61483159",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html",
+    "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/",
+    "statusCode": 301,
+    "note": "réf. 983"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html?cPath=4_40_26&products_id=61452626",
+    "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=61452626",
+    "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=61452626",
+    "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_61190328/appartement-2-pieces-47-54-m2-a-juziers.html",
+    "destination": "/bien/967-appartement-2-pieces-47-54-m-a-juziers/",
+    "statusCode": 301,
+    "note": "réf. 967"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=61190328",
+    "destination": "/bien/967-appartement-2-pieces-47-54-m-a-juziers/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=61190328",
+    "destination": "/bien/967-appartement-2-pieces-47-54-m-a-juziers/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/joli-studio-a-mantes-la-jolie-de-28-m2.html",
+    "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/",
+    "statusCode": 301,
+    "note": "réf. 938"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/joli-studio-a-mantes-la-jolie-de-28-m2.html?cPath=3_33_27&products_id=60992633",
+    "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60992633",
+    "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60992633",
+    "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html",
+    "destination": "/bien/932-appartement-mantes-la-jolie-gare/",
+    "statusCode": 301,
+    "note": "réf. 932"
+  },
+  {
+    "source": "/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html?cPath=3_33_29&products_id=60962717",
+    "destination": "/bien/932-appartement-mantes-la-jolie-gare/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60962717",
+    "destination": "/bien/932-appartement-mantes-la-jolie-gare/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60962717",
+    "destination": "/bien/932-appartement-mantes-la-jolie-gare/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_60906460/appartement-mantes-la-jolie-gare-2pieces.html",
+    "destination": "/bien/922-appartement-mantes-la-jolie-gare-2-pieces/",
+    "statusCode": 301,
+    "note": "réf. 922"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60906460",
+    "destination": "/bien/922-appartement-mantes-la-jolie-gare-2-pieces/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60906460",
+    "destination": "/bien/922-appartement-mantes-la-jolie-gare-2-pieces/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_60828276/appartement-mantes-la-jolie-bords-de-seine-3pieces.html",
+    "destination": "/bien/912-appartement-mantes-la-jolie-bords-de-seine-3-pieces/",
+    "statusCode": 301,
+    "note": "réf. 912"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60828276",
+    "destination": "/bien/912-appartement-mantes-la-jolie-bords-de-seine-3-pieces/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60828276",
+    "destination": "/bien/912-appartement-mantes-la-jolie-bords-de-seine-3-pieces/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_60705368/maison-arthies-6-pieces.html",
+    "destination": "/bien/886-maison-arthies-6-pieces/",
+    "statusCode": 301,
+    "note": "réf. 886"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60705368",
+    "destination": "/bien/886-maison-arthies-6-pieces/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60705368",
+    "destination": "/bien/886-maison-arthies-6-pieces/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_60655527/immeuble-de-rapport-sur-mantes-la-jolie.html",
+    "destination": "/bien/876-immeuble-de-rapport-sur-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "réf. 876"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60655527",
+    "destination": "/bien/876-immeuble-de-rapport-sur-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60655527",
+    "destination": "/bien/876-immeuble-de-rapport-sur-mantes-la-jolie/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/appartement-3-pieces-andresy.html",
+    "destination": "/bien/871-appartement-3-pieces-andresy/",
+    "statusCode": 301,
+    "note": "réf. 871"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/appartement-3-pieces-andresy.html?cPath=3_33_29&products_id=60609523",
+    "destination": "/bien/871-appartement-3-pieces-andresy/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60609523",
+    "destination": "/bien/871-appartement-3-pieces-andresy/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60609523",
+    "destination": "/bien/871-appartement-3-pieces-andresy/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_60550074/maison-le-cormier-5-piece-s-144-m2.html",
+    "destination": "/bien/859-maison-le-cormier-5-piece-s-144-m/",
+    "statusCode": 301,
+    "note": "réf. 859"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60550074",
+    "destination": "/bien/859-maison-le-cormier-5-piece-s-144-m/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60550074",
+    "destination": "/bien/859-maison-le-cormier-5-piece-s-144-m/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/4-40-26_60299040/maison-mericourt-4-pieces.html",
+    "destination": "/bien/807-maison-mericourt-4-pieces/",
+    "statusCode": 301,
+    "note": "réf. 807"
+  },
+  {
+    "source": "/fiches/4-40-26_60299040/maison-mericourt-4-pieces.html?cPath=4_40_26&products_id=60299040",
+    "destination": "/bien/807-maison-mericourt-4-pieces/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60299040",
+    "destination": "/bien/807-maison-mericourt-4-pieces/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60299040",
+    "destination": "/bien/807-maison-mericourt-4-pieces/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/maison-5-pieces-3-chambres-a-mantes-la-jolie.html",
+    "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "réf. 789"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/maison-5-pieces-3-chambres-a-mantes-la-jolie.html?cPath=4_40_26&products_id=60185157",
+    "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60185157",
+    "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60185157",
+    "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_60160723/appartement-mantes-la-jolie-3-piece-s-57-92-m2.html",
+    "destination": "/bien/786-appartement-mantes-la-jolie-3-piece-s-57-92-m/",
+    "statusCode": 301,
+    "note": "réf. 786"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60160723",
+    "destination": "/bien/786-appartement-mantes-la-jolie-3-piece-s-57-92-m/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60160723",
+    "destination": "/bien/786-appartement-mantes-la-jolie-3-piece-s-57-92-m/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/maison-plain-pied-la-couture-boussey-4-pieces-90-m2.html",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": "réf. 776"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/maison-plain-pied-la-couture-boussey-4-pieces-90-m2.html?cPath=4_40_26&products_id=60114296",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=60114296",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=60114296",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/maison-chatou-5pieces-rer-a.html",
+    "destination": "/bien/649-maison-chatou-5-pieces-rer-a/",
+    "statusCode": 301,
+    "note": "réf. 649"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/maison-chatou-5pieces-rer-a.html?cPath=4_40_26&products_id=59514626",
+    "destination": "/bien/649-maison-chatou-5-pieces-rer-a/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=59514626",
+    "destination": "/bien/649-maison-chatou-5-pieces-rer-a/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=59514626",
+    "destination": "/bien/649-maison-chatou-5-pieces-rer-a/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_59083377/studio-refait-a-neuf-de-16-41m2-a-evreux.html",
+    "destination": "/bien/529-studio-refait-a-neuf-de-16-41-m-a-evreux/",
+    "statusCode": 301,
+    "note": "réf. 529"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=59083377",
+    "destination": "/bien/529-studio-refait-a-neuf-de-16-41-m-a-evreux/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=59083377",
+    "destination": "/bien/529-studio-refait-a-neuf-de-16-41-m-a-evreux/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_58864209/maison-verneuil-sur-seine-5-pieces.html",
+    "destination": "/bien/512-maison-verneuil-sur-seine-5-pieces/",
+    "statusCode": 301,
+    "note": "réf. 512"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=58864209",
+    "destination": "/bien/512-maison-verneuil-sur-seine-5-pieces/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=58864209",
+    "destination": "/bien/512-maison-verneuil-sur-seine-5-pieces/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_58637843/appartement-mantes-la-jolie-4pieces.html",
+    "destination": "/bien/431-appartement-mantes-la-jolie-4-pieces/",
+    "statusCode": 301,
+    "note": "réf. 431"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=58637843",
+    "destination": "/bien/431-appartement-mantes-la-jolie-4-pieces/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=58637843",
+    "destination": "/bien/431-appartement-mantes-la-jolie-4-pieces/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/fiches/_58305605/maison-mantes-la-ville-110m2.html",
+    "destination": "/bien/356-maison-mantes-la-ville-110-m/",
+    "statusCode": 301,
+    "note": "réf. 356"
+  },
+  {
+    "source": "/catalog/products_print.php?products_id=58305605",
+    "destination": "/bien/356-maison-mantes-la-ville-110-m/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/catalog/contact_us.php?manufacturer_id=385554&products_id=58305605",
+    "destination": "/bien/356-maison-mantes-la-ville-110-m/#contact",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+    "destination": "/acheter/maison-bonnieres-sur-seine/",
+    "statusCode": 301,
+    "note": "page ville x type"
+  },
+  {
+    "source": "/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+    "destination": "/acheter/maison-follainville-dennemont/",
+    "statusCode": 301,
+    "note": "page ville x type"
+  },
+  {
+    "source": "/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/acheter/appartement-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "page ville x type"
+  },
+  {
+    "source": "/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/acheter/maison-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "page ville x type"
+  },
+  {
+    "source": "/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+    "destination": "/acheter/maison-mantes-la-ville/",
+    "statusCode": 301,
+    "note": "page ville x type"
+  },
+  {
+    "source": "/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+    "destination": "/acheter/maison-vienne-en-arthies/",
+    "statusCode": 301,
+    "note": "page ville x type"
+  },
+  {
+    "source": "/annonces/agent/839239-helene-vermeire-benz.html",
+    "destination": "/equipe/helene-vermeire-benz/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/agent/839238-vincent-maume.html",
+    "destination": "/equipe/vincent-maume/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/agent/840371-oriane-cherel.html",
+    "destination": "/equipe/oriane-cherel/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/agent/847433-aimee-vaillant.html",
+    "destination": "/equipe/aimee-vaillant/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/agent/839272-justine-vitry.html",
+    "destination": "/equipe/justine-vitry/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/agent/839273-natacha-laly.html",
+    "destination": "/equipe/natacha-laly/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/agent/869668-jill-thepaut.html",
+    "destination": "/equipe/jill-thepaut/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/annonces/agent/839241-evan-fernandes.html",
+    "destination": "/equipe/evan-fernandes/",
+    "statusCode": 301,
+    "note": ""
+  },
+  {
+    "source": "/content/5/contact_us.php?form=3",
+    "destination": "/agence/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/content/5/contact_us.php?form=1",
+    "destination": "/agence/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/content/5/selection.php",
+    "destination": "/agence/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/content/5/account.php",
+    "destination": "/agence/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/content/5/notre-agence.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/annonces/transaction/Vente.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/annonces/transaction/Location.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/transaction/contact_us.php?form=1",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/transaction/selection.php",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/transaction/account.php",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/transaction/try",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/transaction/create_alerte_mail.php",
+    "destination": "/gestion-locative/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60114296/maison-plain-pied-la-couture-boussey-4-pieces-90-m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_56344004/maison-rosny-sur-seine-6pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_61496544/ensemble-immobilier-viennes-en-arthies-3maisons.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_61180461/maison-en-pierre-avec-dependance-viennes-en-arthies-8pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_61493070/maison-viennes-en-arthies-5pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-29_59174394/appartement-centre-ville-3pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-30_61457529/appartement-limay-4pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60706451/maison-a-renover-mantes-la-jolie-5-pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-28_61181110/appartement-t2-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-29_60609523/appartement-3-pieces-andresy.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60032440/maison-grisy-les-platres-8-pieces-5-chambres-145m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-29_61161077/appartement-a-mantes-la-jolie-de-3-pieces-49m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60185157/maison-5-pieces-3-chambres-a-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-27_60992633/joli-studio-a-mantes-la-jolie-de-28-m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_59514626/maison-chatou-5pieces-rer-a.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-29_61148704/appartement-dernier-etage-pontoise-3pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60256759/maison-favrieux-11-pieces-350m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60974149/maison-follainville-dennemont-6pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60517248/maison-mericourt-4-pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-30_60257269/appartement-mantes-la-jolie-5-pieces-de-93-6-m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-33-31_59497619/appartement-duplex-mantes-la-ville-centre-ville-6pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60299040/maison-mericourt-4-pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/4-40-26_60790028/maison-reilly-9pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-32-37_61483159/appartement-lumineux-de-4-pieces-a-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/annonces/fiches/3-32-34_58824121/studio-disponible-a-la-location-sur-evreux.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/catalog/create_alerte_mail.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/content/5/notre-agence.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/annonces/transaction/Vente.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/annonces/transaction/Location.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/contact_us.php?form=3",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/4/maisons.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/4-40/a-vendre.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/4-40-26/maison.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/simul_notaires_2.php",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/simul_calc_endettement.php",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/simul_credit.php",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60114296/simul_calc_financiere.php",
+    "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/contact_us.php?form=3",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/3/appartements.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/3-32/a-louer.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/3-32-37/4-pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/simul_notaires_2.php",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/simul_calc_endettement.php",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/simul_credit.php",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-32-37_61483159/simul_calc_financiere.php",
+    "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/contact_us.php?form=3",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/3-33/a-vendre.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/3-33-29/3-pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/simul_notaires_2.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/simul_calc_endettement.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/simul_credit.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60609523/simul_calc_financiere.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/contact_us.php?form=3",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-31_58306384/maison-mantes-la-ville-150m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/4-40-26_58263392/maison-follainville-dennemont.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/4-40-26_60256759/maison-favrieux-11-pieces-350m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-29_57202848/maison-mantes-la-jolie-3pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/4-40-26_60974149/maison-follainville-dennemont-6pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/4-40-26_56344004/maison-rosny-sur-seine-6pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/simul_notaires_2.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/simul_calc_endettement.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/simul_credit.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_61452626/simul_calc_financiere.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/contact_us.php?form=3",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/4-40-26_60669910/maison-d-exception-porcheville-bords-de-seine.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-29_58305680/maison-mantes-la-ville-200m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/simul_notaires_2.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/simul_calc_endettement.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/simul_credit.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_60185157/simul_calc_financiere.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/contact_us.php?form=3",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/type_bien/3-33-27/studio-t1.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-29_59174394/appartement-centre-ville-3pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-30_60257269/appartement-mantes-la-jolie-5-pieces-de-93-6-m2.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-28_61181110/appartement-t2-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-30_61457529/appartement-limay-4pieces.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/fiches/3-33-30_59169542/appartement-mantes-la-jolie-4-piece-s.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/simul_notaires_2.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/simul_calc_endettement.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/simul_credit.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-27_60992633/simul_calc_financiere.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/contact_us.php?form=3",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/simul_notaires_2.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/simul_calc_endettement.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/simul_credit.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/4-40-26_59514626/simul_calc_financiere.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60962717/contact_us.php?form=3",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60962717/contact_us.php?form=1",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60962717/selection.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/fiches/3-33-29_60962717/account.php",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "URL dupliquee par chemin relatif"
+  },
+  {
+    "source": "/content/content/5/notre-agence.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/annonces/transaction/Vente.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/annonces/transaction/Location.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  },
+  {
+    "source": "/content/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+    "destination": "/",
+    "statusCode": 301,
+    "note": "404 sur l ancien site, encore liee"
+  }
+]

@@ -1,0 +1,255 @@
+---
+/**
+ * Vendre avec AUREA : methode, exclusivite, marketing, preuves (§7).
+ * Les differenciants annonces par l'agence sont repris, mais aucun chiffre de
+ * performance n'est invente — les cases vides sont visibles.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Picture from '~/components/Picture.astro';
+import Faq, { type FaqItem } from '~/components/Faq.astro';
+import Todo from '~/components/Todo.astro';
+import { catalogStats, editorialMedia } from '~/lib/catalog';
+import { faqSchema } from '~/lib/schema';
+
+const stats = catalogStats();
+const visual = editorialMedia('services');
+
+const steps = [
+  {
+    title: 'Estimation et avis de valeur',
+    body: 'Visite sur place, relevé des caractéristiques, croisement de quatre méthodes de valorisation, puis remise d’un avis de valeur écrit et argumenté. Gratuit, sans engagement.',
+    delay: 'Sous 48 h après votre demande',
+  },
+  {
+    title: 'Mandat et préparation',
+    body: 'Signature du mandat, constitution du dossier de diagnostics, conseils de présentation. Nous vérifions en amont ce qui bloquerait la vente : DPE, copropriété, servitudes, urbanisme.',
+    delay: 'Quelques jours',
+  },
+  {
+    title: 'Reportage et mise en marché',
+    body: 'Photos professionnelles, visite virtuelle, vidéo par drone selon le bien, rédaction de l’annonce, diffusion sur les portails, notre site et notre fichier d’acquéreurs.',
+    delay: 'Sous une semaine après le mandat',
+  },
+  {
+    title: 'Visites et sélection',
+    body: 'Nous qualifions les candidats avant la visite — budget, financement, calendrier — pour ne faire venir chez vous que des acquéreurs crédibles, et nous vous rendons compte après chaque visite.',
+    delay: 'En continu',
+  },
+  {
+    title: 'Offre, compromis, signature',
+    body: 'Négociation, vérification du plan de financement, préparation du compromis avec le notaire, suivi des conditions suspensives jusqu’à l’acte authentique.',
+    delay: 'Environ 3 mois entre compromis et acte',
+  },
+];
+
+const faq: FaqItem[] = [
+  {
+    question: 'Mandat simple ou mandat exclusif : que choisir ?',
+    answer:
+      'Le mandat exclusif confie la vente à une seule agence, qui engage alors tous ses moyens sur votre bien : reportage complet, diffusion prioritaire, compte rendu régulier. Le mandat simple permet de mandater plusieurs agences, mais dilue l’effort et affaiblit la cohérence du prix affiché.',
+    details: [
+      'Dans les deux cas, vous restez libre de vendre par vous-même selon les termes du mandat.',
+    ],
+  },
+  {
+    question: 'Quels diagnostics dois-je fournir pour vendre ?',
+    answer:
+      'Le dossier de diagnostic technique réunit notamment le DPE, l’amiante, le plomb, l’électricité, le gaz, l’état des risques et pollutions, le mesurage loi Carrez en copropriété et l’assainissement. La liste exacte dépend du bien, de son année de construction et de sa commune.',
+    details: ['Nous travaillons avec des diagnostiqueurs du secteur et coordonnons les rendez-vous.'],
+  },
+  {
+    question: 'Qui paie les honoraires d’agence ?',
+    answer:
+      'C’est fixé au mandat et indiqué sur chaque annonce : les honoraires sont à la charge du vendeur ou de l’acquéreur, et le prix affiché les inclut. Le barème complet est publié sur le site.',
+  },
+  {
+    question: 'Combien de temps faut-il pour vendre ?',
+    answer:
+      'Le délai dépend du bien, du prix et du marché local. Nous publierons notre délai moyen constaté dès que l’agence nous aura communiqué le chiffre exact, plutôt qu’une promesse invérifiable.',
+  },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Vendre' },
+];
+---
+
+<Base
+  title="Vendre son bien à Mantes-la-Jolie avec AUREA Immobilier"
+  description="Notre méthode de vente : estimation en 4 méthodes, reportage photo professionnel, visite virtuelle, acquéreurs qualifiés, accompagnement jusqu’à la signature."
+  path="/vendre/"
+  crumbs={crumbs}
+  schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Vendre votre bien dans le Mantois</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="head">
+      <p class="lede">
+        {stats.archivedTotal} biens vendus ou loués depuis août&nbsp;2024. Une méthode identique
+        pour un studio et pour une maison de famille : c’est le même travail de préparation, de
+        présentation et de sélection des acquéreurs qui fait la différence sur le prix final.
+      </p>
+      <p class="cluster">
+        <a class="btn" href="/estimation/">Demander une estimation gratuite</a>
+        <a class="btn btn-secondary" href="/biens-vendus/">Voir nos réussites</a>
+      </p>
+    </header>
+
+    <section class="section-tight">
+      <h2>Les cinq étapes de la vente</h2>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li>
+              <span class="num" aria-hidden="true">{i + 1}</span>
+              <div>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+                <p class="small muted delay">{s.delay}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="section-tight">
+      <h2>Ce que nous mettons en œuvre</h2>
+      <div class="split">
+        <ul class="means">
+          <li><strong>Reportage photo professionnel</strong> — la qualité des photos décide du nombre de visites.</li>
+          <li><strong>Visite virtuelle</strong> — filtre les curieux et fait venir des acquéreurs déjà convaincus.</li>
+          <li><strong>Vidéo par drone</strong> — pour les biens dont l’environnement est un argument.</li>
+          <li><strong>Réseau intégré</strong> — courtiers, notaires, diagnostiqueurs, architectes, géomètres et paysagistes.</li>
+          <li><strong>Assistance juridique</strong> — sur les points de droit qui ralentissent une vente.</li>
+          <li><strong>Compte rendu après chaque visite</strong> — vous savez ce qui plaît et ce qui bloque.</li>
+        </ul>
+        <Picture
+          media={visual}
+          alt="Conseillers AUREA Immobilier en rendez-vous de présentation d'un bien"
+          sizes="(min-width: 56rem) 28rem, 92vw"
+          class="visual"
+        />
+      </div>
+      <p class="small muted">
+        Visite virtuelle et vidéo drone sont mises en avant par l’agence ; aucun lien de média
+        enrichi n’existait sur l’ancien site.
+        <Todo label="URL des visites virtuelles et vidéos à fournir" />
+      </p>
+    </section>
+
+    <section class="section-tight">
+      <h2>Nos résultats</h2>
+      <dl class="facts">
+        <div>
+          <dt>Transactions réalisées</dt>
+          <dd>{stats.archivedTotal}</dd>
+        </div>
+        <div>
+          <dt>Communes couvertes</dt>
+          <dd>{stats.communes}</dd>
+        </div>
+        <div>
+          <dt>Délai moyen de vente</dt>
+          <dd><Todo label="délai moyen de vente" /></dd>
+        </div>
+        <div>
+          <dt>Part de mandats exclusifs</dt>
+          <dd><Todo label="part de mandats exclusifs sur 12 mois" /></dd>
+        </div>
+      </dl>
+      <p class="small muted">
+        Nous n’affichons que des chiffres vérifiables. Les deux derniers seront publiés dès que
+        l’agence les aura communiqués, avec leur période de référence.
+      </p>
+    </section>
+
+    <section class="section-tight">
+      <Faq items={faq} title="Vendre avec AUREA : vos questions" />
+    </section>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 0;
+    padding: 0;
+    max-width: var(--measure);
+  }
+
+  .steps li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-s);
+    padding-block: var(--space-m);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-pill);
+    background: var(--gold-50);
+    border: 1px solid var(--gold-200);
+    color: var(--gold-700);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 600;
+  }
+
+  .steps h3 {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .steps p {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .delay {
+    margin: 0;
+  }
+
+  .split {
+    display: grid;
+    gap: var(--space-l);
+    align-items: start;
+  }
+
+  .means {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .means li {
+    padding-block: var(--space-2xs);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .split :global(.visual img) {
+    border-radius: var(--radius-m);
+  }
+
+  @media (min-width: 56rem) {
+    .split {
+      grid-template-columns: 1fr 28rem;
+    }
+  }
+</style>

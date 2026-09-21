@@ -1,0 +1,392 @@
+---
+/**
+ * Bandeau d'en-tete — reproduction de `#bandeau_header.dark-mode` du site
+ * d'origine : barre fixe marine de 120 px, logo a gauche, menu centre en
+ * Arapey 15 px blanc (survol sable), 6e entree en bouton borde sable, outils a
+ * droite (selection, telephone), burger sous 992 px. Au defilement, la barre
+ * recoit `.mode-fixe` et se compacte.
+ */
+import { NAV, CONTACT, COMPANY } from '~/lib/site';
+import { logoMedia } from '~/lib/catalog';
+
+interface Props {
+  path: string;
+}
+const { path } = Astro.props;
+const logo = logoMedia();
+const isHome = path === '/';
+const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<header id="bandeau_header" class:list={['dark-mode', isHome && 'home']} data-header>
+  <div class="header-inner">
+    <div class="logo-header">
+      <a href="/" class="logo-header-link" aria-label={`${COMPANY.name} — accueil`}>
+        {
+          logo && (
+            <picture>
+              <source type="image/avif" srcset={`${logo.base}-180.avif 180w, ${logo.base}-360.avif 360w`} sizes="150px" />
+              <img
+                src={`${logo.base}-360.png`}
+                srcset={`${logo.base}-180.png 180w, ${logo.base}-360.png 360w`}
+                sizes="150px"
+                alt={COMPANY.legalName}
+                width="150"
+                height={Math.round(150 / logo.ratio)}
+                fetchpriority="high"
+                decoding="sync"
+              />
+            </picture>
+          )
+        }
+      </a>
+    </div>
+
+    <nav class="header-menu menu-desktop" aria-label="Navigation principale">
+      <ul class="list-links">
+        {
+          NAV.map((item) => (
+            <li class:list={[item.children && 'has-sub', item.outlined && 'outlined']}>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+              {item.children && (
+                <ul class="sub">
+                  {item.children.map((c) => (
+                    <li>
+                      <a href={c.href} aria-current={isCurrent(c.href) ? 'page' : undefined}>
+                        {c.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="menu-tools">
+      <div class="links">
+        <a href="/selection/" title="Ma sélection">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          <span class="visually-hidden">Ma sélection</span>
+        </a>
+        <a href={`tel:${CONTACT.phoneE164}`} title={`Appeler l’agence : ${CONTACT.phone}`}>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="currentColor">
+            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.57.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.01l-2.2 2.21z" />
+          </svg>
+          <span class="visually-hidden">{CONTACT.phone}</span>
+        </a>
+      </div>
+      <button
+        id="burger"
+        class="burger-picto"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menu_mobile"
+        data-burger
+      >
+        <span class="visually-hidden">Ouvrir le menu</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <nav id="menu_mobile" class="menu-mobile" aria-label="Navigation principale (mobile)" hidden>
+    <ul class="list-links">
+      {
+        NAV.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+            {item.children && (
+              <ul>
+                {item.children.map((c) => (
+                  <li>
+                    <a href={c.href}>{c.label}</a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))
+      }
+      <li>
+        <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  const mobile = document.getElementById('menu_mobile');
+
+  // `.mode-fixe` : etat compact une fois que la page a defile.
+  if (header) {
+    const update = () => header.classList.toggle('mode-fixe', window.scrollY > 40);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+
+  if (burger && mobile) {
+    burger.addEventListener('click', () => {
+      const open = burger.getAttribute('aria-expanded') === 'true';
+      burger.setAttribute('aria-expanded', String(!open));
+      mobile.hidden = open;
+      burger.classList.toggle('open', !open);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !mobile.hidden) {
+        mobile.hidden = true;
+        burger.setAttribute('aria-expanded', 'false');
+        burger.classList.remove('open');
+        burger.focus();
+      }
+    });
+  }
+</script>
+
+<style>
+  #bandeau_header {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-1);
+    color: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    height: var(--height-menu);
+    padding-inline: 30px;
+    transition: height 0.3s ease;
+  }
+
+  #bandeau_header.mode-fixe .header-inner {
+    height: 84px;
+  }
+
+  /* --- Logo --------------------------------------------------------------- */
+  .logo-header {
+    flex: 0 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-header img {
+    display: block;
+    max-width: 90%;
+    height: auto;
+    max-height: calc(var(--height-logo) - 16px);
+    width: auto;
+    transition: max-height 0.3s ease;
+  }
+
+  #bandeau_header.mode-fixe .logo-header img {
+    max-height: 64px;
+  }
+
+  /* --- Menu desktop --------------------------------------------------------- */
+  .menu-desktop {
+    display: none;
+  }
+
+  .list-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .list-links > li {
+    position: relative;
+    margin: 0 10px;
+  }
+
+  .list-links > li > a {
+    display: inline-block;
+    padding: 10px 4px;
+    color: #ffffff;
+    font-size: 15px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+  }
+
+  .list-links > li > a:hover,
+  .list-links > li > a:focus,
+  .list-links > li > a[aria-current='page'] {
+    color: var(--color-2);
+  }
+
+  /* 6e entree du menu d'origine : « Nos services », en bouton borde sable. */
+  .list-links > li.outlined > a {
+    padding: 10px 8px;
+    border: 1px solid var(--color-2);
+  }
+
+  .list-links > li.outlined > a:hover,
+  .list-links > li.outlined > a:focus {
+    background: var(--color-2);
+    color: var(--color-1);
+  }
+
+  /* Sous-menu « Nos biens » */
+  .sub {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 160px;
+    margin: 0;
+    padding: 6px 0;
+    list-style: none;
+    background: var(--color-1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+  }
+
+  .has-sub:hover .sub,
+  .has-sub:focus-within .sub {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .sub a {
+    display: block;
+    padding: 8px 16px;
+    color: #ffffff;
+    font-size: 15px;
+    text-decoration: none;
+  }
+
+  .sub a:hover,
+  .sub a:focus {
+    color: var(--color-2);
+  }
+
+  /* --- Outils --------------------------------------------------------------- */
+  .menu-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .menu-tools .links {
+    display: flex;
+    gap: var(--space-xs);
+  }
+
+  .menu-tools .links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--color-2);
+    transition: all 0.3s ease;
+  }
+
+  .menu-tools .links a:hover,
+  .menu-tools .links a:focus {
+    color: #ffffff;
+  }
+
+  /* --- Burger --------------------------------------------------------------- */
+  .burger-picto {
+    display: grid;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .burger-picto span[aria-hidden] {
+    display: block;
+    height: 2px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  .burger-picto.open span[aria-hidden]:nth-child(2) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .burger-picto.open span[aria-hidden]:nth-child(3) {
+    opacity: 0;
+  }
+
+  .burger-picto.open span[aria-hidden]:nth-child(4) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* --- Menu mobile ------------------------------------------------------------ */
+  .menu-mobile {
+    background: var(--color-1);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    max-height: calc(100vh - var(--height-menu));
+    overflow: auto;
+  }
+
+  .menu-mobile .list-links {
+    display: block;
+    padding: 10px 30px 20px;
+  }
+
+  .menu-mobile li {
+    margin: 0;
+  }
+
+  .menu-mobile a {
+    display: block;
+    padding: 12px 0;
+    color: #ffffff;
+    font-size: 17px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .menu-mobile ul ul {
+    list-style: none;
+    padding-left: 16px;
+    margin: 0;
+  }
+
+  .menu-mobile ul ul a {
+    font-size: 15px;
+    color: var(--color-2);
+  }
+
+  @media (min-width: 992px) {
+    .menu-desktop {
+      display: block;
+    }
+
+    .burger-picto,
+    .menu-mobile {
+      display: none;
+    }
+  }
+</style>

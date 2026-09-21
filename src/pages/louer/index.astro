@@ -1,0 +1,44 @@
+---
+/**
+ * Liste des biens a louer — page « A louer » du site d'origine : bandeau
+ * biseaute avec le titre, criteres, tri, compteur, grille, pagination.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import ListingResults from '~/components/ListingResults.astro';
+import { activeListings } from '~/lib/catalog';
+
+const listings = activeListings('location');
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Louer', href: '/louer/' },
+];
+---
+
+<Base
+  title="Biens à louer à Mantes-la-Jolie"
+  description="Appartements et maisons à louer dans le Mantois par AUREA Immobilier. Loyer charges comprises, dépôt de garantie et honoraires affichés sur chaque annonce."
+  path="/louer/"
+  crumbs={crumbs}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>A louer</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <ListingResults
+      listings={listings}
+      emptyMessage="Aucun bien à louer pour le moment. Créez une alerte pour être prévenu dès qu’un bien correspond à vos critères."
+    />
+  </div>
+</Base>
+
+<style>
+  .section {
+    padding-block: var(--space-l) var(--space-xl);
+  }
+</style>

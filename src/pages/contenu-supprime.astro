@@ -1,0 +1,103 @@
+---
+/**
+ * Destination des URL de l'ancien site dont la fonctionnalité n'est pas reprise
+ * (espace compte, sélection, URL parasites).
+ *
+ * Vercel ne sait pas répondre 410 depuis sa table de redirections : on redirige
+ * vers cette page, qui porte un `noindex` et explique la disparition plutôt que
+ * de laisser une 404 muette (§9, §10).
+ */
+import Base from '~/layouts/Base.astro';
+---
+
+<Base
+  title="Fonctionnalité non reprise – AUREA Immobilier"
+  description="Cette fonctionnalité de l’ancien site n’a pas été reprise. Voici les équivalents sur le nouveau site."
+  path="/contenu-supprime/"
+  noindex
+>
+  <div class="wrap-narrow section">
+    <h1>Cette page n’existe plus</h1>
+    <p class="lede">
+      Vous suivez un lien vers une fonctionnalité de l’ancien site qui n’a pas été reprise.
+    </p>
+
+    <div class="panel">
+      <h2>Ce qui remplace quoi</h2>
+      <dl>
+        <div>
+          <dt>Espace « Mon compte »</dt>
+          <dd>
+            Supprimé. Le site ne crée plus de compte client : moins de données personnelles
+            collectées, et moins de surface exposée. Pour suivre un dossier, votre conseiller reste
+            votre interlocuteur direct.
+          </dd>
+        </div>
+        <div>
+          <dt>« Ma sélection »</dt>
+          <dd>
+            Vos biens favoris sont désormais mémorisés dans votre navigateur, sans compte ni envoi
+            de données à l’agence.
+          </dd>
+        </div>
+        <div>
+          <dt>Alertes par email</dt>
+          <dd>
+            Toujours disponibles, avec confirmation par email et désabonnement en un clic.
+            <a href="/contact/">Nous écrire pour créer une alerte</a>.
+          </dd>
+        </div>
+        <div>
+          <dt>Fiches imprimables</dt>
+          <dd>
+            Supprimées : chaque fiche de bien s’imprime directement depuis votre navigateur, avec
+            une mise en page adaptée.
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <p class="cluster">
+      <a class="btn" href="/acheter/">Voir les biens à vendre</a>
+      <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+    </p>
+  </div>
+</Base>
+
+<style>
+  h1 {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .panel {
+    margin-block: var(--space-l);
+  }
+
+  .panel h2 {
+    font-family: var(--font-body);
+    font-size: var(--step-1);
+  }
+
+  dl {
+    margin: 0;
+  }
+
+  dl > div {
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--line);
+  }
+
+  dl > div:last-child {
+    border-bottom: 0;
+  }
+
+  dt {
+    font-weight: 650;
+    margin-bottom: 0.15rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+</style>

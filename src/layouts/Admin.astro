@@ -1,0 +1,113 @@
+---
+/**
+ * Gabarit du back-office.
+ *
+ * Volontairement séparé du gabarit public : pas de fil d'Ariane, pas de
+ * JSON-LD, pas de barre d'action mobile, et surtout `noindex` en dur. Le
+ * `robots.txt` n'est pas une protection — l'en-tête `X-Robots-Tag` est aussi
+ * posé par vercel.json sur `/admin/*` (§20.4).
+ */
+import '~/styles/global.css';
+import { COMPANY } from '~/lib/site';
+import type { AdminSession } from '~/lib/server/supabase-session';
+
+interface Props {
+  title: string;
+  session?: AdminSession | null;
+}
+const { title, session = null } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} — Back-office {COMPANY.name}</title>
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+  </head>
+  <body class="admin">
+    <header class="admin-bar">
+      <div class="wrap">
+        <a href="/admin/" class="brand">{COMPANY.name} · back-office</a>
+        {
+          session && (
+            <div class="session">
+              <span class="small">
+                {session.user.email} · <strong>{session.role}</strong>
+              </span>
+              <span
+                class:list={[
+                  'badge',
+                  session.assuranceLevel === 'aal2' ? 'badge-gold' : 'badge-warn',
+                ]}
+              >
+                {session.assuranceLevel === 'aal2' ? 'MFA validée' : 'MFA requise'}
+              </span>
+              <form method="post" action="/admin/deconnexion/">
+                <button class="btn btn-ghost" type="submit">Se déconnecter</button>
+              </form>
+            </div>
+          )
+        }
+      </div>
+    </header>
+
+    <main class="wrap admin-main">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  .admin {
+    background: var(--canvas-alt);
+  }
+
+  .admin-bar {
+    background: var(--ink);
+    color: var(--canvas);
+    padding-block: var(--space-2xs);
+  }
+
+  .admin-bar .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .brand {
+    color: var(--canvas);
+    text-decoration: none;
+    font-weight: 650;
+    font-size: var(--step--1);
+  }
+
+  .session {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .session form {
+    margin: 0;
+  }
+
+  .session .btn-ghost {
+    color: var(--gold-200);
+  }
+
+  .badge-warn {
+    background: var(--warn-bg);
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+
+  .admin-main {
+    padding-block: var(--space-l) var(--space-2xl);
+  }
+</style>

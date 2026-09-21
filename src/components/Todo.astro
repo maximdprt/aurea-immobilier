@@ -1,0 +1,15 @@
+---
+/**
+ * Placeholder visible pour une information que l'agence n'a pas encore fournie.
+ * Le brief interdit d'inventer : on affiche le manque plutot qu'une valeur
+ * fausse, et la page /plan-du-site/ en dresse la liste (prompt v3 §0 et §19).
+ */
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<span class="todo" data-todo title="Information à fournir par l'agence avant la mise en ligne"
+  >[[{label}]]</span
+>

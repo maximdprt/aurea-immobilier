@@ -1,0 +1,89 @@
+---
+/**
+ * Image responsive AVIF + WebP, dimensions explicites pour ne jamais provoquer
+ * de decalage de mise en page (prompt v3 §6 et §14 : CLS < 0,05).
+ *
+ * Les variantes sont produites par scripts/build-images.mjs et decrites dans
+ * src/data/media.json — ce composant ne fait que les cabler.
+ */
+import type { MediaVariant } from '~/lib/types';
+
+interface Props {
+  media: MediaVariant | null;
+  alt: string;
+  /** Tailles CSS reelles, pour que le navigateur choisisse la bonne largeur. */
+  sizes?: string;
+  /** Premiere image visible : pas de lazy, priorite de telechargement haute. */
+  priority?: boolean;
+  class?: string;
+  /** Force un rapport d'aspect (ex. '4 / 3') pour les grilles homogenes. */
+  aspect?: string;
+  loading?: 'eager' | 'lazy';
+}
+
+const {
+  media,
+  alt,
+  sizes = '100vw',
+  priority = false,
+  class: className,
+  aspect,
+  loading,
+} = Astro.props;
+
+/**
+ * AVIF en `srcset` multi-largeurs, et une seule image WebP en `src` pour les
+ * navigateurs sans AVIF. Voir la note de scripts/build-images.mjs.
+ */
+const avifSrcset = media
+  ? media.widths.map((w) => `${media.base}-${w}.avif ${w}w`).join(', ')
+  : '';
+
+const fallbackWidth = media ? (media.fallbackWidth ?? media.widths[media.widths.length - 1]) : 0;
+const intrinsicWidth = media ? media.width : 0;
+const height = media ? Math.round(intrinsicWidth / media.ratio) : 0;
+---
+
+{
+  media ? (
+    <picture class={className} style={aspect ? `--aspect:${aspect}` : undefined}>
+      <source type="image/avif" srcset={avifSrcset} sizes={sizes} />
+      <img
+        src={`${media.base}-${fallbackWidth}.webp`}
+        alt={alt}
+        width={intrinsicWidth}
+        height={height}
+        loading={loading ?? (priority ? 'eager' : 'lazy')}
+        decoding={priority ? 'sync' : 'async'}
+        fetchpriority={priority ? 'high' : undefined}
+      />
+    </picture>
+  ) : (
+    <div class:list={['img-missing', className]} role="img" aria-label={alt}>
+      <span>Photo non disponible</span>
+    </div>
+  )
+}
+
+<style>
+  picture {
+    display: block;
+  }
+
+  picture[style*='--aspect'] img {
+    aspect-ratio: var(--aspect);
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .img-missing {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    background: var(--canvas-alt);
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    border: 1px dashed var(--line-strong);
+    border-radius: inherit;
+  }
+</style>

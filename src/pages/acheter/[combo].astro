@@ -1,0 +1,80 @@
+---
+/**
+ * Page « type x commune » — ex. /acheter/maison-mantes-la-jolie/.
+ *
+ * Le brief n'autorise ces pages que la ou il y a un volume reel ET une presence
+ * reelle (§5, §7). On applique un seuil strict : au moins deux biens actifs du
+ * type dans la commune, ou un bien actif plus au moins deux ventes realisees.
+ * Sans quoi, la page commune generique suffit et cette URL n'existe pas.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import ListingResults from '~/components/ListingResults.astro';
+import { typeCommunePages } from '~/lib/catalog';
+import { plural, propertyTypeLabel } from '~/lib/format';
+import type { Commune, Listing, PropertyType } from '~/lib/types';
+
+export function getStaticPaths() {
+  return typeCommunePages().map(({ type, commune, listings, soldCount }) => ({
+    params: { combo: `${type}-${commune.slug}` },
+    props: { commune, type, listings, soldCount },
+  }));
+}
+
+interface Props {
+  commune: Commune;
+  type: PropertyType;
+  listings: Listing[];
+  soldCount: number;
+}
+const { commune, type, listings, soldCount } = Astro.props;
+
+const typeLabel = propertyTypeLabel(type);
+const plural1 = type === 'maison' ? 'Maisons' : 'Appartements';
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Acheter', href: '/acheter/' },
+  { label: `${plural1} à ${commune.name}` },
+];
+---
+
+<Base
+  title={`${plural1} à vendre à ${commune.name} – AUREA Immobilier`}
+  description={`${listings.length} ${typeLabel.toLowerCase()}${listings.length > 1 ? 's' : ''} à vendre à ${commune.name}. Prix honoraires inclus, DPE affiché, visite avec un conseiller qui connaît le secteur.`}
+  path={`/acheter/${type}-${commune.slug}/`}
+  crumbs={crumbs}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap section">
+    <header class="head">
+      <h1>{plural1} à vendre à {commune.name}</h1>
+      <p class="lede">
+        {plural(listings.length, `${typeLabel.toLowerCase()} disponible`, `${typeLabel.toLowerCase()}s disponibles`)} à
+        {' '}{commune.name}
+        {soldCount > 0 && <>, après {plural(soldCount, 'vente réalisée', 'ventes réalisées')} sur ce type de bien dans la commune</>}.
+      </p>
+    </header>
+
+    <ListingResults listings={listings} showFilters={false} />
+
+    <p class="more">
+      <a href={`/agence-immobiliere/${commune.slug}/`}>
+        Tout l’immobilier à {commune.name}
+      </a>
+      {' · '}
+      <a href="/acheter/">Tous nos biens à vendre</a>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .more {
+    margin-top: var(--space-l);
+    font-size: var(--step--1);
+  }
+</style>

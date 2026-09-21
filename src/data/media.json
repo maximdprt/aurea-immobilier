@@ -1,0 +1,1512 @@
+{
+  "bien:1013": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/1013/0",
+        "alt": "Appartement  1 pièce(s) 1/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/1013/1",
+        "alt": "Appartement  1 pièce(s) 2/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      }
+    ],
+    "og": "/media/biens/1013/share-og.jpg"
+  },
+  "bien:1002": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/1002/0",
+        "alt": "Appartement lumineux de 4 pièces à Mantes-la-Jolie 1/10",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3318
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/1002/1",
+        "alt": "Appartement lumineux de 4 pièces à Mantes-la-Jolie 2/10",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3318
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/1002/2",
+        "alt": "Appartement lumineux de 4 pièces à Mantes-la-Jolie 3/10",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/1002/share-og.jpg"
+  },
+  "bien:983": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/983/0",
+        "alt": "MAISON FAMILIALE - 8 PIÈCES - MANTES LA VILLE 1/18",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/983/1",
+        "alt": "MAISON FAMILIALE - 8 PIÈCES - MANTES LA VILLE 2/18",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/983/2",
+        "alt": "MAISON FAMILIALE - 8 PIÈCES - MANTES LA VILLE 3/18",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 3,
+        "base": "/media/biens/983/3",
+        "alt": "MAISON- FAVRIEUX - 11 Pièces  350m²",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 4,
+        "base": "/media/biens/983/4",
+        "alt": "MAISON- FAVRIEUX - 11 Pièces  350m² 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 5,
+        "base": "/media/biens/983/5",
+        "alt": "MAISON - FOLLAINVILLE DENNEMONT - 6Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3318
+      },
+      {
+        "index": 6,
+        "base": "/media/biens/983/6",
+        "alt": "MAISON - FOLLAINVILLE DENNEMONT - 6Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 7,
+        "base": "/media/biens/983/7",
+        "alt": "MAISON - ROSNY SUR SEINE - 6Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 8,
+        "base": "/media/biens/983/8",
+        "alt": "MAISON - ROSNY SUR SEINE - 6Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      }
+    ],
+    "og": "/media/biens/983/share-og.jpg"
+  },
+  "bien:967": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/967/0",
+        "alt": "Appartement  2 pièces 47.54 m2 à JUZIERS 1/8",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/967/1",
+        "alt": "Appartement  2 pièces 47.54 m2 à JUZIERS 2/8",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/967/share-og.jpg"
+  },
+  "bien:938": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/938/0",
+        "alt": "Joli studio à Mantes-la-Jolie de 28 m2 1/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/938/1",
+        "alt": "Joli studio à Mantes-la-Jolie de 28 m2 2/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/938/2",
+        "alt": "Joli studio à Mantes-la-Jolie de 28 m2 3/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 3,
+        "base": "/media/biens/938/3",
+        "alt": "APPARTEMENT - CENTRE VILLE - 3Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 4,
+        "base": "/media/biens/938/4",
+        "alt": "APPARTEMENT - CENTRE VILLE - 3Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 5,
+        "base": "/media/biens/938/5",
+        "alt": "Appartement Mantes La Jolie 5 pièces de 93,6 m2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 6,
+        "base": "/media/biens/938/6",
+        "alt": "Appartement Mantes La Jolie 5 pièces de 93,6 m2 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 7,
+        "base": "/media/biens/938/7",
+        "alt": "APPARTEMENT T2 - MANTES LA JOLIE",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 8,
+        "base": "/media/biens/938/8",
+        "alt": "APPARTEMENT T2 - MANTES LA JOLIE 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 9,
+        "base": "/media/biens/938/9",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - GARE",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 10,
+        "base": "/media/biens/938/10",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - GARE 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 11,
+        "base": "/media/biens/938/11",
+        "alt": "APPARTEMENT - LIMAY - 4Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 12,
+        "base": "/media/biens/938/12",
+        "alt": "APPARTEMENT - LIMAY - 4Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      }
+    ],
+    "og": "/media/biens/938/share-og.jpg"
+  },
+  "bien:932": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/932/0",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - GARE 1/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/932/1",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - GARE 2/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/932/2",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - GARE 3/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 3,
+        "base": "/media/biens/932/3",
+        "alt": "Appartement à Mantes-La-Jolie de 3 pièces (49m2)",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 4,
+        "base": "/media/biens/932/4",
+        "alt": "Appartement à Mantes-La-Jolie de 3 pièces (49m2) 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 5,
+        "base": "/media/biens/932/5",
+        "alt": "APPARTEMENT - CENTRE VILLE - 3Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 6,
+        "base": "/media/biens/932/6",
+        "alt": "APPARTEMENT - CENTRE VILLE - 3Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 7,
+        "base": "/media/biens/932/7",
+        "alt": "APPARTEMENT - LIMAY - 4Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 8,
+        "base": "/media/biens/932/8",
+        "alt": "APPARTEMENT - LIMAY - 4Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 9,
+        "base": "/media/biens/932/9",
+        "alt": "Joli studio à Mantes-la-Jolie de 28 m2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 10,
+        "base": "/media/biens/932/10",
+        "alt": "Joli studio à Mantes-la-Jolie de 28 m2 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 11,
+        "base": "/media/biens/932/11",
+        "alt": "Appartement Mantes La Jolie 5 pièces de 93,6 m2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 12,
+        "base": "/media/biens/932/12",
+        "alt": "Appartement Mantes La Jolie 5 pièces de 93,6 m2 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/932/share-og.jpg"
+  },
+  "bien:922": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/922/0",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - GARE - 2Pièces 1/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/922/1",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - GARE - 2Pièces 2/6",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      }
+    ],
+    "og": "/media/biens/922/share-og.jpg"
+  },
+  "bien:912": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/912/0",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - BORDS DE SEINE - 3Pièces 1/7",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/912/1",
+        "alt": "APPARTEMENT - MANTES LA JOLIE - BORDS DE SEINE - 3Pièces 2/7",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      }
+    ],
+    "og": "/media/biens/912/share-og.jpg"
+  },
+  "bien:886": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/886/0",
+        "alt": "MAISON - ARTHIES - 6 Pièces 1/13",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/886/1",
+        "alt": "MAISON - ARTHIES - 6 Pièces 2/13",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/886/share-og.jpg"
+  },
+  "bien:876": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/876/0",
+        "alt": "Immeuble de rapport sur Mantes-la-Jolie 1/10",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/876/1",
+        "alt": "Immeuble de rapport sur Mantes-la-Jolie 2/10",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/876/share-og.jpg"
+  },
+  "bien:871": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/871/0",
+        "alt": "APPARTEMENT - 3 PIÈCES - ANDRÉSY 1/9",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/871/1",
+        "alt": "APPARTEMENT - 3 PIÈCES - ANDRÉSY 2/9",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/871/2",
+        "alt": "APPARTEMENT - 3 PIÈCES - ANDRÉSY 3/9",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/871/share-og.jpg"
+  },
+  "bien:859": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/859/0",
+        "alt": "Maison Le Cormier 5 pièce(s) 144 m2 1/9",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/859/1",
+        "alt": "Maison Le Cormier 5 pièce(s) 144 m2 2/9",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      }
+    ],
+    "og": "/media/biens/859/share-og.jpg"
+  },
+  "bien:807": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/807/0",
+        "alt": "MAISON - MÉRICOURT - 4 PIÈCES 1/12",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/807/1",
+        "alt": "MAISON - MÉRICOURT - 4 PIÈCES 2/12",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/807/2",
+        "alt": "Maison 5 pièces, 3 chambres à Mantes-la-Jolie",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 3,
+        "base": "/media/biens/807/3",
+        "alt": "Maison 5 pièces, 3 chambres à Mantes-la-Jolie 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 4,
+        "base": "/media/biens/807/4",
+        "alt": "MAISON - ROSNY SUR SEINE - 6Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 5,
+        "base": "/media/biens/807/5",
+        "alt": "MAISON - ROSNY SUR SEINE - 6Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 6,
+        "base": "/media/biens/807/6",
+        "alt": "Maison à rénover - Mantes-la-Jolie - 5 pièces",
+        "widths": [
+          400,
+          800
+        ],
+        "fallbackWidth": 800,
+        "width": 800,
+        "height": 1067,
+        "ratio": 0.75
+      },
+      {
+        "index": 7,
+        "base": "/media/biens/807/7",
+        "alt": "Maison à rénover - Mantes-la-Jolie - 5 pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      }
+    ],
+    "og": "/media/biens/807/share-og.jpg"
+  },
+  "bien:789": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/789/0",
+        "alt": "Maison 5 pièces, 3 chambres à Mantes-la-Jolie 1/14",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/789/1",
+        "alt": "Maison 5 pièces, 3 chambres à Mantes-la-Jolie 2/14",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/789/2",
+        "alt": "Maison 5 pièces, 3 chambres à Mantes-la-Jolie 3/14",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 3,
+        "base": "/media/biens/789/3",
+        "alt": "MAISON - FOLLAINVILLE DENNEMONT - 6Pièces",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3318
+      },
+      {
+        "index": 4,
+        "base": "/media/biens/789/4",
+        "alt": "MAISON - FOLLAINVILLE DENNEMONT - 6Pièces 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 5,
+        "base": "/media/biens/789/5",
+        "alt": "MAISON FAMILIALE - 8 PIÈCES - MANTES LA VILLE",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 6,
+        "base": "/media/biens/789/6",
+        "alt": "MAISON FAMILIALE - 8 PIÈCES - MANTES LA VILLE 2",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/789/share-og.jpg"
+  },
+  "bien:786": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/786/0",
+        "alt": "Appartement Mantes La Jolie 3 pièce(s) 57.92 m2 1/9",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/786/1",
+        "alt": "Appartement Mantes La Jolie 3 pièce(s) 57.92 m2 2/9",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/786/share-og.jpg"
+  },
+  "bien:776": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/776/0",
+        "alt": "Maison plain-pied La Couture Boussey 4 pièces 90 m2 1/14",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/776/1",
+        "alt": "Maison plain-pied La Couture Boussey 4 pièces 90 m2 2/14",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/776/2",
+        "alt": "Maison plain-pied La Couture Boussey 4 pièces 90 m2 3/14",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      }
+    ],
+    "og": "/media/biens/776/share-og.jpg"
+  },
+  "bien:649": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/649/0",
+        "alt": "MAISON CHATOU - 5Pièces - RER A 1/13",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 886,
+        "ratio": 1.3544
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/649/1",
+        "alt": "MAISON CHATOU - 5Pièces - RER A 2/13",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3318
+      },
+      {
+        "index": 2,
+        "base": "/media/biens/649/2",
+        "alt": "MAISON CHATOU - 5Pièces - RER A 3/13",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/649/share-og.jpg"
+  },
+  "bien:529": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/529/0",
+        "alt": "Studio refait à neuf de 16,41m2 à Evreux 1/4",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 899,
+        "ratio": 1.3343
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/529/1",
+        "alt": "Studio refait à neuf de 16,41m2 à Evreux 2/4",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/529/share-og.jpg"
+  },
+  "bien:512": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/512/0",
+        "alt": "MAISON - VERNEUIL SUR SEINE - 5 pIèces 1/12",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/512/1",
+        "alt": "MAISON - VERNEUIL SUR SEINE - 5 pIèces 2/12",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 901,
+        "ratio": 1.3324
+      }
+    ],
+    "og": "/media/biens/512/share-og.jpg"
+  },
+  "bien:431": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/431/0",
+        "alt": "APPARTEMENT - MANTES LA JOLIE -  4Pièces 1/8",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/431/1",
+        "alt": "APPARTEMENT - MANTES LA JOLIE -  4Pièces 2/8",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/431/share-og.jpg"
+  },
+  "bien:356": {
+    "photos": [
+      {
+        "index": 0,
+        "base": "/media/biens/356/0",
+        "alt": "Maison - Mantes La Ville - 110m2 1/11",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      },
+      {
+        "index": 1,
+        "base": "/media/biens/356/1",
+        "alt": "Maison - Mantes La Ville - 110m2 2/11",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "fallbackWidth": 800,
+        "width": 1200,
+        "height": 900,
+        "ratio": 1.3333
+      }
+    ],
+    "og": "/media/biens/356/share-og.jpg"
+  },
+  "agent:helene-vermeire-benz": {
+    "base": "/media/equipe/helene-vermeire-benz",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:vincent-maume": {
+    "base": "/media/equipe/vincent-maume",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:oriane-cherel": {
+    "base": "/media/equipe/oriane-cherel",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:aimee-vaillant": {
+    "base": "/media/equipe/aimee-vaillant",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:justine-vitry": {
+    "base": "/media/equipe/justine-vitry",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:natacha-laly": {
+    "base": "/media/equipe/natacha-laly",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:jill-thepaut": {
+    "base": "/media/equipe/jill-thepaut",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:evan-fernandes": {
+    "base": "/media/equipe/evan-fernandes",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "agent:marion-nicaise": {
+    "base": "/media/equipe/marion-nicaise",
+    "widths": [
+      240,
+      480
+    ],
+    "fallbackWidth": 480,
+    "width": 480,
+    "height": 480,
+    "ratio": 1
+  },
+  "editorial:hero-accueil": {
+    "base": "/media/editorial/hero-accueil",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "fallbackWidth": 1600,
+    "width": 1600,
+    "height": 900,
+    "ratio": 1.7775
+  },
+  "editorial:content1": {
+    "base": "/media/editorial/content1",
+    "widths": [
+      640
+    ],
+    "fallbackWidth": 640,
+    "width": 640,
+    "height": 424,
+    "ratio": 1.508
+  },
+  "editorial:agence": {
+    "base": "/media/editorial/agence",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "fallbackWidth": 1600,
+    "width": 1600,
+    "height": 1201,
+    "ratio": 1.3325
+  },
+  "editorial:gestion-locative": {
+    "base": "/media/editorial/gestion-locative",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "fallbackWidth": 1600,
+    "width": 1600,
+    "height": 1226,
+    "ratio": 1.305
+  },
+  "editorial:contact": {
+    "base": "/media/editorial/contact",
+    "widths": [
+      640,
+      994
+    ],
+    "fallbackWidth": 994,
+    "width": 994,
+    "height": 554,
+    "ratio": 1.7942
+  },
+  "editorial:services": {
+    "base": "/media/editorial/services",
+    "widths": [
+      640,
+      1024
+    ],
+    "fallbackWidth": 1024,
+    "width": 1024,
+    "height": 768,
+    "ratio": 1.3337
+  },
+  "editorial:services-2": {
+    "base": "/media/editorial/services-2",
+    "widths": [
+      640,
+      1024
+    ],
+    "fallbackWidth": 1024,
+    "width": 1024,
+    "height": 617,
+    "ratio": 1.6597
+  },
+  "editorial:vitrine": {
+    "base": "/media/editorial/vitrine",
+    "widths": [
+      640,
+      800
+    ],
+    "fallbackWidth": 800,
+    "width": 800,
+    "height": 600,
+    "ratio": 1.3333
+  },
+  "og:default": "/media/editorial/default-og.jpg",
+  "logo": {
+    "base": "/media/marque/logo",
+    "widths": [
+      180,
+      360,
+      720
+    ],
+    "fallbackWidth": 360,
+    "width": 720,
+    "height": 471,
+    "ratio": 1.5272
+  }
+}

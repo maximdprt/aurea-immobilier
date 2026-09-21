@@ -1,0 +1,98 @@
+---
+/**
+ * Etiquettes DPE et GES.
+ *
+ * Affichage obligatoire sur chaque annonce, avec la valeur chiffree et
+ * l'estimation des depenses annuelles d'energie (prompt v3 §8 et §15).
+ * Rendu en HTML/CSS et non en image : un moteur generatif doit pouvoir lire
+ * la classe et la valeur (§11.5).
+ */
+import type { EnergyClass } from '~/lib/types';
+import { energyClasses } from '~/lib/format';
+
+interface Props {
+  kind: 'dpe' | 'ges';
+  value: EnergyClass | null;
+  amount: number | null;
+  unit: string;
+}
+const { kind, value, amount, unit } = Astro.props;
+
+const label = kind === 'dpe' ? 'Consommation énergétique (DPE)' : 'Émissions de gaz à effet de serre (GES)';
+const scaleName = kind === 'dpe' ? 'classe énergie' : 'classe climat';
+---
+
+<div class="energy" data-kind={kind}>
+  <p class="label">{label}</p>
+  {
+    value ? (
+      <>
+        <ol class="scale" aria-label={`Échelle ${scaleName}, de A à G`}>
+          {energyClasses.map((c) => (
+            <li
+              class:list={[c === value && 'current']}
+              style={`--bar:var(--dpe-${c.toLowerCase()})`}
+              aria-current={c === value ? 'true' : undefined}
+            >
+              <span aria-hidden="true">{c}</span>
+              {c === value && <span class="visually-hidden">Classe {c}, classement du bien</span>}
+            </li>
+          ))}
+        </ol>
+        <p class="value">
+          <strong>Classe {value}</strong>
+          {amount != null && <> — {amount} {unit}</>}
+        </p>
+      </>
+    ) : (
+      <p class="value muted">Diagnostic non communiqué</p>
+    )
+  }
+</div>
+
+<style>
+  .energy {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .label {
+    margin: 0;
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  .scale {
+    display: flex;
+    gap: 3px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .scale li {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding-block: 0.3rem;
+    background: color-mix(in srgb, var(--bar) 26%, var(--canvas-alt));
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+    border-radius: var(--radius-xs);
+  }
+
+  .scale li.current {
+    background: var(--bar);
+    /* Les jaunes de l'echelle reglementaire exigent un texte sombre */
+    color: #17130d;
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+
+  .value {
+    margin: 0;
+    font-size: var(--step--1);
+  }
+</style>

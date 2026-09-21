@@ -1,0 +1,149 @@
+---
+/**
+ * Politique cookies — contenu du §21.4.
+ *
+ * Parti pris technique : aucun cookie soumis à consentement n'est déposé au
+ * chargement. Pas de régie publicitaire, pas de widget tiers, pas d'analytics
+ * à cookie, et les contenus tiers derrière une façade cliquable. Il n'y a donc
+ * rien à consentir, et afficher un bandeau de consentement serait trompeur.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Todo from '~/components/Todo.astro';
+
+const LEGAL_VERSION = 1;
+const UPDATED = '21 septembre 2026';
+
+const trackers = [
+  {
+    name: 'cf_challenge (Cloudflare Turnstile)',
+    issuer: 'Cloudflare',
+    purpose: 'Vérifier que l’envoi d’un formulaire n’est pas automatisé',
+    duration: 'Le temps de la vérification',
+    consent: 'Exempté — strictement nécessaire à la sécurité',
+  },
+  {
+    name: 'aurea:cookie-notice (stockage local)',
+    issuer: 'AUREA Immobilier',
+    purpose: 'Se souvenir que vous avez fermé le bandeau d’information',
+    duration: 'Jusqu’à effacement des données du site',
+    consent: 'Exempté — confort d’usage, aucune donnée personnelle',
+  },
+  {
+    name: 'aurea:estimation (stockage local)',
+    issuer: 'AUREA Immobilier',
+    purpose: 'Conserver votre saisie en cours dans le formulaire d’estimation',
+    duration: 'Jusqu’à l’envoi du formulaire ou effacement des données du site',
+    consent: 'Exempté — reste dans votre navigateur, n’est pas transmis',
+  },
+  {
+    name: 'Session du back-office',
+    issuer: 'AUREA Immobilier / Supabase',
+    purpose: 'Maintenir la session authentifiée des collaborateurs de l’agence',
+    duration: 'Durée de la session',
+    consent: 'Exempté — strictement nécessaire, ne concerne pas les visiteurs',
+  },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Politique cookies' },
+];
+---
+
+<Base
+  title="Politique cookies – AUREA Immobilier"
+  description="Cookies et traceurs utilisés sur le site AUREA Immobilier : lesquels, pourquoi, combien de temps, et pourquoi il n’y a pas de bandeau de consentement."
+  path="/cookies/"
+  crumbs={crumbs}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap-narrow section prose">
+    <h1>Politique cookies</h1>
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+
+    <h2>Ce site ne dépose aucun traceur publicitaire</h2>
+    <p>
+      Nous n’utilisons ni régie publicitaire, ni réseau social embarqué, ni outil de mesure
+      d’audience déposant un cookie. Aucun traceur soumis à consentement n’est déposé au
+      chargement d’une page.
+    </p>
+    <p>
+      En conséquence, ce site n’affiche pas de bandeau de consentement : il n’y a rien à consentir.
+      Un bandeau demandant votre accord pour des traceurs inexistants serait trompeur.
+    </p>
+
+    <h2>Les contenus tiers sont chargés après votre action</h2>
+    <p>
+      Les cartes, visites virtuelles et vidéos proviennent de services tiers susceptibles de
+      déposer des traceurs. Sur ce site, ils sont remplacés par une image cliquable : le service
+      tiers n’est contacté qu’après un clic de votre part, et la façade indique lequel.
+    </p>
+
+    <h2>Ce qui est réellement utilisé</h2>
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Traceurs et stockages utilisés par le site</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Émetteur</th>
+            <th scope="col">Finalité</th>
+            <th scope="col">Durée</th>
+            <th scope="col">Consentement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            trackers.map((t) => (
+              <tr>
+                <th scope="row">{t.name}</th>
+                <td>{t.issuer}</td>
+                <td>{t.purpose}</td>
+                <td>{t.duration}</td>
+                <td>{t.consent}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Mesure d’audience</h2>
+    <p>
+      Si une mesure d’audience est mise en place, elle le sera avec un outil sans cookie
+      (Plausible, ou Matomo configuré selon les conditions d’exemption de la CNIL), produisant des
+      statistiques agrégées et non rattachables à une personne.
+    </p>
+    <p class="small muted">
+      Outil retenu : <Todo label="choix de l’outil de mesure d’audience" />
+    </p>
+
+    <h2>Gérer vos données stockées localement</h2>
+    <p>
+      Les éléments listés ci-dessus qui relèvent du stockage local de votre navigateur peuvent être
+      supprimés à tout moment depuis les paramètres de votre navigateur, rubrique « Données de
+      sites » ou « Cookies et données de sites ». Cette suppression n’affecte pas votre capacité à
+      utiliser le site.
+    </p>
+
+    <h2>Si cette situation évolue</h2>
+    <p>
+      Si un traceur soumis à consentement devait être ajouté, un bandeau conforme aux
+      recommandations de la CNIL serait mis en place : boutons « Tout accepter » et « Tout refuser »
+      de même niveau et de même présentation, choix par finalité, aucun dépôt avant consentement,
+      choix conservé six mois au plus, et lien permanent « Gérer mes cookies » dans le pied de page.
+    </p>
+
+    <h2>En savoir plus</h2>
+    <ul>
+      <li><a href="/confidentialite/">Politique de confidentialité</a></li>
+      <li>
+        <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs" rel="noopener">
+          Cookies et autres traceurs — CNIL
+        </a>
+      </li>
+    </ul>
+  </div>
+</Base>

@@ -1,0 +1,275 @@
+---
+/**
+ * Moteur de recherche du hero — reproduction de `#box_search` / `#quick_find`
+ * du site d'origine : onglets Acheter / Louer / Estimer (l'actif en aplat
+ * sable), puis une rangee blanche ombree avec Localisation, Type de bien,
+ * Budget max, « Plus de criteres » (Surface min, Pieces min, Budget min) et le
+ * bouton Rechercher.
+ *
+ * Les criteres partent en parametres d'URL vers /acheter/ ou /louer/, ou la
+ * grille les applique cote client (aucune page de filtre n'est creee : la
+ * canonique reste celle de la liste).
+ */
+import { communesWithPage } from '~/lib/catalog';
+
+const communes = communesWithPage();
+const TYPES = [
+  ['maison', 'Maison'],
+  ['appartement', 'Appartement'],
+  ['parking', 'Parking / box'],
+  ['immeuble', 'Immeuble'],
+  ['terrain', 'Terrain'],
+] as const;
+---
+
+<div id="box_search" data-search-box>
+  <form id="quick_find" class="search-form" method="get" action="/acheter/" data-search>
+    <div class="row-transac">
+      <ul class="list-transac" role="tablist" aria-label="Type de recherche">
+        <li>
+          <button type="button" role="tab" class="btn-primary" aria-selected="true" data-transac="vente">
+            Acheter
+          </button>
+        </li>
+        <li>
+          <button type="button" role="tab" aria-selected="false" data-transac="location">
+            Louer
+          </button>
+        </li>
+        <li>
+          <a role="tab" href="/estimation/" aria-selected="false">Estimer</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="row-search-home">
+      <p class="input-search row-localisation">
+        <label for="s-commune">Localisation</label>
+        <select id="s-commune" name="commune">
+          <option value="">Toutes les communes</option>
+          {communes.map((c) => <option value={c.slug}>{c.name}</option>)}
+        </select>
+      </p>
+      <p class="input-search">
+        <label for="s-type">Type de bien</label>
+        <select id="s-type" name="type">
+          <option value="">Tous les biens</option>
+          {TYPES.map(([v, l]) => <option value={v}>{l}</option>)}
+        </select>
+      </p>
+      <p class="input-search">
+        <label for="s-budget">Budget max</label>
+        <input id="s-budget" name="budget" type="number" min="0" step="1000" inputmode="numeric" placeholder="Budget max" />
+      </p>
+
+      <div class="more" data-more hidden>
+        <p class="input-search">
+          <label for="s-surface">Surface min</label>
+          <input id="s-surface" name="surface" type="number" min="0" inputmode="numeric" placeholder="Surface min" />
+        </p>
+        <p class="input-search">
+          <label for="s-rooms">Pièces min</label>
+          <input id="s-rooms" name="rooms" type="number" min="1" inputmode="numeric" placeholder="Pièces min" />
+        </p>
+        <p class="input-search">
+          <label for="s-budget-min">Budget min</label>
+          <input id="s-budget-min" name="budgetmin" type="number" min="0" step="1000" inputmode="numeric" placeholder="Budget min" />
+        </p>
+      </div>
+
+      <p class="btn-toggle">
+        <button type="button" class="btn-secondary btn" data-toggle-more aria-expanded="false">
+          Plus de critères
+        </button>
+      </p>
+      <p class="btn-submit">
+        <button type="submit" class="btn">Rechercher</button>
+      </p>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-search]').forEach((form) => {
+    const tabs = form.querySelectorAll<HTMLButtonElement>('[data-transac]');
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          const on = t === tab;
+          t.setAttribute('aria-selected', String(on));
+          t.classList.toggle('btn-primary', on);
+        });
+        form.action = tab.dataset.transac === 'location' ? '/louer/' : '/acheter/';
+      });
+    });
+
+    const more = form.querySelector<HTMLElement>('[data-more]');
+    const toggle = form.querySelector<HTMLButtonElement>('[data-toggle-more]');
+    if (more && toggle) {
+      toggle.addEventListener('click', () => {
+        const open = !more.hidden;
+        more.hidden = open;
+        toggle.setAttribute('aria-expanded', String(!open));
+        toggle.textContent = open ? 'Plus de critères' : 'Moins de critères';
+      });
+    }
+
+    // N'envoie que les champs remplis : l'URL reste courte et lisible.
+    form.addEventListener('submit', () => {
+      form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select').forEach((f) => {
+        if (!f.value) f.disabled = true;
+      });
+    });
+  });
+</script>
+
+<style>
+  #box_search {
+    z-index: 20;
+    padding: 25px;
+    border-radius: 5px;
+    background-color: #ffffff;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .search-form {
+    position: relative;
+  }
+
+  /* --- Onglets ------------------------------------------------------------- */
+  .list-transac {
+    display: inline-flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background-color: var(--color-bg-transparent);
+    position: relative;
+  }
+
+  .list-transac li {
+    z-index: 1;
+  }
+
+  .list-transac button,
+  .list-transac a {
+    display: inline-block;
+    padding: 10px 22px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #000000;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .list-transac .btn-primary {
+    background: var(--color-2);
+    color: var(--color-1);
+    border-color: var(--color-2);
+  }
+
+  .list-transac button:hover,
+  .list-transac a:hover {
+    color: var(--color-1);
+    background: var(--gold-100);
+  }
+
+  /* --- Rangee de champs ---------------------------------------------------- */
+  .row-search-home {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    background-color: #ffffff;
+    padding: 25px 20px 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .input-search {
+    flex: 1 1 160px;
+    margin: 0 0 10px;
+  }
+
+  .more {
+    display: contents;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  select,
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 6px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: #ffffff;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: #000000;
+  }
+
+  select:focus,
+  input:focus {
+    outline: 2px solid var(--color-1);
+    outline-offset: 1px;
+  }
+
+  .btn-toggle,
+  .btn-submit {
+    flex: 0 0 auto;
+    margin: 0 0 10px;
+  }
+
+  .btn-submit .btn {
+    padding-left: 16px;
+    padding-right: 16px;
+    width: 100%;
+    height: 40px;
+    min-height: 0;
+  }
+
+  .btn-toggle .btn {
+    height: 40px;
+    min-height: 0;
+    font-weight: 400;
+  }
+
+  @media (max-width: 599px) {
+    #box_search {
+      padding: 15px;
+    }
+
+    .list-transac {
+      width: 100%;
+    }
+
+    .list-transac li {
+      flex: 1;
+    }
+
+    .list-transac button,
+    .list-transac a {
+      width: 100%;
+      padding-inline: 8px;
+      font-size: 14px;
+    }
+
+    .btn-toggle,
+    .btn-submit {
+      flex: 1 1 100%;
+    }
+  }
+</style>

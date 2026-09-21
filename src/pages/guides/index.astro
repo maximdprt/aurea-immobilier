@@ -1,0 +1,149 @@
+---
+/**
+ * Index des guides — le pilier GEO du site (§11).
+ * L'ancien /catalog/news.php ne contenait que 212 mots : tout est neuf.
+ */
+import { getCollection } from 'astro:content';
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import { agentBySlug } from '~/lib/catalog';
+import { frDate } from '~/lib/format';
+
+const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.updated.valueOf() - a.data.updated.valueOf()
+);
+
+const CLUSTERS: Record<string, string> = {
+  prix: 'Prix et estimation',
+  vendre: 'Vendre',
+  acheter: 'Acheter',
+  louer: 'Louer',
+  gestion: 'Gestion locative',
+  'vivre-ici': 'Vivre dans le Mantois',
+};
+
+const byCluster = Object.entries(CLUSTERS)
+  .map(([key, label]) => ({
+    key,
+    label,
+    items: guides.filter((g) => g.data.cluster === key),
+  }))
+  .filter((c) => c.items.length > 0);
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Guides' },
+];
+---
+
+<Base
+  title="Guides immobiliers pour le Mantois – AUREA Immobilier"
+  description="Prix, estimation, mandat, frais de notaire, DPE, gestion locative : nos guides répondent aux questions réelles des vendeurs, acquéreurs et bailleurs du Mantois."
+  path="/guides/"
+  crumbs={crumbs}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Guides et conseils immobiliers</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="head">
+      <p class="lede">
+        Des réponses précises, sourcées et signées par un membre de l’équipe. Chaque chiffre
+        réglementaire renvoie à sa source officielle, et chaque page porte sa date de dernière
+        révision.
+      </p>
+    </header>
+
+    {
+      byCluster.map((cluster) => (
+        <section class="cluster-block">
+          <h2>{cluster.label}</h2>
+          <ul class="guides">
+            {cluster.items.map((g) => {
+              const author = agentBySlug(g.data.author);
+              return (
+                <li class="card">
+                  <h3>
+                    <a href={`/guides/${g.id}/`}>{g.data.title}</a>
+                  </h3>
+                  <p class="question small muted">{g.data.question}</p>
+                  <p class="answer">{g.data.answer}</p>
+                  <p class="meta small muted">
+                    {author ? `Par ${author.name}` : ''} · Mis à jour le {frDate(g.data.updated)}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .cluster-block {
+    margin-bottom: var(--space-xl);
+  }
+
+  .cluster-block h2 {
+    font-size: var(--step-2);
+    padding-bottom: var(--space-2xs);
+    border-bottom: 2px solid var(--gold-200);
+  }
+
+  .guides {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card {
+    position: relative;
+    padding: var(--space-m);
+  }
+
+  .card h3 {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .card h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .card h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card h3 a:hover {
+    color: var(--gold-700);
+  }
+
+  .question {
+    margin-bottom: var(--space-2xs);
+    font-style: italic;
+  }
+
+  .answer {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .meta {
+    margin: 0;
+  }
+</style>

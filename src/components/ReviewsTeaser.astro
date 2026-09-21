@@ -1,0 +1,116 @@
+---
+/**
+ * Bloc avis clients.
+ *
+ * Le scraping ne contient aucun avis : l'ancien site n'en affichait pas. Les
+ * cinq avis retenus (§13) doivent etre copies mot pour mot depuis la fiche
+ * Google, avec leur date de releve. Tant qu'ils ne sont pas fournis, on affiche
+ * la structure et les emplacements manquants plutot qu'un faux temoignage.
+ *
+ * Rappel §12 : ces avis ne sont PAS balises en Review / AggregateRating.
+ */
+import { GOOGLE_REVIEWS, isMissing } from '~/lib/site';
+import Todo from '~/components/Todo.astro';
+
+/**
+ * Auteurs et sujets identifies dans le brief. Le texte integral reste a
+ * collecter : on ne le reconstitue pas de memoire.
+ */
+const PLANNED = [
+  { author: 'Melissa Dantin', topic: 'Vente d’une maison', advisor: 'Aimée Vaillant' },
+  { author: 'Estelle Broussard', topic: 'Efficacité et écoute', advisor: 'Aimée Vaillant' },
+  { author: 'Bilel B. Khalifa', topic: 'Visite d’une maison', advisor: 'Oriane Cherel' },
+] as const;
+---
+
+<section class="section wrap reviews">
+  <div class="section-head">
+    <h2>Ils nous ont fait confiance</h2>
+    <p class="small"><a href="/avis/">Voir tous les avis</a></p>
+  </div>
+
+  <p class="rating">
+    {
+      isMissing(GOOGLE_REVIEWS.rating) ? (
+        <Todo label="note Google" />
+      ) : (
+        <strong>{GOOGLE_REVIEWS.rating}/5</strong>
+      )
+    }
+    {' sur '}
+    {isMissing(GOOGLE_REVIEWS.count) ? <Todo label="nombre d’avis" /> : GOOGLE_REVIEWS.count}
+    {' avis Google, relevés le '}
+    {isMissing(GOOGLE_REVIEWS.surveyedAt) ? <Todo label="date du relevé" /> : GOOGLE_REVIEWS.surveyedAt}
+  </p>
+
+  <ul class="list">
+    {
+      PLANNED.map((r) => (
+        <li class="card">
+          <p class="stars" aria-label="5 étoiles sur 5">
+            <span aria-hidden="true">★★★★★</span>
+          </p>
+          <blockquote>
+            <p><Todo label={`texte exact de l’avis de ${r.author}, à copier depuis Google`} /></p>
+          </blockquote>
+          <p class="author small">
+            <strong>{r.author}</strong> — {r.topic}
+            <br />
+            <span class="muted">Conseiller cité : {r.advisor}</span>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="small muted policy">
+    Les avis affichés sont publiés sur Google et reproduits sans modification. Conformément aux
+    consignes de Google, ils ne font l’objet d’aucun balisage d’étoiles sur ce site.
+  </p>
+</section>
+
+<style>
+  .rating {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-m);
+  }
+
+  .list {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    list-style: none;
+    margin: 0 0 var(--space-s);
+    padding: 0;
+  }
+
+  .card {
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .stars {
+    /* Les etoiles portent l'information : 3:1 minimum (WCAG 1.4.11). */
+    color: var(--gold-600);
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-2xs);
+  }
+
+  blockquote {
+    margin: 0 0 var(--space-s);
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  .author {
+    margin: 0;
+  }
+
+  .policy {
+    margin-bottom: 0;
+  }
+</style>

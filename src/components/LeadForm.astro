@@ -1,0 +1,243 @@
+---
+/**
+ * Formulaire de prise de contact.
+ *
+ * Le navigateur n'ecrit jamais directement en base : tout passe par la route
+ * serveur /api/leads qui valide, verifie Turnstile, limite le debit et
+ * journalise (prompt v3 §20.5). Le honeypot et le jeton Turnstile sont ici ;
+ * leur verification est cote serveur.
+ *
+ * Le formulaire fonctionne sans JavaScript : sans lui, la soumission recharge
+ * la page vers /merci/.
+ */
+import { CONTACT } from '~/lib/site';
+
+interface Props {
+  /** Nature de la demande, utilisee pour router le lead vers le bon conseiller. */
+  type: 'contact' | 'visite' | 'estimation' | 'gestion';
+  /** Reference du bien concerne, pre-remplie depuis la fiche. */
+  reference?: number | null;
+  title?: string;
+  intro?: string;
+  compact?: boolean;
+  id?: string;
+}
+
+const {
+  type,
+  reference = null,
+  title = 'Nous contacter',
+  intro,
+  compact = false,
+  id = 'contact',
+} = Astro.props;
+
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const consentVersion = '2026-09-21';
+---
+
+<section class:list={['lead-form', compact && 'compact']} id={id}>
+  <h2>{title}</h2>
+  {intro && <p class="muted">{intro}</p>}
+
+  <form method="post" action="/api/leads/" data-lead-form novalidate>
+    <input type="hidden" name="type" value={type} />
+    <input type="hidden" name="consent_version" value={consentVersion} />
+    {reference && <input type="hidden" name="reference" value={reference} />}
+
+    {/* Piege a robots : un humain ne le voit ni ne le remplit (§20.5) */}
+    <div class="hp-field" aria-hidden="true">
+      <label for={`${id}-website`}>Ne pas remplir</label>
+      <input id={`${id}-website`} type="text" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="two">
+      <p class="field">
+        <label for={`${id}-firstname`}>Prénom <span aria-hidden="true">*</span></label>
+        <input
+          id={`${id}-firstname`}
+          name="firstname"
+          type="text"
+          autocomplete="given-name"
+          required
+          maxlength="80"
+        />
+      </p>
+      <p class="field">
+        <label for={`${id}-lastname`}>Nom <span aria-hidden="true">*</span></label>
+        <input
+          id={`${id}-lastname`}
+          name="lastname"
+          type="text"
+          autocomplete="family-name"
+          required
+          maxlength="80"
+        />
+      </p>
+    </div>
+
+    <div class="two">
+      <p class="field">
+        <label for={`${id}-email`}>Email <span aria-hidden="true">*</span></label>
+        <input
+          id={`${id}-email`}
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          maxlength="254"
+        />
+      </p>
+      <p class="field">
+        <label for={`${id}-phone`}>Téléphone</label>
+        <input
+          id={`${id}-phone`}
+          name="phone"
+          type="tel"
+          autocomplete="tel"
+          maxlength="25"
+          inputmode="tel"
+        />
+      </p>
+    </div>
+
+    <p class="field">
+      <label for={`${id}-message`}>Votre message <span aria-hidden="true">*</span></label>
+      <textarea id={`${id}-message`} name="message" required maxlength="2000" rows="5"></textarea>
+      <span class="hint">2 000 caractères maximum.</span>
+    </p>
+
+    <p class="field consent">
+      <label>
+        <input type="checkbox" name="consent" value="1" required />
+        <span>
+          J’accepte que mes données soient utilisées pour répondre à ma demande. Elles sont
+          conservées 3 ans après notre dernier contact et ne sont jamais cédées.
+          <a href="/confidentialite/">Politique de confidentialité</a>.
+        </span>
+      </label>
+    </p>
+
+    {
+      turnstileKey ? (
+        <div class="cf-turnstile" data-sitekey={turnstileKey} data-theme="light" data-language="fr" />
+      ) : (
+        <p class="small muted">
+          Protection anti-spam à activer : clé Cloudflare Turnstile non configurée.
+        </p>
+      )
+    }
+
+    <p class="actions">
+      <button class="btn" type="submit">Envoyer ma demande</button>
+      <span class="small muted">ou appelez-nous au <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a></span>
+    </p>
+
+    <p class="form-status" role="status" hidden data-status></p>
+  </form>
+</section>
+
+{
+  turnstileKey && (
+    <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+  )
+}
+
+<style>
+  .lead-form {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: var(--space-m);
+  }
+
+  .lead-form.compact {
+    padding: var(--space-s);
+  }
+
+  .lead-form h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .two {
+    display: grid;
+    gap: 0 var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  }
+
+  .consent label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2xs);
+    align-items: start;
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+
+  .consent input {
+    margin-top: 0.25rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    margin-bottom: 0;
+  }
+
+  .form-status {
+    margin-top: var(--space-s);
+    margin-bottom: 0;
+  }
+</style>
+
+<script>
+  // Amelioration progressive : envoi en arriere-plan, message en place.
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-lead-form]')) {
+    const status = form.querySelector<HTMLElement>('[data-status]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type=submit]');
+
+    form.addEventListener('submit', async (event) => {
+      if (!form.reportValidity()) {
+        event.preventDefault();
+        return;
+      }
+      event.preventDefault();
+      submit?.setAttribute('disabled', '');
+      if (status) {
+        status.hidden = false;
+        status.dataset.state = '';
+        status.textContent = 'Envoi en cours…';
+      }
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = (await response.json().catch(() => ({}))) as { message?: string };
+        if (!response.ok) throw new Error(data.message ?? 'Envoi impossible');
+        if (status) {
+          status.dataset.state = 'ok';
+          status.textContent =
+            'Merci, votre demande est bien arrivée. Un conseiller vous répond sous 24 h ouvrées.';
+        }
+        form.reset();
+      } catch (error) {
+        if (status) {
+          status.dataset.state = 'error';
+          status.textContent =
+            error instanceof Error && error.message
+              ? error.message
+              : 'Envoi impossible pour le moment. Vous pouvez nous appeler au 01 30 63 50 50.';
+        }
+      } finally {
+        submit?.removeAttribute('disabled');
+      }
+    });
+  }
+</script>

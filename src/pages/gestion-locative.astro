@@ -1,0 +1,294 @@
+---
+/**
+ * Gestion locative — vraie page de vente, pas un formulaire (§7, §8).
+ *
+ * Sur l'ancien site, cette offre se resumait a `contact_us.php?form=3`, soit
+ * 566 mots de formulaire. Le brief en fait un cluster de mots-cles a part
+ * entiere, a faible concurrence (§5).
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Picture from '~/components/Picture.astro';
+import LeadForm from '~/components/LeadForm.astro';
+import Faq, { type FaqItem } from '~/components/Faq.astro';
+import Todo from '~/components/Todo.astro';
+import { agentBySlug, agentMedia, editorialMedia } from '~/lib/catalog';
+import { faqSchema } from '~/lib/schema';
+
+const manager = agentBySlug('marion-nicaise');
+const visual = editorialMedia('gestion-locative');
+
+const included = [
+  ['Recherche et sélection du locataire', 'Diffusion, visites, vérification des pièces, analyse de solvabilité et choix du dossier avec vous.'],
+  ['Rédaction du bail', 'Bail conforme, annexes obligatoires, dossier de diagnostics, notice d’information.'],
+  ['États des lieux', 'Entrée et sortie, photos datées, comparatif contradictoire et chiffrage des dégradations.'],
+  ['Encaissement des loyers', 'Appels de loyer, quittances, relances en cas de retard, procédure de recouvrement si nécessaire.'],
+  ['Charges et régularisation', 'Provisions, régularisation annuelle sur justificatifs, répartition entre bailleur et locataire.'],
+  ['Suivi des travaux', 'Devis, coordination des artisans, suivi du chantier et contrôle avant paiement.'],
+  ['Déclarations et documents', 'Récapitulatif annuel pour votre déclaration de revenus fonciers.'],
+];
+
+/** Calendrier officiel — a verifier sur Legifrance avant publication (§11). */
+const dpeCalendar = [
+  ['1ᵉʳ janvier 2025', 'Logements classés G', 'Interdits à la location en tant que logement décent'],
+  ['1ᵉʳ janvier 2028', 'Logements classés F', 'Interdits à la location en tant que logement décent'],
+  ['1ᵉʳ janvier 2034', 'Logements classés E', 'Interdits à la location en tant que logement décent'],
+];
+
+const faq: FaqItem[] = [
+  {
+    question: 'Combien coûte la gestion locative ?',
+    answer:
+      'Les honoraires de gestion sont exprimés en pourcentage des loyers encaissés, et figurent dans notre barème publié sur le site. Ils sont déductibles de vos revenus fonciers au régime réel.',
+    details: ['Le taux exact sera affiché ici dès que l’agence l’aura confirmé.'],
+  },
+  {
+    question: 'Proposez-vous une garantie contre les loyers impayés ?',
+    answer:
+      'Cette option est à confirmer auprès de l’agence. Une garantie loyers impayés couvre généralement les impayés, les dégradations et les frais de procédure, sous condition d’un dossier locataire respectant les critères de l’assureur.',
+  },
+  {
+    question: 'Mon logement est classé F ou G : puis-je encore le louer ?',
+    answer:
+      'La loi interdit progressivement la mise en location des logements les plus énergivores. Les logements classés G sont concernés depuis 2025, les F le seront en 2028 et les E en 2034. Un bail en cours n’est pas rompu, mais le renouvellement et la relocation sont bloqués.',
+    details: ['Nous établissons avec vous un plan de travaux chiffré et priorisé pour sortir du seuil.'],
+  },
+  {
+    question: 'Puis-je récupérer mon bien pour l’habiter ou le vendre ?',
+    answer:
+      'Oui, en donnant congé au locataire dans les délais légaux et pour un motif prévu par la loi : reprise pour habiter, vente, ou motif légitime et sérieux. Nous préparons le congé et vérifions sa validité.',
+  },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Gestion locative' },
+];
+---
+
+<Base
+  title="Gestion locative à Mantes-la-Jolie"
+  description="Loyers encaissés, locataires sélectionnés, travaux suivis : confiez votre bien à notre gestionnaire dédiée. Honoraires transparents, un interlocuteur unique."
+  path="/gestion-locative/"
+  crumbs={crumbs}
+  schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Gestion locative</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="hero-gl">
+      <div>
+        <p class="lede">
+          Vous confiez votre bien, nous nous occupons de tout : trouver le bon locataire, encaisser
+          les loyers, suivre les travaux et vous rendre compte. Un seul interlocuteur, joignable.
+        </p>
+        <p class="cluster">
+          <a class="btn" href="#contact">Confier mon bien</a>
+          <a class="btn btn-secondary" href="/honoraires/">Voir le barème</a>
+        </p>
+      </div>
+      <Picture
+        media={visual}
+        alt="Remise des clés d'un logement géré par AUREA Immobilier"
+        sizes="(min-width: 56rem) 30rem, 92vw"
+        class="hero-visual"
+        priority
+      />
+    </header>
+
+    <section class="section-tight">
+      <h2>Ce que comprend notre mandat de gestion</h2>
+      <dl class="included">
+        {
+          included.map(([title, body]) => (
+            <div>
+              <dt>{title}</dt>
+              <dd>{body}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section class="section-tight">
+      <h2>Nos honoraires de gestion</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Prestation</th>
+              <th scope="col">Honoraires</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Gestion courante</th>
+              <td><Todo label="% HT et TTC des loyers encaissés" /></td>
+            </tr>
+            <tr>
+              <th scope="row">Mise en location (part bailleur)</th>
+              <td><Todo label="honoraires de mise en location, part bailleur" /></td>
+            </tr>
+            <tr>
+              <th scope="row">Garantie loyers impayés (option)</th>
+              <td><Todo label="taux de la GLI et conditions, si l’offre existe" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        Le barème complet est également disponible en clair sur la page
+        <a href="/honoraires/">Barème des honoraires</a>, accessible depuis toutes les pages du
+        site.
+      </p>
+    </section>
+
+    <section class="section-tight">
+      <h2>Location et performance énergétique : le calendrier</h2>
+      <p>
+        La loi interdit progressivement la mise en location des logements les plus énergivores. Si
+        votre bien est classé E, F ou G, anticipez : les travaux conditionnent votre capacité à
+        relouer.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">À partir du</th>
+              <th scope="col">Classe DPE</th>
+              <th scope="col">Conséquence</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              dpeCalendar.map(([date, klass, effect]) => (
+                <tr>
+                  <td>{date}</td>
+                  <td><strong>{klass}</strong></td>
+                  <td>{effect}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        Calendrier à vérifier sur
+        <a href="https://www.legifrance.gouv.fr/" rel="noopener">Légifrance</a> et
+        <a href="https://www.service-public.fr/" rel="noopener">service-public.fr</a> avant
+        publication, et à réviser à chaque évolution législative.
+        <Todo label="validation juridique du calendrier applicable" />
+      </p>
+    </section>
+
+    {
+      manager && (
+        <section class="section-tight">
+          <h2>Votre gestionnaire</h2>
+          <div class="manager panel">
+            <Picture
+              media={agentMedia(manager.slug)}
+              alt={`Portrait de ${manager.name}`}
+              sizes="120px"
+              class="manager-photo"
+            />
+            <div>
+              <p class="manager-name">{manager.name}</p>
+              <p class="small muted">{manager.role}</p>
+              <p>
+                Marion suit l’ensemble des biens en gestion : c’est elle qui sélectionne les
+                locataires, réalise les états des lieux et vous appelle quand une décision vous
+                revient.
+              </p>
+              <p class="cluster">
+                <a class="btn btn-secondary" href={`/equipe/${manager.slug}/`}>Sa page</a>
+                <a class="btn btn-secondary" href="tel:+33130635050">01 30 63 50 50</a>
+              </p>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="section-tight">
+      <Faq items={faq} title="Gestion locative : vos questions" />
+    </section>
+
+    <section class="section-tight">
+      <LeadForm
+        type="gestion"
+        title="Confier mon bien en gestion"
+        intro="Décrivez votre bien en quelques lignes : Marion Nicaise vous rappelle sous 48 h ouvrées."
+      />
+    </section>
+  </div>
+</Base>
+
+<style>
+  .hero-gl {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    margin-bottom: var(--space-l);
+  }
+
+  .hero-gl :global(.hero-visual img) {
+    border-radius: var(--radius-l);
+  }
+
+  .included {
+    margin: 0;
+    max-width: var(--measure);
+  }
+
+  .included > div {
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .included dt {
+    font-weight: 650;
+    margin-bottom: 0.15rem;
+  }
+
+  .included dd {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  .manager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    align-items: start;
+  }
+
+  .manager :global(.manager-photo img) {
+    width: 7.5rem;
+    height: 7.5rem;
+    border-radius: var(--radius-m);
+    object-fit: cover;
+  }
+
+  .manager > div {
+    flex: 1 1 18rem;
+  }
+
+  .manager-name {
+    margin: 0;
+    font-weight: 650;
+    font-size: var(--step-1);
+  }
+
+  @media (min-width: 56rem) {
+    .hero-gl {
+      grid-template-columns: 1fr 30rem;
+    }
+  }
+</style>

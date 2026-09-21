@@ -1,0 +1,231 @@
+---
+/**
+ * Mentions légales — contenu du §21.1 du brief.
+ *
+ * Rendu en HTML côté serveur, indexable, avec title et meta description
+ * dédiés (§15.1). Les mentions réglementaires reprises du barème des
+ * honoraires sont sourcées ; celles qui manquent restent visibles.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Todo from '~/components/Todo.astro';
+import {
+  COMPANY,
+  CONTACT,
+  HOSTING,
+  REGULATED,
+  LEGAL_DISCREPANCIES,
+  isMissing,
+} from '~/lib/site';
+
+const LEGAL_VERSION = 1;
+const UPDATED = '21 septembre 2026';
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Mentions légales' },
+];
+---
+
+<Base
+  title="Mentions légales – AUREA Immobilier"
+  description="Éditeur, carte professionnelle, garantie, assurance, médiateur, hébergeurs et propriété intellectuelle du site AUREA Immobilier."
+  path="/mentions-legales/"
+  crumbs={crumbs}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap-narrow section prose">
+    <h1>Mentions légales</h1>
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+
+    <p class="notice">
+      <strong>À faire valider par un juriste avant publication.</strong> Ce texte est une base
+      complète et structurée, rédigée à partir des documents publiés par l’agence. Il engage la
+      responsabilité d’AUREA Immobilier et doit être relu par un professionnel du droit.
+    </p>
+
+    <h2>1. Éditeur du site</h2>
+    <p>
+      <strong>{COMPANY.legalName}</strong>, {COMPANY.legalForm} au capital de {COMPANY.capital}.
+    </p>
+    <ul>
+      <li>Siège social : {CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}</li>
+      <li>RCS {COMPANY.rcsCity} {COMPANY.rcs}</li>
+      <li>SIRET {COMPANY.siret}</li>
+      <li>TVA intracommunautaire {COMPANY.vatId}</li>
+      <li>Téléphone : <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a></li>
+      <li>Email : <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+    </ul>
+    <p class="small muted">
+      Adresse du siège à confronter au Kbis :
+      <Todo label="adresse exacte du siège selon le Kbis" /> — une annonce légale de création
+      mentionnerait une adresse différente du 44 rue Nationale.
+    </p>
+
+    <h2>2. Directeur de la publication</h2>
+    <p>
+      {
+        isMissing(REGULATED.publicationDirector) ? (
+          <Todo label={REGULATED.publicationDirector.__missing} />
+        ) : (
+          REGULATED.publicationDirector
+        )
+      }
+    </p>
+
+    <h2>3. Activité réglementée</h2>
+    <p>
+      Conformément à la loi n° 70-9 du 2 janvier 1970 dite loi Hoguet et à son décret d’application
+      du 20 juillet 1972, AUREA Immobilier exerce une activité de transaction sur immeubles et
+      fonds de commerce.
+    </p>
+    <ul>
+      <li>
+        <strong>Carte professionnelle</strong> : {REGULATED.cpiScope}, n° {REGULATED.cpiNumber},
+        délivrée par la {REGULATED.cpiIssuer} le 5 septembre 2024
+      </li>
+      <li>
+        <strong>Assurance responsabilité civile professionnelle</strong> : {REGULATED.insurer},
+        police n° {REGULATED.insurancePolicy}, {REGULATED.insurerAddress}
+      </li>
+      <li>
+        <strong>Détention de fonds</strong> : l’agence déclare ne pas recevoir ni détenir d’autres
+        fonds, effets ou valeurs que ceux représentatifs de sa rémunération ou de sa commission
+      </li>
+      <li>
+        <strong>Garantie financière</strong> :{' '}
+        {
+          isMissing(REGULATED.financialGuarantee) ? (
+            <Todo label="garantie financière — nom, adresse, montant" />
+          ) : (
+            REGULATED.financialGuarantee
+          )
+        }
+      </li>
+    </ul>
+    <p class="notice">
+      <strong>Point à lever avant publication.</strong> La déclaration de non-détention de fonds
+      est difficilement compatible avec l’activité de gestion locative, qui implique l’encaissement
+      de loyers pour le compte de propriétaires et donc, en principe, une garantie financière. Le
+      texte de cette section doit être adapté après confirmation par l’agence.
+    </p>
+    <p class="small muted">
+      Source des mentions ci-dessus : {REGULATED.source}.
+    </p>
+
+    {
+      LEGAL_DISCREPANCIES.length > 0 && (
+        <div class="notice">
+          <p><strong>Incohérences relevées dans les documents existants</strong></p>
+          <ul>
+            {LEGAL_DISCREPANCIES.map((d) => (
+              <li>
+                {d.field} — mentions légales : {d.inLegalNotice} ; barème : {d.inFeesPdf}. {d.note}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+
+    <h2>4. Médiation de la consommation</h2>
+    <p>
+      Conformément aux articles L.612-1 et suivants du Code de la consommation, tout client
+      consommateur a le droit de recourir gratuitement à un médiateur de la consommation en vue de
+      la résolution amiable d’un litige qui l’oppose à un professionnel.
+    </p>
+    <ul>
+      <li>
+        Médiateur :{' '}
+        {
+          isMissing(REGULATED.mediator) ? (
+            <Todo label={REGULATED.mediator.__missing} />
+          ) : (
+            REGULATED.mediator
+          )
+        }
+      </li>
+    </ul>
+    <p>
+      Pour en savoir plus :{' '}
+      <a href="https://www.inc-conso.fr/content/comment-saisir-le-mediateur-de-la-consommation" rel="noopener">
+        comment saisir le médiateur de la consommation
+      </a>.
+    </p>
+
+    <h2>5. Honoraires</h2>
+    <p>
+      Le barème des honoraires est accessible depuis toutes les pages du site :{' '}
+      <a href="/honoraires/">consulter le barème</a>. Le prix affiché sur chaque annonce est
+      exprimé honoraires inclus, et l’annonce précise le montant des honoraires ainsi que la partie
+      qui les prend en charge.
+    </p>
+
+    <h2>6. Hébergement</h2>
+    <ul>
+      <li>
+        <strong>Site</strong> : {HOSTING.site.name}, {HOSTING.site.address} —{' '}
+        <a href={HOSTING.site.url} rel="noopener">{HOSTING.site.url}</a>
+      </li>
+      <li>
+        <strong>Base de données et fichiers</strong> : {HOSTING.database.name},{' '}
+        {
+          isMissing(HOSTING.database.address) ? (
+            <Todo label={HOSTING.database.address.__missing} />
+          ) : (
+            HOSTING.database.address
+          )
+        }
+        . {HOSTING.database.note}
+      </li>
+    </ul>
+
+    <h2>7. Propriété intellectuelle</h2>
+    <p>
+      L’ensemble de ce site relève de la législation française et internationale sur le droit
+      d’auteur et la propriété intellectuelle. Les textes, photographies, vidéos, logo et charte
+      graphique appartiennent à AUREA Immobilier ou à leurs auteurs respectifs. Toute reproduction,
+      représentation, adaptation ou diffusion, intégrale ou partielle, par quelque procédé que ce
+      soit, est interdite sans autorisation écrite préalable, à l’exception d’une copie unique
+      réservée à l’usage privé du copiste.
+    </p>
+
+    <h3>Crédits et visuels générés par intelligence artificielle</h3>
+    <p>
+      Par souci de transparence, nous précisons que certains visuels illustratifs de ce site ont
+      été générés à l’aide d’outils d’intelligence artificielle, ou proviennent de banques
+      d’images. <strong>Aucun visuel généré par intelligence artificielle n’est présenté comme une
+      photographie réelle d’un bien ou de l’agence.</strong> Les photographies d’annonces sont des
+      prises de vue réelles des biens concernés.
+    </p>
+    <p class="small muted">
+      Tri « photo réelle / visuel généré » à valider sur l’ensemble du fonds iconographique :
+      <Todo label="validation du tri des visuels par l’agence" />
+    </p>
+
+    <h2>8. Responsabilité</h2>
+    <p>
+      Les informations publiées sur ce site le sont à titre informatif et n’ont pas de valeur
+      contractuelle. Les descriptifs, surfaces, photographies et disponibilités des biens sont
+      donnés à titre indicatif ; seuls le mandat, le compromis et l’acte authentique font foi.
+      AUREA Immobilier ne saurait être tenue responsable d’une erreur ou d’une omission, et se
+      réserve le droit de modifier le contenu du site sans préavis.
+    </p>
+
+    <h2>9. Démarchage téléphonique</h2>
+    <p>
+      Vous pouvez vous inscrire gratuitement sur la liste d’opposition au démarchage téléphonique{' '}
+      <a href="https://www.bloctel.gouv.fr/" rel="noopener">Bloctel</a>, conformément à la loi
+      n° 2014-344 du 17 mars 2014 relative à la consommation.
+    </p>
+
+    <h2>10. Autres informations</h2>
+    <ul>
+      <li><a href="/confidentialite/">Politique de confidentialité et données personnelles</a></li>
+      <li><a href="/cgu/">Conditions générales d’utilisation</a></li>
+      <li><a href="/cookies/">Politique cookies</a></li>
+      <li><a href="/honoraires/">Barème des honoraires</a></li>
+    </ul>
+  </div>
+</Base>

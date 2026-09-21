@@ -1,0 +1,85 @@
+---
+/**
+ * Page 404 utile : recherche et liens vers les biens (§9).
+ *
+ * L'ancien site laissait 18 URL en 404 encore liées depuis ses propres pages.
+ * Toutes sont désormais redirigées ; cette page ne doit donc être atteinte que
+ * par un lien externe ancien ou une faute de frappe.
+ */
+import Base from '~/layouts/Base.astro';
+import ListingCard from '~/components/ListingCard.astro';
+import { activeListings, communesWithPage } from '~/lib/catalog';
+
+const suggestions = activeListings().slice(0, 3);
+const communes = communesWithPage().slice(0, 8);
+---
+
+<Base
+  title="Page introuvable – AUREA Immobilier"
+  description="Cette page n’existe pas ou plus. Retrouvez nos biens à vendre et à louer dans le Mantois, ou contactez l’agence."
+  path="/404/"
+  noindex
+>
+  <div class="wrap section">
+    <header class="head">
+      <h1>Cette page n’existe pas</h1>
+      <p class="lede">
+        Le lien est peut-être ancien, ou le bien que vous cherchiez a été vendu. Voici par où
+        continuer.
+      </p>
+      <p class="cluster">
+        <a class="btn" href="/acheter/">Voir les biens à vendre</a>
+        <a class="btn btn-secondary" href="/louer/">Voir les biens à louer</a>
+        <a class="btn btn-secondary" href="/contact/">Nous contacter</a>
+      </p>
+    </header>
+
+    {
+      suggestions.length > 0 && (
+        <section class="section-tight">
+          <h2>Nos biens du moment</h2>
+          <div class="grid-cards">
+            {suggestions.map((l) => (
+              <ListingCard listing={l} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="section-tight">
+      <h2>Nos communes</h2>
+      <ul class="communes">
+        {
+          communes.map((c) => (
+            <li>
+              <a class="badge" href={`/agence-immobiliere/${c.slug}/`}>
+                {c.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="small"><a href="/plan-du-site/">Voir le plan du site complet</a></p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+    max-width: var(--measure);
+  }
+
+  .communes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    list-style: none;
+    padding: 0;
+  }
+
+  .communes .badge {
+    text-decoration: none;
+  }
+</style>

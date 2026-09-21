@@ -1,0 +1,196 @@
+---
+/** Nous contacter — NAP complet, carte en façade cliquable (§6, §21.4). */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import LeadForm from '~/components/LeadForm.astro';
+import Todo from '~/components/Todo.astro';
+import { CONTACT, OPENING_HOURS, GEO, formatRanges, isMissing } from '~/lib/site';
+import { allAgents } from '~/lib/catalog';
+
+const agents = allAgents();
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Contact' },
+];
+---
+
+<Base
+  title="Contacter AUREA Immobilier à Mantes-la-Jolie"
+  description="44 rue Nationale, 78200 Mantes-la-Jolie. Téléphone, email et formulaire : un conseiller vous répond sous 24 h ouvrées."
+  path="/contact/"
+  crumbs={crumbs}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Nous contacter</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="head">
+      <p class="lede">
+        L’agence est ouverte au public 44 rue Nationale, en centre-ville de Mantes-la-Jolie. Vous
+        pouvez passer, appeler, ou écrire — nous répondons sous 24 heures ouvrées.
+      </p>
+    </header>
+
+    <div class="columns">
+      <div>
+        <section class="panel">
+          <h2>Coordonnées</h2>
+          <address>
+            <strong>AUREA Immobilier</strong><br />
+            {CONTACT.street}<br />
+            {CONTACT.postalCode} {CONTACT.city}
+          </address>
+          <p>
+            <a class="big-link" href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a><br />
+            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          </p>
+          <h3>Horaires</h3>
+          <dl class="hours">
+            {
+              OPENING_HOURS.map((d) => (
+                <>
+                  <dt>{d.label}</dt>
+                  <dd>{formatRanges(d)}</dd>
+                </>
+              ))
+            }
+          </dl>
+          <p class="small muted">
+            Les horaires publiés ici doivent être strictement identiques à ceux de la fiche Google
+            et des annuaires : c’est un facteur direct de visibilité dans le pack local.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Nous trouver</h2>
+          <div class="facade">
+            <p>
+              <strong>Carte interactive</strong><br />
+              <span class="small muted">
+                La carte n’est chargée qu’après un clic de votre part : aucun traceur tiers n’est
+                déposé à l’ouverture de la page.
+              </span>
+            </p>
+            {
+              isMissing(GEO) ? (
+                <p>
+                  <Todo label="coordonnées GPS de la fiche Google, nécessaires à la carte" />
+                </p>
+              ) : (
+                <button class="btn btn-secondary" type="button" data-load-map>
+                  Afficher la carte
+                </button>
+              )
+            }
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <LeadForm
+          type="contact"
+          title="Écrire à l’agence"
+          intro="Une question, un projet, une demande de rappel : votre message arrive directement à l’équipe."
+        />
+
+        <section class="panel team-direct">
+          <h2>Écrire directement à un conseiller</h2>
+          <ul>
+            {
+              agents.map((a) => (
+                <li>
+                  <a href={`/equipe/${a.slug}/`}>{a.name}</a>
+                  <span class="small muted">{a.role}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .columns {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .panel + .panel {
+    margin-top: var(--space-m);
+  }
+
+  address {
+    font-style: normal;
+    margin-bottom: var(--space-s);
+  }
+
+  .big-link {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+  }
+
+  .facade {
+    display: grid;
+    gap: var(--space-s);
+    place-items: center;
+    text-align: center;
+    padding: var(--space-l) var(--space-m);
+    background: var(--canvas-alt);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-m);
+  }
+
+  .facade p {
+    margin: 0;
+  }
+
+  .team-direct ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .team-direct li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (min-width: 56rem) {
+    .columns {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .hours {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3xs) var(--space-s);
+    margin: 0 0 var(--space-s);
+  }
+
+  .hours dt {
+    color: var(--ink-muted);
+  }
+
+  .hours dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

@@ -1,0 +1,131 @@
+---
+/**
+ * Nos reussites — preuve sociale et maillage interne (§7).
+ *
+ * Honnetete des chiffres : l'ancien site annonce 128 biens archives, mais le
+ * scraping n'a pu en reconstituer qu'une partie (les pages 7 a 10 de la liste
+ * n'ont pas ete crawlees). On affiche donc les deux nombres, et on le dit.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import { archivedListings, catalogStats, soldListings } from '~/lib/catalog';
+import { area, propertyTypeLabel } from '~/lib/format';
+
+const withSheet = soldListings();
+const listOnly = archivedListings();
+const stats = catalogStats();
+
+const rows = [
+  ...withSheet.map((l) => ({
+    reference: l.reference,
+    title: l.title,
+    commune: l.commune,
+    status: l.status,
+    area: l.livingArea,
+    rooms: l.rooms,
+    propertyType: l.propertyType,
+    href: `/bien/${l.slug}/`,
+  })),
+  ...listOnly.map((a) => ({
+    reference: a.reference,
+    title: a.title,
+    commune: a.commune,
+    status: a.status,
+    area: a.area,
+    rooms: a.rooms,
+    propertyType: a.propertyType,
+    href: null,
+  })),
+].sort((a, b) => b.reference - a.reference);
+
+const communes = [...new Set(rows.map((r) => r.commune).filter(Boolean))].length;
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Nos réussites' },
+];
+---
+
+<Base
+  title="Nos biens vendus et loués – AUREA Immobilier"
+  description={`${stats.archivedTotal} biens vendus ou loués par AUREA Immobilier dans le Mantois depuis août 2024. Références, communes et typologies de nos transactions.`}
+  path="/biens-vendus/"
+  crumbs={crumbs}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Liste des biens vendus ou loués</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="head">
+      <p class="lede">
+        Depuis la création de l’agence en août&nbsp;2024, AUREA Immobilier a mené
+        <strong> {stats.archivedTotal} transactions</strong> — ventes et locations — dans le
+        Mantois et ses environs, sur {communes} communes.
+      </p>
+      <p class="small muted">
+        Le détail ci-dessous porte sur {rows.length} de ces {stats.archivedTotal} transactions :
+        les archives du site actuel n’ont pu être relevées qu’en partie lors de la reprise des
+        données. La liste sera complétée à l’import du flux du logiciel métier.
+      </p>
+    </header>
+
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Biens vendus ou loués par AUREA Immobilier</caption>
+        <thead>
+          <tr>
+            <th scope="col">Réf.</th>
+            <th scope="col">Bien</th>
+            <th scope="col">Commune</th>
+            <th scope="col">Type</th>
+            <th scope="col">Surface</th>
+            <th scope="col">Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((r) => (
+              <tr>
+                <td>{r.reference}</td>
+                <td>{r.href ? <a href={r.href}>{r.title}</a> : r.title}</td>
+                <td>{r.commune ?? '—'}</td>
+                <td>{propertyTypeLabel(r.propertyType)}</td>
+                <td>{r.area ? area(r.area) : '—'}</td>
+                <td>
+                  <span class="badge badge-sold">{r.status === 'sold' ? 'Vendu' : 'Loué'}</span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="cta">
+      <a class="btn" href="/estimation/">Faire estimer mon bien</a>
+      <a class="btn btn-secondary" href="/vendre/">Notre méthode de vente</a>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-top: var(--space-l);
+  }
+
+  td .badge {
+    white-space: nowrap;
+  }
+</style>

@@ -1,0 +1,2211 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "astro",
+  "regions": [
+    "cdg1"
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://[[projet]].supabase.co; font-src 'self'; connect-src 'self' https://[[projet]].supabase.co; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin"
+        }
+      ]
+    },
+    {
+      "source": "/media/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/content/5/notre-agence.html",
+      "destination": "/agence/",
+      "permanent": true
+    },
+    {
+      "source": "/content/1/notre-agence.html",
+      "destination": "/agence/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/Vente.html",
+      "destination": "/acheter/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/vente.html",
+      "destination": "/acheter/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction_____2/vente.html",
+      "destination": "/acheter/page/2/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction_____3/vente.html",
+      "destination": "/acheter/page/3/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/Location.html",
+      "destination": "/louer/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/location.html",
+      "destination": "/louer/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/2/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/3/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/4/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/5/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/6/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/7/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "7"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/8/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "8"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/9/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "9"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/10/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "10"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_selled.php",
+      "destination": "/biens-vendus/page/11/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "page",
+          "value": "11"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/estimation.php",
+      "destination": "/estimation/",
+      "permanent": true
+    },
+    {
+      "source": "/estimation.php",
+      "destination": "/estimation/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/contact/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/contact_us.php",
+      "destination": "/contact/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/gestion-locative/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/contact_us.php",
+      "destination": "/gestion-locative/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/annonces/transaction/contact_us.php",
+      "destination": "/gestion-locative/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/news.php",
+      "destination": "/guides/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/mentions.php",
+      "destination": "/mentions-legales/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/gdpr.php",
+      "destination": "/confidentialite/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/cookies-policy.php",
+      "destination": "/cookies/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/cookies.php",
+      "destination": "/cookies/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/site_plan.php",
+      "destination": "/plan-du-site/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/annonce.php",
+      "destination": "/acheter/",
+      "permanent": true
+    },
+    {
+      "source": "/annonce.php",
+      "destination": "/acheter/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/outils.php",
+      "destination": "/guides/outils/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/account.php",
+      "destination": "/contenu-supprime/",
+      "permanent": true
+    },
+    {
+      "source": "/account.php",
+      "destination": "/contenu-supprime/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/selection.php",
+      "destination": "/contenu-supprime/",
+      "permanent": true
+    },
+    {
+      "source": "/selection.php",
+      "destination": "/contenu-supprime/",
+      "permanent": true
+    },
+    {
+      "source": "/create_alerte_mail.php",
+      "destination": "/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/try",
+      "destination": "/contenu-supprime/",
+      "permanent": true
+    },
+    {
+      "source": "/segments/immo/catalog/images/manufacturers_bareme/385554.pdf",
+      "destination": "/honoraires/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/_61507497/appartement-1-piece-s.html",
+      "destination": "/bien/1013-appartement-1-piece-s/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/1013-appartement-1-piece-s/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61507497"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/1013-appartement-1-piece-s/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61507497"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/appartement-lumineux-de-4-pieces-a-mantes-la-jolie.html",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/appartement-lumineux-de-4-pieces-a-mantes-la-jolie.html",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "3_32_37"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61483159"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61483159"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61483159"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html",
+      "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html",
+      "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "4_40_26"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61452626"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61452626"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/983-maison-familiale-8-pieces-mantes-la-ville/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61452626"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_61190328/appartement-2-pieces-47-54-m2-a-juziers.html",
+      "destination": "/bien/967-appartement-2-pieces-47-54-m-a-juziers/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/967-appartement-2-pieces-47-54-m-a-juziers/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61190328"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/967-appartement-2-pieces-47-54-m-a-juziers/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "61190328"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/joli-studio-a-mantes-la-jolie-de-28-m2.html",
+      "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/joli-studio-a-mantes-la-jolie-de-28-m2.html",
+      "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "3_33_27"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60992633"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60992633"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/938-joli-studio-a-mantes-la-jolie-de-28-m/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60992633"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html",
+      "destination": "/bien/932-appartement-mantes-la-jolie-gare/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html",
+      "destination": "/bien/932-appartement-mantes-la-jolie-gare/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "3_33_29"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60962717"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/932-appartement-mantes-la-jolie-gare/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60962717"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/932-appartement-mantes-la-jolie-gare/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60962717"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_60906460/appartement-mantes-la-jolie-gare-2pieces.html",
+      "destination": "/bien/922-appartement-mantes-la-jolie-gare-2-pieces/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/922-appartement-mantes-la-jolie-gare-2-pieces/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60906460"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/922-appartement-mantes-la-jolie-gare-2-pieces/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60906460"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_60828276/appartement-mantes-la-jolie-bords-de-seine-3pieces.html",
+      "destination": "/bien/912-appartement-mantes-la-jolie-bords-de-seine-3-pieces/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/912-appartement-mantes-la-jolie-bords-de-seine-3-pieces/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60828276"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/912-appartement-mantes-la-jolie-bords-de-seine-3-pieces/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60828276"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_60705368/maison-arthies-6-pieces.html",
+      "destination": "/bien/886-maison-arthies-6-pieces/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/886-maison-arthies-6-pieces/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60705368"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/886-maison-arthies-6-pieces/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60705368"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_60655527/immeuble-de-rapport-sur-mantes-la-jolie.html",
+      "destination": "/bien/876-immeuble-de-rapport-sur-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/876-immeuble-de-rapport-sur-mantes-la-jolie/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60655527"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/876-immeuble-de-rapport-sur-mantes-la-jolie/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60655527"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/appartement-3-pieces-andresy.html",
+      "destination": "/bien/871-appartement-3-pieces-andresy/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/appartement-3-pieces-andresy.html",
+      "destination": "/bien/871-appartement-3-pieces-andresy/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "3_33_29"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60609523"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/871-appartement-3-pieces-andresy/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60609523"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/871-appartement-3-pieces-andresy/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60609523"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_60550074/maison-le-cormier-5-piece-s-144-m2.html",
+      "destination": "/bien/859-maison-le-cormier-5-piece-s-144-m/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/859-maison-le-cormier-5-piece-s-144-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60550074"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/859-maison-le-cormier-5-piece-s-144-m/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60550074"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_60299040/maison-mericourt-4-pieces.html",
+      "destination": "/bien/807-maison-mericourt-4-pieces/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60299040/maison-mericourt-4-pieces.html",
+      "destination": "/bien/807-maison-mericourt-4-pieces/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "4_40_26"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60299040"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/807-maison-mericourt-4-pieces/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60299040"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/807-maison-mericourt-4-pieces/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60299040"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/maison-5-pieces-3-chambres-a-mantes-la-jolie.html",
+      "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/maison-5-pieces-3-chambres-a-mantes-la-jolie.html",
+      "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "4_40_26"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60185157"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60185157"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/789-maison-5-pieces-3-chambres-a-mantes-la-jolie/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60185157"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_60160723/appartement-mantes-la-jolie-3-piece-s-57-92-m2.html",
+      "destination": "/bien/786-appartement-mantes-la-jolie-3-piece-s-57-92-m/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/786-appartement-mantes-la-jolie-3-piece-s-57-92-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60160723"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/786-appartement-mantes-la-jolie-3-piece-s-57-92-m/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60160723"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/maison-plain-pied-la-couture-boussey-4-pieces-90-m2.html",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/maison-plain-pied-la-couture-boussey-4-pieces-90-m2.html",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "4_40_26"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60114296"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60114296"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "60114296"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/maison-chatou-5pieces-rer-a.html",
+      "destination": "/bien/649-maison-chatou-5-pieces-rer-a/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/maison-chatou-5pieces-rer-a.html",
+      "destination": "/bien/649-maison-chatou-5-pieces-rer-a/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "cPath",
+          "value": "4_40_26"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "59514626"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/649-maison-chatou-5-pieces-rer-a/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "59514626"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/649-maison-chatou-5-pieces-rer-a/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "59514626"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_59083377/studio-refait-a-neuf-de-16-41m2-a-evreux.html",
+      "destination": "/bien/529-studio-refait-a-neuf-de-16-41-m-a-evreux/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/529-studio-refait-a-neuf-de-16-41-m-a-evreux/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "59083377"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/529-studio-refait-a-neuf-de-16-41-m-a-evreux/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "59083377"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_58864209/maison-verneuil-sur-seine-5-pieces.html",
+      "destination": "/bien/512-maison-verneuil-sur-seine-5-pieces/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/512-maison-verneuil-sur-seine-5-pieces/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "58864209"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/512-maison-verneuil-sur-seine-5-pieces/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "58864209"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_58637843/appartement-mantes-la-jolie-4pieces.html",
+      "destination": "/bien/431-appartement-mantes-la-jolie-4-pieces/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/431-appartement-mantes-la-jolie-4-pieces/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "58637843"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/431-appartement-mantes-la-jolie-4-pieces/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "58637843"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/_58305605/maison-mantes-la-ville-110m2.html",
+      "destination": "/bien/356-maison-mantes-la-ville-110-m/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/products_print.php",
+      "destination": "/bien/356-maison-mantes-la-ville-110-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "58305605"
+        }
+      ]
+    },
+    {
+      "source": "/catalog/contact_us.php",
+      "destination": "/bien/356-maison-mantes-la-ville-110-m/#contact",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "manufacturer_id",
+          "value": "385554"
+        },
+        {
+          "type": "query",
+          "key": "products_id",
+          "value": "58305605"
+        }
+      ]
+    },
+    {
+      "source": "/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+      "destination": "/acheter/maison-bonnieres-sur-seine/",
+      "permanent": true
+    },
+    {
+      "source": "/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+      "destination": "/acheter/maison-follainville-dennemont/",
+      "permanent": true
+    },
+    {
+      "source": "/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/acheter/appartement-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/acheter/maison-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+      "destination": "/acheter/maison-mantes-la-ville/",
+      "permanent": true
+    },
+    {
+      "source": "/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+      "destination": "/acheter/maison-vienne-en-arthies/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/839239-helene-vermeire-benz.html",
+      "destination": "/equipe/helene-vermeire-benz/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/839238-vincent-maume.html",
+      "destination": "/equipe/vincent-maume/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/840371-oriane-cherel.html",
+      "destination": "/equipe/oriane-cherel/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/847433-aimee-vaillant.html",
+      "destination": "/equipe/aimee-vaillant/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/839272-justine-vitry.html",
+      "destination": "/equipe/justine-vitry/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/839273-natacha-laly.html",
+      "destination": "/equipe/natacha-laly/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/869668-jill-thepaut.html",
+      "destination": "/equipe/jill-thepaut/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/agent/839241-evan-fernandes.html",
+      "destination": "/equipe/evan-fernandes/",
+      "permanent": true
+    },
+    {
+      "source": "/content/5/contact_us.php",
+      "destination": "/agence/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/content/5/contact_us.php",
+      "destination": "/agence/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/content/5/selection.php",
+      "destination": "/agence/",
+      "permanent": true
+    },
+    {
+      "source": "/content/5/account.php",
+      "destination": "/agence/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/content/5/notre-agence.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/annonces/transaction/Vente.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/annonces/transaction/Location.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/contact_us.php",
+      "destination": "/gestion-locative/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/annonces/transaction/selection.php",
+      "destination": "/gestion-locative/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/account.php",
+      "destination": "/gestion-locative/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/try",
+      "destination": "/gestion-locative/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/transaction/create_alerte_mail.php",
+      "destination": "/gestion-locative/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60114296/maison-plain-pied-la-couture-boussey-4-pieces-90-m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_56344004/maison-rosny-sur-seine-6pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_61496544/ensemble-immobilier-viennes-en-arthies-3maisons.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_61180461/maison-en-pierre-avec-dependance-viennes-en-arthies-8pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_61493070/maison-viennes-en-arthies-5pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-29_59174394/appartement-centre-ville-3pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-30_61457529/appartement-limay-4pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60706451/maison-a-renover-mantes-la-jolie-5-pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-28_61181110/appartement-t2-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-29_60609523/appartement-3-pieces-andresy.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60032440/maison-grisy-les-platres-8-pieces-5-chambres-145m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-29_61161077/appartement-a-mantes-la-jolie-de-3-pieces-49m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60185157/maison-5-pieces-3-chambres-a-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-27_60992633/joli-studio-a-mantes-la-jolie-de-28-m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_59514626/maison-chatou-5pieces-rer-a.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-29_61148704/appartement-dernier-etage-pontoise-3pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60256759/maison-favrieux-11-pieces-350m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60974149/maison-follainville-dennemont-6pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60517248/maison-mericourt-4-pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-30_60257269/appartement-mantes-la-jolie-5-pieces-de-93-6-m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-33-31_59497619/appartement-duplex-mantes-la-ville-centre-ville-6pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60299040/maison-mericourt-4-pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/4-40-26_60790028/maison-reilly-9pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-32-37_61483159/appartement-lumineux-de-4-pieces-a-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/annonces/fiches/3-32-34_58824121/studio-disponible-a-la-location-sur-evreux.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/create_alerte_mail.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/content/5/notre-agence.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/annonces/transaction/Vente.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/annonces/transaction/Location.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/contact_us.php",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/4/maisons.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/4-40/a-vendre.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/4-40-26/maison.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/simul_notaires_2.php",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/simul_calc_endettement.php",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/simul_credit.php",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60114296/simul_calc_financiere.php",
+      "destination": "/bien/776-maison-plain-pied-la-couture-boussey-4-pieces-90-m/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/3/appartements.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/3-32/a-louer.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/3-32-37/4-pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/simul_notaires_2.php",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/simul_calc_endettement.php",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/simul_credit.php",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-32-37_61483159/simul_calc_financiere.php",
+      "destination": "/bien/1002-appartement-lumineux-de-4-pieces-a-mantes-la-jolie/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/3-33/a-vendre.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/3-33-29/3-pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/simul_notaires_2.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/simul_calc_endettement.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/simul_credit.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60609523/simul_calc_financiere.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-31_58306384/maison-mantes-la-ville-150m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/4-40-26_58263392/maison-follainville-dennemont.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/4-40-26_60256759/maison-favrieux-11-pieces-350m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-29_57202848/maison-mantes-la-jolie-3pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/4-40-26_60974149/maison-follainville-dennemont-6pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/4-40-26_56344004/maison-rosny-sur-seine-6pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/simul_notaires_2.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/simul_calc_endettement.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/simul_credit.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_61452626/simul_calc_financiere.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/4-40-26_60669910/maison-d-exception-porcheville-bords-de-seine.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/4-40-26_61452626/maison-familiale-8-pieces-mantes-la-ville.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-29_58305680/maison-mantes-la-ville-200m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/simul_notaires_2.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/simul_calc_endettement.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/simul_credit.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_60185157/simul_calc_financiere.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/type_bien/3-33-27/studio-t1.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-29_59174394/appartement-centre-ville-3pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-30_60257269/appartement-mantes-la-jolie-5-pieces-de-93-6-m2.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-28_61181110/appartement-t2-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-29_60962717/appartement-mantes-la-jolie-gare.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-30_61457529/appartement-limay-4pieces.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/fiches/3-33-30_59169542/appartement-mantes-la-jolie-4-piece-s.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/simul_notaires_2.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/simul_calc_endettement.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/simul_credit.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-27_60992633/simul_calc_financiere.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/simul_notaires_2.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/simul_calc_endettement.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/simul_credit.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/4-40-26_59514626/simul_calc_financiere.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60962717/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-29_60962717/contact_us.php",
+      "destination": "/",
+      "permanent": true,
+      "has": [
+        {
+          "type": "query",
+          "key": "form",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/fiches/3-33-29_60962717/selection.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fiches/3-33-29_60962717/account.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/content/5/notre-agence.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/annonces/transaction/Vente.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/annonces/transaction/Location.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/ville_bien/mantes+la+jolie__1__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/ville_bien/mantes+la+jolie__2__vente/immobilier-mantes-la-jolie.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/ville_bien/mantes+la+ville__2__vente/immobilier-mantes-la-ville.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/ville_bien/vienne+en+arthies__2__vente/immobilier-vienne-en-arthies.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/ville_bien/follainville+dennemont__2__vente/immobilier-follainville-dennemont.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/content/ville_bien/bonnieres+sur+seine__2__vente/immobilier-bonnieres-sur-seine.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/import-orisha",
+      "schedule": "0 5 * * *"
+    }
+  ]
+}

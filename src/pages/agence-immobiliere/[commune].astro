@@ -1,0 +1,332 @@
+---
+/**
+ * Page commune — « agence immobilière à [Commune] ».
+ *
+ * Regle anti doorway page du brief (§8) : cette page n'existe QUE si l'agence a
+ * une presence reelle dans la commune — au moins un bien actif, ou au moins
+ * deux ventes realisees. Le filtre est applique par `communesWithPage()`, pas
+ * ici, pour qu'aucune page vide ne puisse etre generee.
+ *
+ * Chaque page doit etre reellement unique : le contenu est construit a partir
+ * des biens, des ventes et du conseiller referent propres a la commune.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import ListingResults from '~/components/ListingResults.astro';
+import Faq, { type FaqItem } from '~/components/Faq.astro';
+import Todo from '~/components/Todo.astro';
+import Picture from '~/components/Picture.astro';
+import {
+  agentBySlug,
+  agentMedia,
+  archivedByCommune,
+  communesWithPage,
+  listingsByCommune,
+  typeCommunePagesFor,
+} from '~/lib/catalog';
+import { area, composeDescription, composeTitle, plural, propertyTypeLabel } from '~/lib/format';
+import { faqSchema } from '~/lib/schema';
+import type { Commune } from '~/lib/types';
+
+export function getStaticPaths() {
+  return communesWithPage().map((commune) => ({
+    params: { commune: commune.slug },
+    props: { commune },
+  }));
+}
+
+interface Props {
+  commune: Commune;
+}
+const { commune } = Astro.props;
+
+const listings = listingsByCommune(commune.slug);
+const active = listings.filter((l) => l.status === 'published' || l.status === 'under_offer');
+const soldHere = listings.filter((l) => l.status === 'sold' || l.status === 'rented');
+const archived = archivedByCommune(commune.name);
+const totalSold = soldHere.length + archived.length;
+
+// Conseiller referent : celui qui a traite le plus de biens dans la commune
+const agentCounts = new Map<string, number>();
+for (const l of listings) {
+  if (l.agentSlug) agentCounts.set(l.agentSlug, (agentCounts.get(l.agentSlug) ?? 0) + 1);
+}
+const refSlug = [...agentCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+const referent = refSlug ? agentBySlug(refSlug) : undefined;
+
+// Typologie reellement traitee dans la commune, pour un contenu non generique
+const typeCounts = new Map<string, number>();
+for (const l of [...listings, ...archived]) {
+  typeCounts.set(l.propertyType, (typeCounts.get(l.propertyType) ?? 0) + 1);
+}
+const typology = [...typeCounts.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([t, n]) => `${n} ${propertyTypeLabel(t as never).toLowerCase()}${n > 1 ? 's' : ''}`);
+
+const areas = [...listings, ...archived]
+  .map((l) => ('livingArea' in l ? l.livingArea : l.area))
+  .filter((v): v is number => typeof v === 'number' && v > 0);
+const medianArea = areas.length
+  ? [...areas].sort((a, b) => a - b)[Math.floor(areas.length / 2)]
+  : null;
+
+// Pages type x commune generees pour cette commune : elles doivent etre liees
+// depuis ici, sinon elles seraient orphelines (§9 : aucune page orpheline).
+const typePages = typeCommunePagesFor(commune.slug);
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Nos communes', href: '/plan-du-site/' },
+  { label: commune.name },
+];
+
+const faq: FaqItem[] = [
+  {
+    question: `AUREA Immobilier intervient-elle à ${commune.name} ?`,
+    answer: `Oui. Notre agence, installée à Mantes-la-Jolie, a accompagné ${plural(totalSold, 'transaction')} à ${commune.name}${active.length ? ` et y propose actuellement ${plural(active.length, 'bien')}` : ''}. ${referent ? `${referent.name} suit ce secteur.` : ''}`,
+  },
+  {
+    question: `Quel est le prix au m² à ${commune.name} ?`,
+    answer:
+      'Les prix de marché sont issus des transactions réellement enregistrées (base DVF publiée par la direction générale des finances publiques). Nous publions ces chiffres commune par commune, avec leur date de mise à jour, dès qu’ils sont extraits.',
+    details: [
+      'Une estimation fiable ne se déduit pas d’un prix moyen : elle tient compte de l’état, de l’étage, de l’exposition et du DPE.',
+    ],
+  },
+  {
+    question: `Comment faire estimer un bien à ${commune.name} ?`,
+    answer:
+      'Demandez une estimation depuis le site ou appelez le 01 30 63 50 50. Un conseiller se déplace, relève les caractéristiques du bien, croise quatre méthodes de valorisation et vous remet un avis de valeur écrit, gratuit et sans engagement.',
+  },
+];
+
+const title = `Agence immobilière à ${commune.name}${commune.postalCode ? ` (${commune.postalCode})` : ''}`;
+// Sur une commune au nom long, le code postal saute avant la marque : c'est la
+// marque qui porte la confiance dans les resultats de recherche.
+const pageTitle =
+  composeTitle(title).length <= 65
+    ? composeTitle(title)
+    : composeTitle(`Agence immobilière à ${commune.name}`);
+const description = composeDescription([
+  `Vendre, acheter ou louer à ${commune.name} avec AUREA Immobilier, agence installée à Mantes-la-Jolie.`,
+  `${totalSold} transaction${totalSold > 1 ? 's' : ''} déjà réalisée${totalSold > 1 ? 's' : ''} dans la commune.`,
+  active.length > 0
+    ? `${active.length} bien${active.length > 1 ? 's' : ''} disponible${active.length > 1 ? 's' : ''}.`
+    : null,
+  'Estimation gratuite.',
+  'Conseiller dédié au secteur.',
+]);
+---
+
+<Base
+  title={pageTitle}
+  brand={false}
+  description={description}
+  path={`/agence-immobiliere/${commune.slug}/`}
+  crumbs={crumbs}
+  schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap section">
+    <header class="head">
+      <h1>{title}</h1>
+      <p class="lede">
+        AUREA Immobilier accompagne vendeurs, acquéreurs et bailleurs à {commune.name}. Depuis la
+        création de l’agence, nous y avons mené {plural(totalSold, 'transaction')}
+        {typology.length > 0 && <> — {typology.slice(0, 3).join(', ')}</>}.
+        {active.length > 0
+          ? ` ${plural(active.length, 'bien est', 'biens sont')} actuellement disponible${active.length > 1 ? 's' : ''}.`
+          : ' Aucun bien n’est disponible dans cette commune en ce moment.'}
+      </p>
+    </header>
+
+    {
+      active.length > 0 && (
+        <section class="section-tight">
+          <h2>Nos biens à {commune.name}</h2>
+          <ListingResults listings={active} showFilters={false} />
+          {typePages.length > 0 && (
+            <p class="type-links small">
+              Voir aussi :{' '}
+              {typePages.map((p, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <a href={`/acheter/${p.type}-${p.commune.slug}/`}>
+                    {p.type === 'maison' ? 'Maisons' : 'Appartements'} à vendre à {commune.name}
+                  </a>
+                </>
+              ))}
+            </p>
+          )}
+        </section>
+      )
+    }
+
+    <section class="section-tight">
+      <h2>Le marché à {commune.name}</h2>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">
+            Indicateurs de marché et activité d’AUREA Immobilier à {commune.name}
+          </caption>
+          <tbody>
+            <tr>
+              <th scope="row">Transactions réalisées par AUREA</th>
+              <td>{totalSold}</td>
+            </tr>
+            <tr>
+              <th scope="row">Biens actuellement proposés</th>
+              <td>{active.length}</td>
+            </tr>
+            {
+              medianArea && (
+                <tr>
+                  <th scope="row">Surface médiane des biens traités</th>
+                  <td>{area(medianArea)}</td>
+                </tr>
+              )
+            }
+            <tr>
+              <th scope="row">Prix médian au m² — maisons</th>
+              <td><Todo label={`prix médian maisons à ${commune.name}, source DVF + date`} /></td>
+            </tr>
+            <tr>
+              <th scope="row">Prix médian au m² — appartements</th>
+              <td>
+                <Todo label={`prix médian appartements à ${commune.name}, source DVF + date`} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        Les deux dernières lignes seront renseignées à partir de la base DVF
+        (<a href="https://app.dvf.etalab.gouv.fr/" rel="noopener">app.dvf.etalab.gouv.fr</a>), avec
+        la date d’extraction. Nous ne publions aucun prix de marché que nous ne pouvons pas sourcer.
+      </p>
+    </section>
+
+    <section class="section-tight prose">
+      <h2>Quartiers, transports et écoles</h2>
+      <p class="notice">
+        <Todo label={`quartiers, gares et lignes, temps de trajet, écoles et projets urbains de ${commune.name}, avec leurs sources`} />
+        <br />
+        Cette section n’est publiée qu’avec des faits vérifiables et liés à leur source officielle.
+        Le brief interdit explicitement le contenu générique recopié d’une commune à l’autre : sans
+        données propres, la section reste vide plutôt que d’être remplie de texte interchangeable.
+      </p>
+    </section>
+
+    {
+      referent && (
+        <section class="section-tight">
+          <h2>Votre conseiller sur le secteur</h2>
+          <div class="referent panel">
+            <Picture
+              media={agentMedia(referent.slug)}
+              alt={`Portrait de ${referent.name}`}
+              sizes="96px"
+              class="referent-photo"
+            />
+            <div>
+              <p class="referent-name">
+                <a href={`/equipe/${referent.slug}/`}>{referent.name}</a>
+              </p>
+              <p class="small muted">{referent.role}</p>
+              <p class="small">
+                {plural(agentCounts.get(referent.slug) ?? 0, 'bien suivi', 'biens suivis')} à{' '}
+                {commune.name}.
+              </p>
+              <p class="cluster">
+                <a class="btn btn-secondary" href="tel:+33130635050">01 30 63 50 50</a>
+                <a class="btn" href="/estimation/">Estimer mon bien</a>
+              </p>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      totalSold > 0 && (
+        <section class="section-tight">
+          <h2>Nos réussites à {commune.name}</h2>
+          <ul class="sold">
+            {[...soldHere, ...archived].slice(0, 12).map((l) => (
+              <li>
+                <span class="badge badge-sold">
+                  {l.status === 'sold' ? 'Vendu' : 'Loué'}
+                </span>
+                <span>{l.title}</span>
+                {'area' in l && l.area ? <span class="small muted">{area(l.area)}</span> : null}
+                {'livingArea' in l && l.livingArea ? (
+                  <span class="small muted">{area(l.livingArea)}</span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+          <p class="small"><a href="/biens-vendus/">Voir toutes nos réussites</a></p>
+        </section>
+      )
+    }
+
+    <section class="section-tight">
+      <Faq items={faq} title={`Immobilier à ${commune.name} : vos questions`} />
+    </section>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .referent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    align-items: center;
+  }
+
+  .referent :global(.referent-photo img) {
+    width: 6rem;
+    height: 6rem;
+    border-radius: var(--radius-m);
+    object-fit: cover;
+  }
+
+  .referent-name {
+    margin: 0;
+    font-weight: 650;
+    font-size: var(--step-1);
+  }
+
+  .referent-name a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .referent p {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .sold {
+    list-style: none;
+    margin: 0 0 var(--space-s);
+    padding: 0;
+  }
+
+  .type-links {
+    margin-top: var(--space-s);
+  }
+
+  .sold li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding-block: 0.55rem;
+    border-bottom: 1px solid var(--line);
+  }
+</style>

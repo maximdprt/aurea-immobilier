@@ -1,0 +1,381 @@
+---
+/**
+ * Liste de biens — reproduction de la page « A vendre » du site d'origine :
+ * barre de criteres (Localisation, Type de bien, Surface min/max, Budget
+ * min/max, Pieces min, Chambres min, Reference), tri Date / Prix -/+ / Prix
+ * +/-, compteur « N annonces », grille de cartes, pagination « 1 2 3 Suivante ».
+ *
+ * Tout se fait cote client sur la liste complete deja rendue : aucune URL de
+ * filtre n'est creee (la canonique reste celle de la liste, §7). Les
+ * parametres envoyes par le moteur de recherche de l'accueil (?commune=,
+ * ?type=, ?budget=...) pre-remplissent les criteres.
+ */
+import ListingCard from '~/components/ListingCard.astro';
+import type { Listing } from '~/lib/types';
+
+interface Props {
+  listings: Listing[];
+  showFilters?: boolean;
+  emptyMessage?: string;
+  perPage?: number;
+}
+const {
+  listings,
+  showFilters = true,
+  emptyMessage = 'Aucun bien ne correspond à cette recherche pour le moment.',
+  perPage = 12,
+} = Astro.props;
+
+const communes = [
+  ...new Map(
+    listings
+      .filter((l) => l.commune && l.communeSlug)
+      .map((l) => [l.communeSlug as string, l.commune as string])
+  ).entries(),
+].sort((a, b) => a[1].localeCompare(b[1], 'fr'));
+
+const types = [...new Set(listings.map((l) => l.propertyType))];
+const typeLabels: Record<string, string> = {
+  maison: 'Maison',
+  appartement: 'Appartement',
+  parking: 'Parking / box',
+  immeuble: 'Immeuble',
+  terrain: 'Terrain',
+  local: 'Local',
+};
+---
+
+<div class="listing" data-listing-root data-per-page={perPage}>
+  {
+    showFilters && listings.length > 0 && (
+      <form class="filters" data-filters>
+        <p class="field">
+          <label for="f-commune">Localisation</label>
+          <select id="f-commune" name="commune">
+            <option value="">Toutes</option>
+            {communes.map(([slug, name]) => (
+              <option value={slug}>{name}</option>
+            ))}
+          </select>
+        </p>
+        <p class="field">
+          <label for="f-type">Type de bien</label>
+          <select id="f-type" name="type">
+            <option value="">Tous</option>
+            {types.map((t) => (
+              <option value={t}>{typeLabels[t] ?? t}</option>
+            ))}
+          </select>
+        </p>
+        <p class="field">
+          <label for="f-surface">Surface min</label>
+          <input id="f-surface" name="surface" type="number" min="0" inputmode="numeric" placeholder="Surface min" />
+        </p>
+        <p class="field">
+          <label for="f-surface-max">Surface max</label>
+          <input id="f-surface-max" name="surfacemax" type="number" min="0" inputmode="numeric" placeholder="Surface max" />
+        </p>
+        <p class="field">
+          <label for="f-budget-min">Budget min</label>
+          <input id="f-budget-min" name="budgetmin" type="number" min="0" step="1000" inputmode="numeric" placeholder="Budget min" />
+        </p>
+        <p class="field">
+          <label for="f-budget">Budget max</label>
+          <input id="f-budget" name="budget" type="number" min="0" step="1000" inputmode="numeric" placeholder="Budget max" />
+        </p>
+        <p class="field">
+          <label for="f-rooms">Pièces min</label>
+          <input id="f-rooms" name="rooms" type="number" min="1" inputmode="numeric" placeholder="Pièces min" />
+        </p>
+        <p class="field">
+          <label for="f-bedrooms">Chambres min</label>
+          <input id="f-bedrooms" name="bedrooms" type="number" min="1" inputmode="numeric" placeholder="Chambres min" />
+        </p>
+        <p class="field">
+          <label for="f-ref">Référence</label>
+          <input id="f-ref" name="ref" type="text" inputmode="numeric" placeholder="Référence" />
+        </p>
+        <p class="field actions">
+          <button type="submit" class="btn">Rechercher</button>
+          <button type="reset" class="btn btn-secondary">Effacer</button>
+        </p>
+      </form>
+    )
+  }
+
+  <div class="bar">
+    <p class="count" role="status" data-count>
+      {listings.length} annonce{listings.length > 1 ? 's' : ''}
+    </p>
+    <p class="sort">
+      <label for="f-sort">Trier par</label>
+      <select id="f-sort" name="sort" data-sort>
+        <option value="date">Date</option>
+        <option value="asc">Prix -/+</option>
+        <option value="desc">Prix +/-</option>
+      </select>
+    </p>
+  </div>
+
+  <div class="grid" data-results>
+    {
+      listings.map((l, i) => (
+        <div
+          class="listing-item"
+          data-listing
+          data-index={i}
+          data-commune={l.communeSlug ?? ''}
+          data-type={l.propertyType}
+          data-area={l.livingArea ?? 0}
+          data-rooms={l.rooms ?? 0}
+          data-bedrooms={l.bedrooms ?? 0}
+          data-price={l.price ?? 0}
+          data-ref={l.reference}
+        >
+          <ListingCard listing={l} priority={i < 3} />
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="empty notice" data-empty hidden>{emptyMessage}</p>
+  {listings.length === 0 && <p class="notice">{emptyMessage}</p>}
+
+  <nav class="nav-pagination" aria-label="Pagination" data-pagination hidden></nav>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-listing-root]').forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>('[data-filters]');
+    const sort = root.querySelector<HTMLSelectElement>('[data-sort]');
+    const grid = root.querySelector<HTMLElement>('[data-results]');
+    const count = root.querySelector<HTMLElement>('[data-count]');
+    const empty = root.querySelector<HTMLElement>('[data-empty]');
+    const pager = root.querySelector<HTMLElement>('[data-pagination]');
+    const perPage = Number(root.dataset.perPage) || 12;
+    if (!grid || !count || !empty || !pager) return;
+
+    const items = [...grid.querySelectorAll<HTMLElement>('[data-listing]')];
+    let page = 1;
+
+    // Pre-remplissage depuis l'URL (moteur de recherche de l'accueil).
+    const params = new URLSearchParams(location.search);
+    if (form) {
+      for (const [k, v] of params) {
+        const f = form.elements.namedItem(k) as HTMLInputElement | HTMLSelectElement | null;
+        if (f && 'value' in f) f.value = v;
+      }
+    }
+
+    const num = (name: string) => {
+      const f = form?.elements.namedItem(name) as HTMLInputElement | null;
+      const v = Number(f?.value);
+      return f && f.value !== '' && Number.isFinite(v) ? v : null;
+    };
+    const str = (name: string) => {
+      const f = form?.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+      return f?.value?.trim() ?? '';
+    };
+
+    const matches = (el: HTMLElement) => {
+      if (!form) return true;
+      const d = el.dataset;
+      const commune = str('commune');
+      const type = str('type');
+      const ref = str('ref');
+      if (commune && d.commune !== commune) return false;
+      if (type && d.type !== type) return false;
+      if (ref && d.ref !== ref) return false;
+      const area = Number(d.area), price = Number(d.price), rooms = Number(d.rooms), bedrooms = Number(d.bedrooms);
+      const sMin = num('surface'), sMax = num('surfacemax'), bMin = num('budgetmin'), bMax = num('budget');
+      const rMin = num('rooms'), cMin = num('bedrooms');
+      if (sMin !== null && area < sMin) return false;
+      if (sMax !== null && area > sMax) return false;
+      if (bMin !== null && price < bMin) return false;
+      if (bMax !== null && price > bMax) return false;
+      if (rMin !== null && rooms < rMin) return false;
+      if (cMin !== null && bedrooms < cMin) return false;
+      return true;
+    };
+
+    const render = () => {
+      const kept = items.filter(matches);
+      const mode = sort?.value ?? 'date';
+      kept.sort((a, b) => {
+        if (mode === 'asc') return Number(a.dataset.price) - Number(b.dataset.price);
+        if (mode === 'desc') return Number(b.dataset.price) - Number(a.dataset.price);
+        return Number(a.dataset.index) - Number(b.dataset.index);
+      });
+
+      const pages = Math.max(1, Math.ceil(kept.length / perPage));
+      page = Math.min(page, pages);
+      const start = (page - 1) * perPage;
+      const visible = new Set(kept.slice(start, start + perPage));
+
+      items.forEach((el) => (el.hidden = !visible.has(el)));
+      kept.forEach((el, i) => (el.style.order = String(i)));
+
+      count.textContent = `${kept.length} annonce${kept.length > 1 ? 's' : ''}`;
+      empty.hidden = kept.length > 0;
+
+      pager.hidden = pages <= 1;
+      pager.replaceChildren();
+      if (pages > 1) {
+        for (let p = 1; p <= pages; p++) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = String(p);
+          if (p === page) b.setAttribute('aria-current', 'page');
+          b.addEventListener('click', () => {
+            page = p;
+            render();
+            grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+          pager.append(b);
+        }
+        if (page < pages) {
+          const next = document.createElement('button');
+          next.type = 'button';
+          next.textContent = 'Suivante';
+          next.addEventListener('click', () => {
+            page += 1;
+            render();
+            grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+          pager.append(next);
+        }
+      }
+    };
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      page = 1;
+      render();
+    });
+    form?.addEventListener('reset', () => {
+      setTimeout(() => {
+        page = 1;
+        render();
+      }, 0);
+    });
+    form?.addEventListener('change', () => {
+      page = 1;
+      render();
+    });
+    sort?.addEventListener('change', () => {
+      page = 1;
+      render();
+    });
+    render();
+  });
+</script>
+
+<style>
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px 14px;
+    align-items: end;
+    margin: 0 0 var(--space-l);
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .field {
+    margin: 0;
+  }
+
+  .field label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  .filters select,
+  .filters input,
+  .sort select {
+    width: 100%;
+    height: 40px;
+    padding: 6px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: #ffffff;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: #000000;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .actions .btn {
+    height: 40px;
+    min-height: 0;
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-bottom: var(--space-s);
+  }
+
+  .count {
+    margin: 0;
+    font-size: 18px;
+    color: var(--color-1);
+  }
+
+  .sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .sort select {
+    width: auto;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+  }
+
+  .listing-item[hidden] {
+    display: none;
+  }
+
+  .nav-pagination {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: var(--space-l);
+  }
+
+  .nav-pagination button {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--color-2);
+    background: #ffffff;
+    color: var(--color-1);
+    font-family: var(--font-body);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .nav-pagination button:hover,
+  .nav-pagination button[aria-current='page'] {
+    background: var(--color-2);
+  }
+</style>

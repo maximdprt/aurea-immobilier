@@ -1,0 +1,161 @@
+---
+/**
+ * Conditions générales d'utilisation — contenu du §21.3.
+ *
+ * Pourquoi des CGU et pas des CGV : le site ne vend rien en ligne. Les
+ * prestations de l'agence sont encadrées par des mandats écrits régis par la
+ * loi Hoguet, et leur prix est donné par le barème des honoraires. Des CGV de
+ * vente en ligne seraient inadaptées, voire trompeuses.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+
+const LEGAL_VERSION = 1;
+const UPDATED = '21 septembre 2026';
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Conditions générales d’utilisation' },
+];
+---
+
+<Base
+  title="Conditions générales d’utilisation du site"
+  description="Règles d’utilisation du site AUREA Immobilier : annonces, estimation en ligne, alertes, formulaires et responsabilités."
+  path="/cgu/"
+  crumbs={crumbs}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="wrap-narrow section prose">
+    <h1>Conditions générales d’utilisation</h1>
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+
+    <p class="notice">
+      <strong>À faire valider par un juriste avant publication.</strong>
+    </p>
+
+    <h2>1. Objet et acceptation</h2>
+    <p>
+      Les présentes conditions régissent l’utilisation du site www.aurea-immobilier.fr, édité par
+      AUREA Immobilier (voir les <a href="/mentions-legales/">mentions légales</a>). Toute
+      utilisation du site vaut acceptation de ces conditions.
+    </p>
+
+    <h2>2. Accès au site</h2>
+    <p>
+      L’accès est gratuit, hors coûts de connexion. Le site est accessible en permanence, sous
+      réserve des interruptions nécessaires à sa maintenance ou d’un cas de force majeure. AUREA
+      Immobilier ne garantit pas une disponibilité continue et sans erreur.
+    </p>
+
+    <h2>3. Annonces immobilières</h2>
+    <p>
+      Les annonces publiées sur le site sont fournies <strong>à titre indicatif et non
+      contractuel</strong>. Les descriptifs, surfaces, photographies, plans et disponibilités
+      peuvent évoluer ; un bien peut être vendu ou loué avant la mise à jour de la page.
+    </p>
+    <ul>
+      <li>Les prix sont affichés <strong>honoraires inclus</strong>.</li>
+      <li>
+        Chaque annonce indique le montant des honoraires et la partie qui les prend en charge.
+      </li>
+      <li>Le <a href="/honoraires/">barème des honoraires</a> est accessible depuis toutes les pages.</li>
+      <li>
+        Les diagnostics affichés (DPE, GES, estimation des dépenses d’énergie, état des risques)
+        reprennent les documents établis par des diagnostiqueurs certifiés.
+      </li>
+    </ul>
+    <p>
+      Seuls le mandat, le compromis de vente ou le bail, et l’acte authentique, ont valeur
+      contractuelle.
+    </p>
+
+    <h2>4. Estimation en ligne</h2>
+    <p>
+      Le formulaire d’estimation permet de solliciter un rendez-vous. Il ne délivre pas de valeur
+      automatique et ne constitue ni un avis de valeur signé, ni une expertise au sens juridique.
+      L’avis de valeur est établi après visite du bien par un conseiller.
+    </p>
+
+    <h2>5. Alertes email et sélection de biens</h2>
+    <ul>
+      <li>
+        L’inscription à une alerte email suppose une confirmation par un lien envoyé à votre
+        adresse (double opt-in). Chaque message comporte un lien de désabonnement en un clic.
+      </li>
+      <li>
+        La sélection de biens que vous constituez est enregistrée <strong>localement dans votre
+        navigateur</strong>. Elle n’est ni transmise ni conservée par l’agence, et disparaît si vous
+        effacez les données du site.
+      </li>
+    </ul>
+
+    <h2>6. Utilisations interdites</h2>
+    <p>Il est notamment interdit :</p>
+    <ul>
+      <li>
+        de procéder à une extraction automatisée, massive ou répétée, du contenu du site, en
+        particulier des annonces, des photographies et des coordonnées ;
+      </li>
+      <li>
+        de tenter d’accéder à des parties non publiques du site, de contourner ses protections ou
+        d’en perturber le fonctionnement ;
+      </li>
+      <li>
+        d’utiliser les formulaires pour transmettre des contenus illicites, diffamatoires ou
+        publicitaires non sollicités ;
+      </li>
+      <li>d’usurper l’identité d’un tiers lors de l’envoi d’un formulaire ;</li>
+      <li>
+        de reproduire ou de rediffuser les photographies et descriptifs des biens sur un autre
+        support sans autorisation écrite.
+      </li>
+    </ul>
+
+    <h2>7. Propriété intellectuelle</h2>
+    <p>
+      L’ensemble des contenus du site est protégé. Voir la section correspondante des{' '}
+      <a href="/mentions-legales/">mentions légales</a>.
+    </p>
+
+    <h2>8. Responsabilité et liens externes</h2>
+    <p>
+      AUREA Immobilier ne saurait être tenue responsable d’un dommage résultant de l’utilisation du
+      site, d’une erreur ou d’une omission dans son contenu, ni du contenu des sites tiers vers
+      lesquels des liens sont proposés. Ces liens sont fournis à titre informatif et ne valent pas
+      approbation de leur contenu.
+    </p>
+
+    <h2>9. Données personnelles</h2>
+    <p>
+      Le traitement de vos données est décrit dans notre{' '}
+      <a href="/confidentialite/">politique de confidentialité</a>. L’usage des traceurs est décrit
+      dans notre <a href="/cookies/">politique cookies</a>.
+    </p>
+
+    <h2>10. Modification, droit applicable et litiges</h2>
+    <p>
+      Ces conditions peuvent être modifiées ; chaque version est datée et numérotée. Elles sont
+      soumises au droit français.
+    </p>
+    <p>
+      En cas de litige, une solution amiable sera recherchée en priorité. Le client consommateur
+      peut recourir gratuitement au médiateur de la consommation désigné dans les{' '}
+      <a href="/mentions-legales/">mentions légales</a>. À défaut, les tribunaux français sont
+      compétents.
+    </p>
+
+    <aside class="notice">
+      <p>
+        <strong>Pourquoi des CGU et non des CGV ?</strong> Ce site ne commercialise aucun service
+        en ligne : il ne comporte ni panier, ni paiement. Les prestations de l’agence — transaction,
+        location, gestion — sont encadrées par des mandats écrits régis par la loi Hoguet, avec
+        leurs propres conditions, et leur prix figure au barème des honoraires. Des conditions
+        générales de vente en ligne seraient inadaptées et pourraient induire en erreur. Si un
+        service payant en ligne était créé, une page de CGV distincte devrait être rédigée et
+        validée juridiquement.
+      </p>
+    </aside>
+  </div>
+</Base>

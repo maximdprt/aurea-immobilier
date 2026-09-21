@@ -1,0 +1,327 @@
+---
+/**
+ * Carte de bien — reproduction de `.item-product .product-selection` du site
+ * d'origine : photo principale, seconde photo revelee au survol (fondu 0,3 s),
+ * badge « Exclusif » marine, bulle ronde du conseiller qui surgit en bas a
+ * droite au survol (shiverInUp 1 s), fleche blanche sous la photo, titre,
+ * commune, puces sable « pieces • surface • ref », prix marine 22 px, puis un
+ * pied avec le coeur « selection ». Au survol : ombre 0 0 10px.
+ */
+import Picture from '~/components/Picture.astro';
+import { listingMedia, agentBySlug, agentMedia } from '~/lib/catalog';
+import { listingHeading, priceLine, statusLabel } from '~/lib/format';
+import type { Listing } from '~/lib/types';
+
+interface Props {
+  listing: Listing;
+  priority?: boolean;
+  sizes?: string;
+}
+const { listing, priority = false, sizes = '(min-width: 992px) 360px, (min-width: 768px) 45vw, 92vw' } =
+  Astro.props;
+
+const media = listingMedia(listing.reference);
+const photo = media?.photos[0] ?? null;
+const photo2 = media?.photos[1] ?? null;
+const isArchived = listing.status === 'sold' || listing.status === 'rented';
+const href = `/bien/${listing.slug}/`;
+const agent = listing.agentSlug ? agentBySlug(listing.agentSlug) : null;
+const agentPhoto = agent ? agentMedia(agent.slug) : null;
+const heading = listingHeading(listing);
+---
+
+<article class:list={['item-product', isArchived && 'is-archived']}>
+  <div class="product-selection">
+    <ul class="pictos-product" aria-label="Statut">
+      {isArchived && <li><div class="text vendu">{statusLabel(listing)}</div></li>}
+      {listing.isExclusive && !isArchived && <li><div class="text mandat">Exclusif</div></li>}
+    </ul>
+
+    <a class="product-image" href={href} tabindex="-1" aria-hidden="true">
+      <Picture media={photo} alt="" aspect="4 / 3" sizes={sizes} priority={priority} class="photo" />
+      {photo2 && <Picture media={photo2} alt="" aspect="4 / 3" sizes={sizes} class="photo-hidden" />}
+      {
+        agentPhoto && agent && (
+          <span class="bulle-nego" title={agent.name}>
+            <Picture media={agentPhoto} alt="" sizes="60px" aspect="1" />
+          </span>
+        )
+      }
+    </a>
+
+    <div class="product-infos">
+      <span class="arrow-up" aria-hidden="true"></span>
+      <a class="link-product" href={href}>
+        <h3 class="product-title">{heading}</h3>
+        {listing.commune && <p class="city">{listing.commune}</p>}
+        <ul class="data-list">
+          {listing.rooms && <li class="data-list__item">{listing.rooms} pièce{listing.rooms > 1 ? 's' : ''}</li>}
+          {listing.livingArea && <li class="data-list__item">{Math.round(listing.livingArea)} m²</li>}
+          <li class="data-list__item">Réf&nbsp;: {listing.reference}</li>
+        </ul>
+        <p class="product-price">{priceLine(listing)}</p>
+      </a>
+      <div class="product-bottom">
+        <button type="button" class="add-fav" data-fav={listing.reference} aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          <span>Ajouter à ma sélection</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  .item-product {
+    margin: 10px 0;
+    height: 100%;
+  }
+
+  .product-selection {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  .product-selection:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  /* --- Badges ----------------------------------------------------------------- */
+  .pictos-product {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    display: flex;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pictos-product .text {
+    background: var(--color-1);
+    color: #ffffff;
+    padding: 2px 10px;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  .pictos-product .vendu {
+    background: var(--color-2-darken);
+    color: var(--color-1);
+  }
+
+  /* --- Photos ----------------------------------------------------------------- */
+  .product-image {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+  }
+
+  .product-image :global(picture),
+  .product-image :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+  }
+
+  .product-image :global(.photo-hidden) {
+    opacity: 0;
+    z-index: 2;
+  }
+
+  .product-selection:hover .product-image :global(.photo-hidden) {
+    opacity: 1;
+  }
+
+  .is-archived .product-image :global(.photo img) {
+    filter: grayscale(0.4);
+  }
+
+  /* Bulle du conseiller : cachee, surgit au survol avec shiverInUp. */
+  .bulle-nego {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 3;
+    visibility: hidden;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    transform-origin: bottom;
+  }
+
+  .bulle-nego :global(picture),
+  .bulle-nego :global(img) {
+    position: static;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .product-selection:hover .bulle-nego {
+    visibility: visible;
+    animation-name: shiverInUp;
+    animation-timing-function: ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-selection:hover .bulle-nego {
+      animation: none;
+    }
+  }
+
+  /* --- Infos ------------------------------------------------------------------ */
+  .product-infos {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px 14px;
+  }
+
+  .arrow-up {
+    position: absolute;
+    top: -15px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid #ffffff;
+    z-index: 3;
+  }
+
+  .link-product {
+    flex: 1;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .product-title {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--color-1);
+    text-transform: capitalize;
+  }
+
+  .city {
+    margin: 0 0 8px;
+    color: var(--ink-muted);
+    text-transform: capitalize;
+  }
+
+  .data-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0 0 8px;
+    padding: 0;
+    list-style: none;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+
+  .data-list__item ~ .data-list__item::before {
+    content: '•';
+    color: var(--color-2-darken);
+    font-size: 30px;
+    line-height: 15px;
+    margin: 0 8px;
+    vertical-align: middle;
+  }
+
+  .product-price {
+    margin: 0;
+    color: var(--color-1);
+    font-size: 22px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .product-bottom {
+    margin-top: 5px;
+    padding-top: 15px;
+    border-top: solid 0.1em #d9d9d9;
+    color: #666666;
+  }
+
+  .add-fav {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #666666;
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .add-fav:hover,
+  .add-fav[aria-pressed='true'] {
+    color: var(--color-1);
+  }
+
+  .add-fav[aria-pressed='true'] svg {
+    fill: var(--color-1);
+  }
+</style>
+
+<script>
+  /* « Ma selection » : conservee dans le navigateur, comme sur l'ancien site. */
+  const KEY = 'aurea-selection';
+  const read = (): number[] => {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) ?? '[]');
+    } catch {
+      return [];
+    }
+  };
+  const write = (v: number[]) => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(v));
+    } catch {
+      /* stockage indisponible : le bouton reste purement visuel */
+    }
+  };
+  const current = new Set(read());
+  document.querySelectorAll<HTMLButtonElement>('[data-fav]').forEach((btn) => {
+    const ref = Number(btn.dataset.fav);
+    const label = btn.querySelector('span');
+    const paint = () => {
+      const on = current.has(ref);
+      btn.setAttribute('aria-pressed', String(on));
+      if (label) label.textContent = on ? 'Dans ma sélection' : 'Ajouter à ma sélection';
+    };
+    paint();
+    btn.addEventListener('click', () => {
+      current.has(ref) ? current.delete(ref) : current.add(ref);
+      write([...current]);
+      paint();
+    });
+  });
+</script>

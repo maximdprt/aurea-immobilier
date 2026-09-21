@@ -1,0 +1,272 @@
+---
+/**
+ * Barème des honoraires.
+ *
+ * Obligation professionnelle : le barème doit être accessible depuis toutes
+ * les pages, en HTML et pas seulement en PDF (§15). Sur l'ancien site, il
+ * n'existait qu'en PDF, et le serveur le servait de façon instable — la même
+ * URL renvoyait tantôt le PDF, tantôt un PNG (§3.2).
+ *
+ * Les taux ci-dessous sont transcrits du PDF publié par l'agence
+ * (scrapper_aurea/files/nos-honoraires-385554.pdf). Ils doivent être confirmés
+ * et datés avant la mise en ligne : un barème est un document opposable.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Todo from '~/components/Todo.astro';
+import { COMPANY, REGULATED, LEGAL_DISCREPANCIES, isMissing } from '~/lib/site';
+
+const sale = [
+  ['Biens immobiliers à usage d’habitation', '6 %', '10 000 € TTC'],
+  ['Terrain non constructible', '10 %', '—'],
+  ['Terrain constructible', '10 %', '—'],
+  ['Parkings et box', '10 %', '2 500 € TTC'],
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Barème des honoraires' },
+];
+---
+
+<Base
+  title="Barème des honoraires – AUREA Immobilier"
+  description="Nos honoraires de transaction, de location et de gestion locative, en clair : taux, minimums et partie qui les prend en charge."
+  path="/honoraires/"
+  crumbs={crumbs}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+      <h1>Barème des honoraires</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap-narrow section">
+    <header class="head">
+      <p class="lede">
+        Nos honoraires sont publics. Le prix affiché sur chaque annonce les inclut, et l’annonce
+        précise qui les prend en charge.
+      </p>
+      <p class="updated">
+        Barème en vigueur au <Todo label="date d’entrée en vigueur du barème" />. Transcrit du
+        document publié par l’agence.
+      </p>
+    </header>
+
+    <section>
+      <h2>Transaction — vente</h2>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Honoraires de transaction</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nature du bien</th>
+              <th scope="col">Forfait ou % du prix de vente</th>
+              <th scope="col">Minimum</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              sale.map(([label, rate, min]) => (
+                <tr>
+                  <th scope="row">{label}</th>
+                  <td>{rate}</td>
+                  <td>{min}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Les honoraires sont <strong>à la charge du vendeur</strong>. À titre exceptionnel, ils
+        peuvent être mis à la charge de l’acquéreur : le barème appliqué est alors identique à
+        celui du vendeur.
+      </p>
+      <p class="small muted">La délivrance d’une note d’honoraires est obligatoire.</p>
+    </section>
+
+    <section>
+      <h2>Location</h2>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Honoraires de location</caption>
+          <thead>
+            <tr>
+              <th scope="col">Prestation</th>
+              <th scope="col">Part locataire</th>
+              <th scope="col">Part bailleur</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Visite, constitution du dossier et rédaction du bail</th>
+              <td><Todo label="€/m² de surface habitable, part locataire" /></td>
+              <td><Todo label="part bailleur" /></td>
+            </tr>
+            <tr>
+              <th scope="row">État des lieux</th>
+              <td><Todo label="€/m², part locataire" /></td>
+              <td><Todo label="part bailleur" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        Les honoraires à la charge du locataire sont plafonnés par décret, au mètre carré de
+        surface habitable et selon la zone. Ils ne peuvent pas dépasser ceux du bailleur.
+      </p>
+    </section>
+
+    <section>
+      <h2>Gestion locative</h2>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Honoraires de gestion locative</caption>
+          <thead>
+            <tr>
+              <th scope="col">Prestation</th>
+              <th scope="col">Honoraires</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Gestion courante</th>
+              <td><Todo label="% HT et TTC des loyers encaissés" /></td>
+            </tr>
+            <tr>
+              <th scope="row">Garantie loyers impayés (option)</th>
+              <td><Todo label="taux de la GLI, si l’offre existe" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small">
+        <a href="/gestion-locative/">Découvrir ce que comprend notre mandat de gestion</a>
+      </p>
+    </section>
+
+    <section class="regulated">
+      <h2>Mentions réglementaires</h2>
+      <dl>
+        <div>
+          <dt>Raison sociale</dt>
+          <dd>
+            {COMPANY.legalName}, {COMPANY.legalForm} au capital de {COMPANY.capital}, RCS
+            {' '}{COMPANY.rcsCity} {COMPANY.rcs}
+          </dd>
+        </div>
+        <div>
+          <dt>Carte professionnelle</dt>
+          <dd>
+            {REGULATED.cpiScope}, n° {REGULATED.cpiNumber}, délivrée par la
+            {' '}{REGULATED.cpiIssuer} le 5 septembre 2024
+          </dd>
+        </div>
+        <div>
+          <dt>Assurance responsabilité civile professionnelle</dt>
+          <dd>
+            {REGULATED.insurer}, police n° {REGULATED.insurancePolicy} —
+            {' '}{REGULATED.insurerAddress}
+          </dd>
+        </div>
+        <div>
+          <dt>Détention de fonds</dt>
+          <dd>
+            L’agence déclare ne pas recevoir ni détenir d’autres fonds, effets ou valeurs que ceux
+            représentatifs de sa rémunération ou de sa commission.
+          </dd>
+        </div>
+        <div>
+          <dt>Garantie financière</dt>
+          <dd>
+            {
+              isMissing(REGULATED.financialGuarantee) ? (
+                <Todo label={REGULATED.financialGuarantee.__missing} />
+              ) : (
+                REGULATED.financialGuarantee
+              )
+            }
+          </dd>
+        </div>
+      </dl>
+      <p class="small muted">Source : {REGULATED.source}.</p>
+    </section>
+
+    <aside class="notice">
+      <h2>Points à trancher avant publication</h2>
+      <ul>
+        {
+          LEGAL_DISCREPANCIES.map((d) => (
+            <li>
+              <strong>{d.field}</strong> — mentions légales : {d.inLegalNotice} ; barème des
+              honoraires : {d.inFeesPdf}. {d.note}
+            </li>
+          ))
+        }
+        <li>
+          <strong>Garantie financière et gestion locative</strong> — la déclaration de
+          non-détention de fonds figurant au barème est difficilement compatible avec
+          l’encaissement de loyers pour le compte de propriétaires. À faire confirmer.
+        </li>
+      </ul>
+      <p class="small">
+        Cet encadré est destiné à l’agence et sera retiré une fois les points résolus.
+      </p>
+    </aside>
+
+    <p class="small muted">
+      <a href="/files/nos-honoraires.pdf" download>Télécharger le barème au format PDF</a> — la
+      version HTML ci-dessus fait foi pour l’accessibilité.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  section {
+    margin-bottom: var(--space-xl);
+  }
+
+  section h2 {
+    font-size: var(--step-2);
+  }
+
+  .regulated dl {
+    margin: 0;
+  }
+
+  .regulated dl > div {
+    padding-block: var(--space-2xs);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .regulated dt {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+
+  .regulated dd {
+    margin: 0;
+  }
+
+  .notice h2 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .notice ul {
+    margin-bottom: var(--space-2xs);
+    padding-left: 1.1rem;
+  }
+
+  .notice li + li {
+    margin-top: var(--space-2xs);
+  }
+</style>
