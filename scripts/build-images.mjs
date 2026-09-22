@@ -25,11 +25,187 @@ const agents = JSON.parse(readFileSync(join(DATA, 'agents.json'), 'utf8'));
 
 const AVIF = { quality: 46, effort: 6, chromaSubsampling: '4:2:0' };
 const WEBP = { quality: 64, effort: 5 };
+
+/*
+ * Portraits : reglages plus genereux que pour les photos de biens.
+ *
+ * - `4:4:4` au lieu de `4:2:0` : le sous-echantillonnage de chrominance divise
+ *   par deux la definition des couleurs. Sur un paysage cela ne se voit pas,
+ *   sur un visage cela etale les teints et salit le contour des levres et des
+ *   yeux. Un portrait fait quelques dizaines de Ko : la depense est minime.
+ * - qualite plus haute, effort maximal a l'encodage (le build est hors ligne).
+ */
+const AVIF_PORTRAIT = { quality: 62, effort: 9, chromaSubsampling: '4:4:4' };
+const WEBP_PORTRAIT = { quality: 86, effort: 6, smartSubsample: true };
 const manifest = {};
 let written = 0;
 let bytes = 0;
 
 const ensure = (dir) => mkdirSync(dir, { recursive: true });
+
+/* ------------------------------------------------- portraits de l'equipe */
+/*
+ * Les photos fournies par l'agence sont heterogenes : certaines cadrent le
+ * visage, d'autres la personne entiere a plusieurs metres. Mises cote a cote,
+ * les tetes vont du simple au double et la grille parait bancale.
+ *
+ * On releve donc, une fois pour toutes, la position du visage sur chaque
+ * photo REDRESSEE (centre X, centre Y, hauteur de la tete, en fraction de
+ * l'image), puis on calcule un cadrage qui amene toutes les tetes a la meme
+ * taille et a la meme hauteur dans le cadre.
+ *
+ * Mesures faites a la grille sur les originaux ; a refaire si l'agence
+ * fournit de nouvelles photos.
+ */
+const FACES = {
+  'helene-vermeire-benz': { x: 0.48, y: 0.13, h: 0.13 },
+  'vincent-maume': { x: 0.5, y: 0.14, h: 0.12 },
+  'oriane-cherel': { x: 0.62, y: 0.15, h: 0.13 },
+  'justine-vitry': { x: 0.4, y: 0.24, h: 0.15 },
+  'natacha-laly': { x: 0.5, y: 0.22, h: 0.16 },
+  'aimee-vaillant': { x: 0.57, y: 0.25, h: 0.15 },
+  'evan-fernandes': { x: 0.43, y: 0.25, h: 0.135 },
+  'jill-thepaut': { x: 0.53, y: 0.27, h: 0.11 },
+  'marion-nicaise': { x: 0.52, y: 0.37, h: 0.07 },
+};
+
+/** Portrait 4:5, tete a 17 % de la hauteur, centre du visage a 27 % du haut. */
+/*
+ * Portrait 4:5, tete a 17 % de la hauteur, centre du visage a 27 % du haut.
+ *
+ * `widths` est un PLAFOND : on ne produit jamais une largeur superieure au
+ * recadrage natif. Les sorties etaient jusqu'ici en 600 px pour un recadrage
+ * de 427 px, soit un agrandissement de 41 % — de la matiere inventee par
+ * l'interpolation, donc du flou. Les photos fournies par l'agence plafonnent
+ * a 640 px de cote : c'est la limite, on ne la depasse pas.
+ */
+const PORTRAIT = { aspect: 4 / 5, head: 0.17, headY: 0.27, widths: [220, 440] };
+
+/**
+ * Cadre de recadrage pour une photo donnee. `maxUpscale` evite d'agrandir une
+ * photo trop large au-dela du raisonnable : mieux vaut une tete un peu plus
+ * petite qu'un portrait flou (cas de Marion Nicaise, photographiee de loin).
+ */
+function faceCrop(srcW, srcH, face, outW, maxUpscale = 1.35) {
+  let hc = (face.h * srcH) / PORTRAIT.head;
+  let wc = hc * PORTRAIT.aspect;
+  const fit = () => {
+    if (wc > srcW) {
+      wc = srcW;
+      hc = wc / PORTRAIT.aspect;
+    }
+    if (hc > srcH) {
+      hc = srcH;
+      wc = hc * PORTRAIT.aspect;
+    }
+  };
+  fit();
+  const minW = outW / maxUpscale;
+  if (wc < minW) {
+    wc = Math.min(minW, srcW);
+    hc = wc / PORTRAIT.aspect;
+    fit();
+  }
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  return {
+    left: Math.round(clamp(face.x * srcW - wc / 2, 0, srcW - wc)),
+    top: Math.round(clamp(face.y * srcH - PORTRAIT.headY * hc, 0, srcH - hc)),
+    width: Math.round(wc),
+    height: Math.round(hc),
+  };
+}
+
+/**
+ * Parmi tous les fichiers `<slug>-*` du corpus, retient celui qui a le plus de
+ * pixels une fois redresse. L'extraction retenait le fichier nomme d'apres
+ * l'identifiant interne, systematiquement la vignette 200x300, alors qu'une
+ * version 427x640 existait a cote.
+ */
+async function bestPortrait(slug) {
+  const candidates = readdirSync(SRC).filter(
+    (f) => f.startsWith(`${slug}-`) && !f.includes('no-picture') && /\.(jpe?g|png|webp)$/i.test(f)
+  );
+  let best = null;
+  for (const file of candidates) {
+    try {
+      const info = await sharp(join(SRC, file))
+        .rotate()
+        .toBuffer({ resolveWithObject: true })
+        .then((r) => r.info);
+      const area = info.width * info.height;
+      if (!best || area > best.area) best = { file, area, width: info.width, height: info.height };
+    } catch {
+      /* fichier illisible (SVG « no-picture ») : ignore */
+    }
+  }
+  return best;
+}
+
+/** Variantes d'un portrait : recadre sur le visage, puis AVIF + WebP. */
+async function portraitVariants(slug, outDir) {
+  const src = await bestPortrait(slug);
+  if (!src) return null;
+  const face = FACES[slug];
+  if (!face) {
+    console.warn(`  ! pas de repere de visage pour ${slug} : cadrage centre par defaut`);
+  }
+  ensure(outDir);
+  const rotated = await sharp(join(SRC, src.file)).rotate().toBuffer();
+  const ceiling = PORTRAIT.widths[PORTRAIT.widths.length - 1];
+  // `maxUpscale: 1` : le cadre ne descend jamais sous la largeur demandee, donc
+  // aucune variante n'a besoin d'etre agrandie.
+  const box = face ? faceCrop(src.width, src.height, face, ceiling, 1) : null;
+  const nativeW = box ? box.width : src.width;
+
+  const base = () => {
+    const p = sharp(rotated);
+    return box ? p.extract(box) : p;
+  };
+
+  /*
+   * Aucune largeur au-dela du recadrage natif : pas d'agrandissement. On
+   * ajoute ensuite la largeur native elle-meme comme plus grande variante,
+   * sans quoi un cadre de 427 px ne produirait que le palier 220 px et les
+   * ecrans a haute densite afficheraient une image deux fois trop petite.
+   */
+  const maxNative = Math.round(nativeW);
+  const targets = PORTRAIT.widths.filter((w) => w < maxNative);
+  targets.push(maxNative);
+
+  const render = (w) =>
+    base()
+      .resize(w, Math.round(w / PORTRAIT.aspect), {
+        fit: 'cover',
+        position: box ? 'centre' : 'attention',
+        kernel: 'lanczos3',
+      })
+      // Accentuation legere, appliquee APRES reduction : elle compense la
+      // douceur inherente au reechantillonnage, sans creer de halo.
+      .sharpen({ sigma: 0.5, m1: 0.6, m2: 2 });
+
+  const produced = [];
+  for (const w of targets) {
+    const out = join(outDir, `${slug}-${w}.avif`);
+    await render(w).avif(AVIF_PORTRAIT).toFile(out);
+    bytes += statSync(out).size;
+    written++;
+    produced.push(w);
+  }
+  const fbWidth = produced[produced.length - 1];
+  const fbOut = join(outDir, `${slug}-${fbWidth}.webp`);
+  await render(fbWidth).webp(WEBP_PORTRAIT).toFile(fbOut);
+  bytes += statSync(fbOut).size;
+  written++;
+
+  return {
+    widths: produced,
+    fallbackWidth: fbWidth,
+    width: fbWidth,
+    height: Math.round(fbWidth / PORTRAIT.aspect),
+    ratio: Number(PORTRAIT.aspect.toFixed(4)),
+  };
+}
+
 
 /**
  * Genere les variantes d'une image source.
@@ -41,8 +217,16 @@ async function variants(sourceFile, outDir, baseName, widths, { square = false }
     console.warn(`  ! introuvable : ${sourceFile}`);
     return null;
   }
-  const meta = await sharp(input).metadata();
-  if (!meta.width || !meta.height) return null;
+  /*
+   * Metadonnees APRES rotation EXIF. Les lire avant serait un piege : deux
+   * portraits de l'equipe portent `orientation: 8` (photo couchee a 90 deg).
+   * On enregistrait alors un ratio paysage pour une image finalement
+   * verticale, et le navigateur ecrasait l'image aux dimensions annoncees.
+   */
+  const meta = await sharp(input).rotate().toBuffer({ resolveWithObject: true })
+    .then((r) => r.info)
+    .catch(() => null);
+  if (!meta || !meta.width || !meta.height) return null;
 
   ensure(outDir);
   const produced = [];
@@ -187,9 +371,7 @@ async function main() {
   // 2. Portraits de l'equipe ------------------------------------------------
   for (const agent of agents) {
     if (!agent.photo || agent.photo.endsWith('.svg')) continue;
-    const v = await variants(agent.photo, join(OUT, 'equipe'), agent.slug, [240, 480], {
-      square: true,
-    });
+    const v = await portraitVariants(agent.slug, join(OUT, 'equipe'));
     if (v) manifest[`agent:${agent.slug}`] = { base: `/media/equipe/${agent.slug}`, ...v };
   }
   console.log(`  portraits : ${Object.keys(manifest).filter((k) => k.startsWith('agent:')).length}`);

@@ -6,6 +6,7 @@
     "role": "Directrice, présidente",
     "email": "helene.vermeire@aurea-immobilier.fr",
     "phone": "06 33 63 02 55",
+    "bio": "Diplômée d’un Master en Management de Patrimoine immobilier, avec une dizaine d’années d’expérience en France et à l’étranger, j’ai décidé de me lancer afin de vous offrir ma vision de l’immobilier. Ce métier est pour moi bien plus qu’un travail de commercial, notre champ d’action est vaste et doit être maîtrisé à la perfection afin que votre tranquillité reste intacte. À l’heure où le service client devient de plus en plus déplorable j’ai pour souhait de montrer que les choses peuvent changer et que le professionnalisme a encore de belles heures devant lui. Votre projet de vie, ma priorité !",
     "photo": "helene-vermeire-benz-839239.jpg",
     "legacyUrl": "/annonces/agent/839239-helene-vermeire-benz.html"
   },
@@ -16,6 +17,7 @@
     "role": "Directeur associé, cofondateur",
     "email": "vincent.maume@aurea-immobilier.fr",
     "phone": "06 83 70 66 01",
+    "bio": "Fort d’une solide expérience en gestion d’agences et en accompagnement de projets immobiliers variés, j’ai choisi de co-fonder AUREA Immobilier avec une conviction simple mais essentielle : remettre l’humain et la qualité du service au cœur de chaque projet. Être conseiller immobilier, c’est avant tout comprendre un projet de vie, anticiper les besoins, sécuriser chaque étape et créer une relation de confiance durable. AUREA Immobilier, quand immobilier rime avec qualité",
     "photo": "vincent-maume-839238.jpg",
     "legacyUrl": "/annonces/agent/839238-vincent-maume.html"
   },
@@ -26,6 +28,7 @@
     "role": "Négociatrice",
     "email": "oriane.cherel@aurea-immobilier.fr",
     "phone": "06 99 39 88 48",
+    "bio": null,
     "photo": "oriane-cherel-840371.jpg",
     "legacyUrl": "/annonces/agent/840371-oriane-cherel.html"
   },
@@ -36,6 +39,7 @@
     "role": "Négociatrice",
     "email": "aimee.vaillant@aurea-immobilier.fr",
     "phone": "06 28 46 57 71",
+    "bio": null,
     "photo": "aimee-vaillant-847433.jpg",
     "legacyUrl": "/annonces/agent/847433-aimee-vaillant.html"
   },
@@ -46,6 +50,7 @@
     "role": "Négociatrice",
     "email": null,
     "phone": "06 10 96 01 31",
+    "bio": null,
     "photo": "justine-vitry-839272.jpg",
     "legacyUrl": "/annonces/agent/839272-justine-vitry.html"
   },
@@ -56,16 +61,18 @@
     "role": "Négociatrice",
     "email": null,
     "phone": "06 73 71 23 89",
+    "bio": null,
     "photo": "natacha-laly-natacha-laly.jpeg",
     "legacyUrl": "/annonces/agent/839273-natacha-laly.html"
   },
   {
     "legacyId": "869668",
     "slug": "jill-thepaut",
-    "name": "Jill Thepaut",
+    "name": "Jill Thépaut",
     "role": "Négociatrice",
     "email": null,
     "phone": "06 73 26 93 38",
+    "bio": null,
     "photo": "jill-thepaut-jill.jpg",
     "legacyUrl": "/annonces/agent/869668-jill-thepaut.html"
   },
@@ -76,6 +83,7 @@
     "role": "Négociateur",
     "email": "evan.fernandes@aurea-immobilier.fr",
     "phone": "06 68 42 59 73",
+    "bio": null,
     "photo": "evan-fernandes-839241.jpg",
     "legacyUrl": "/annonces/agent/839241-evan-fernandes.html"
   },
@@ -86,6 +94,7 @@
     "role": "Gestionnaire locative",
     "email": "marion.nicaise@aurea-immobilier.fr",
     "phone": "06 24 71 07 39",
+    "bio": null,
     "photo": "marion-nicaise-marion.jpg",
     "legacyUrl": null
   }

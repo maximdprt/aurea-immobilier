@@ -70,8 +70,8 @@ const agentTel = toE164(agent.phone);
       <Picture
         media={media}
         alt={`Portrait de ${agent.name}`}
-        sizes="(min-width: 48rem) 15rem, 45vw"
-        aspect="1"
+        sizes="(min-width: 48rem) 18rem, 60vw"
+        aspect="4 / 5"
         class="portrait"
         priority
       />
@@ -120,14 +120,28 @@ const agentTel = toE164(agent.phone);
     </header>
 
     <section class="section-tight prose">
-      <h2>Parcours</h2>
-      <p class="notice">
-        <Todo label={`parcours, formation et langues parlées de ${agent.name}`} />
-        <br />
-        Le site existant ne publie aucune biographie. Cette section est le principal signal
-        d’expertise pour les moteurs de recherche comme pour les moteurs génératifs : elle sera
-        rédigée à partir des éléments fournis par l’agence, et signée.
-      </p>
+      <h2>Présentation</h2>
+      {
+        agent.bio ? (
+          <blockquote class="bio">
+            {agent.bio.split(/(?<=[.!?])\s+(?=[A-ZÀÂÉÈÊÎÔÛÇ])/).map((para) => (
+              <p>{para}</p>
+            ))}
+            <footer class="small muted">
+              {agent.name} — présentation publiée par l’agence.
+            </footer>
+          </blockquote>
+        ) : (
+          <p class="notice">
+            <Todo label={`présentation rédigée par ${agent.name}`} />
+            <br />
+            Seuls Hélène Vermeire Benz et Vincent Maume ont publié la leur sur le site de
+            l’agence. Cette section est le principal signal d’expertise pour les moteurs de
+            recherche comme pour les moteurs génératifs : elle sera rédigée à partir des éléments
+            fournis par la personne concernée, et signée.
+          </p>
+        )
+      }
     </section>
 
     {
@@ -235,5 +249,25 @@ const agentTel = toE164(agent.phone);
       grid-template-columns: 15rem 1fr;
       align-items: start;
     }
+  }
+
+  /* Presentation reprise du site de l'agence, citee comme telle. */
+  .bio {
+    margin: 0;
+    padding: var(--space-m) var(--space-l);
+    background: var(--canvas-alt);
+    border-left: 3px solid var(--color-2);
+  }
+
+  .bio p {
+    margin-bottom: var(--space-s);
+  }
+
+  .bio p:last-of-type {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .bio footer {
+    font-style: normal;
   }
 </style>

@@ -9,7 +9,15 @@ import Breadcrumb from '~/components/Breadcrumb.astro';
 import Picture from '~/components/Picture.astro';
 import Todo from '~/components/Todo.astro';
 import PhoneReel from '~/components/PhoneReel.astro';
-import { agentBySlug, agentMedia, allAgents, catalogStats, editorialMedia, logoMedia } from '~/lib/catalog';
+import {
+  agentBySlug,
+  agentIntro,
+  agentMedia,
+  allAgents,
+  catalogStats,
+  editorialMedia,
+  logoMedia,
+} from '~/lib/catalog';
 import { toE164 } from '~/lib/format';
 import { COMPANY, CONTACT, MAP_EMBED_URL, SOCIAL } from '~/lib/site';
 
@@ -47,7 +55,7 @@ const crumbs = [
 >
   <div class="page-band">
     <div class="wrap">
-      <Breadcrumb crumbs={crumbs} />
+      <Breadcrumb crumbs={crumbs} onDark />
       <h1>Notre agence</h1>
     </div>
   </div>
@@ -109,29 +117,41 @@ const crumbs = [
         </ul>
 
         <h2 class="main-title">Notre équipe</h2>
+        <p class="equipe-intro">
+          Une dizaine de personnes, un seul interlocuteur par projet. Chacun a sa ligne directe :
+          vous n’aurez pas à réexpliquer votre dossier.
+        </p>
         <ul class="membres_equipe">
           {
-            allAgents().map((a) => (
-              <li class="membre_equipe">
-                <figure>
-                  <a href={`/equipe/${a.slug}/`} tabindex="-1" aria-hidden="true">
-                    <Picture media={agentMedia(a.slug)} alt="" sizes="(min-width: 992px) 260px, 45vw" aspect="2 / 3" />
+            allAgents().map((a) => {
+              const intro = agentIntro(a);
+              return (
+                <li class="membre_equipe">
+                  <a class="portrait" href={`/equipe/${a.slug}/`} tabindex="-1" aria-hidden="true">
+                    <Picture
+                      media={agentMedia(a.slug)}
+                      alt=""
+                      sizes="(min-width: 600px) 190px, 40vw"
+                    />
                   </a>
-                </figure>
-                <div class="membre_equipe_details">
-                  <h3><a href={`/equipe/${a.slug}/`}>{a.name}</a></h3>
-                  <h4>{a.role}</h4>
-                  <p><a href={`/equipe/${a.slug}/`}>Consulter ses annonces</a></p>
-                  {toE164(a.phone) && (
-                    <p class="tel">
-                      <a href={`tel:${toE164(a.phone)}`}>{a.phone}</a>
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))
+                  <div class="membre_equipe_details">
+                    <h3><a href={`/equipe/${a.slug}/`}>{a.name}</a></h3>
+                    <p class="role">{a.role}</p>
+                    <p class="intro">{intro.text}</p>
+                    {toE164(a.phone) && (
+                      <p class="tel">
+                        <a href={`tel:${toE164(a.phone)}`}>{a.phone}</a>
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })
           }
         </ul>
+        <p class="small muted">
+          <Todo label="présentation rédigée par chaque conseiller — seuls Hélène Vermeire Benz et Vincent Maume en ont publié une" />
+        </p>
 
         <h2 class="main-title">Nous trouver</h2>
         <div class="plan_agence facade" data-map-facade>
@@ -373,42 +393,86 @@ const crumbs = [
     font-size: var(--step--1);
   }
 
-  /* Grille de l'equipe de la page « Notre agence » d'origine. */
+  /* --- Grille de l'equipe ------------------------------------------------
+     Cartes horizontales : le portrait a gauche, le texte a droite. La carte
+     s'etale donc dans la largeur, ce qui laisse la place a la presentation
+     sans etirer la colonne vers le bas. Deux cartes par rangee sur grand
+     ecran, une seule en dessous de 1100 px. */
+  .equipe-intro {
+    max-width: 62ch;
+    margin-bottom: var(--space-l);
+  }
+
   .membres_equipe {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 30px;
+    grid-template-columns: 1fr;
+    gap: 24px;
     list-style: none;
-    margin: 0 0 var(--space-xl);
+    margin: 0 0 var(--space-s);
     padding: 0;
   }
 
+  @media (min-width: 1100px) {
+    .membres_equipe {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   .membre_equipe {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    /* 190 / 0,8 : la carte ne descend jamais sous le rapport 4:5 du
+       portrait, qui ne peut donc pas s'ecraser. */
+    min-height: 238px;
     background-color: #ffffff;
     box-shadow: 0 3px 15px rgb(0 0 0 / 16%);
-    padding: 20px;
+    transition: all 0.3s ease;
   }
 
-  .membre_equipe figure {
-    margin: 0;
-    text-align: center;
+  .membre_equipe:hover {
+    box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
   }
 
-  .membre_equipe figure :global(img) {
-    max-width: 100%;
+  .portrait {
     display: block;
+    overflow: hidden;
+    align-self: stretch;
+  }
+
+  .portrait :global(picture),
+  .portrait :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Si la carte s'allonge, on rogne par le bas : le visage est cadre dans
+       le haut de l'image, il doit rester entier. */
+    object-position: center top;
+    transition: transform 0.3s ease;
+  }
+
+  .membre_equipe:hover .portrait :global(img) {
+    transform: scale(1.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .membre_equipe:hover .portrait :global(img) {
+      transform: none;
+    }
   }
 
   .membre_equipe_details {
-    text-align: center;
-    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 22px;
+    min-width: 0;
   }
 
   .membre_equipe_details h3 {
     color: var(--color-1);
     font-weight: 700;
-    font-size: 22px;
-    margin: 0 0 4px;
+    font-size: 21px;
+    margin: 0 0 2px;
   }
 
   .membre_equipe_details h3 a {
@@ -416,19 +480,51 @@ const crumbs = [
     text-decoration: none;
   }
 
-  .membre_equipe_details h4 {
+  .membre_equipe_details h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .membre_equipe_details .role {
     color: var(--color-2-darken);
     font-weight: 700;
-    font-size: 20px;
+    font-size: 16px;
     margin: 0 0 10px;
   }
 
-  .membre_equipe_details p {
-    margin: 0 0 6px;
+  .membre_equipe_details .intro {
+    flex: 1;
+    margin: 0 0 12px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .membre_equipe_details .tel {
+    margin: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
   }
 
   .membre_equipe_details .tel a {
-    font-variant-numeric: tabular-nums;
+    color: var(--color-1);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .membre_equipe_details .tel a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .membre_equipe {
+      grid-template-columns: 130px 1fr;
+      min-height: 163px;
+    }
+
+    .membre_equipe_details {
+      padding: 16px;
+    }
   }
 
   .plan_agence {

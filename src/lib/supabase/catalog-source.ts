@@ -159,6 +159,7 @@ export async function loadFromSupabase(): Promise<CatalogSnapshot> {
         role: a.role,
         email: a.email ?? null,
         phone: a.phone ?? null,
+        bio: a.bio ?? null,
         photo: a.photo_file ?? null,
         legacyUrl: null,
       })),

@@ -1310,101 +1310,101 @@
   "agent:helene-vermeire-benz": {
     "base": "/media/equipe/helene-vermeire-benz",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "agent:vincent-maume": {
     "base": "/media/equipe/vincent-maume",
     "widths": [
-      240,
-      480
+      220,
+      440
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 440,
+    "width": 440,
+    "height": 550,
+    "ratio": 0.8
   },
   "agent:oriane-cherel": {
     "base": "/media/equipe/oriane-cherel",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "agent:aimee-vaillant": {
     "base": "/media/equipe/aimee-vaillant",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "agent:justine-vitry": {
     "base": "/media/equipe/justine-vitry",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "agent:natacha-laly": {
     "base": "/media/equipe/natacha-laly",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "agent:jill-thepaut": {
     "base": "/media/equipe/jill-thepaut",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "agent:evan-fernandes": {
     "base": "/media/equipe/evan-fernandes",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "agent:marion-nicaise": {
     "base": "/media/equipe/marion-nicaise",
     "widths": [
-      240,
-      480
+      220,
+      427
     ],
-    "fallbackWidth": 480,
-    "width": 480,
-    "height": 480,
-    "ratio": 1
+    "fallbackWidth": 427,
+    "width": 427,
+    "height": 534,
+    "ratio": 0.8
   },
   "editorial:hero-accueil": {
     "base": "/media/editorial/hero-accueil",

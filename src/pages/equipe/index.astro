@@ -8,7 +8,7 @@ import Base from '~/layouts/Base.astro';
 import Breadcrumb from '~/components/Breadcrumb.astro';
 import Picture from '~/components/Picture.astro';
 import Todo from '~/components/Todo.astro';
-import { allAgents, agentMedia, listingsByAgent } from '~/lib/catalog';
+import { allAgents, agentMedia, listingsByAgent, agentIntro } from '~/lib/catalog';
 
 const agents = allAgents();
 const crumbs = [
@@ -25,7 +25,7 @@ const crumbs = [
 >
   <div class="page-band">
     <div class="wrap">
-      <Breadcrumb crumbs={crumbs} />
+      <Breadcrumb crumbs={crumbs} onDark />
       <h1>L’équipe AUREA Immobilier</h1>
     </div>
   </div>
@@ -43,28 +43,27 @@ const crumbs = [
       {
         agents.map((a) => {
           const count = listingsByAgent(a.slug).length;
+          const intro = agentIntro(a);
           return (
             <li class="card">
               <a class="photo" href={`/equipe/${a.slug}/`} tabindex="-1" aria-hidden="true">
                 <Picture
                   media={agentMedia(a.slug)}
                   alt=""
-                  sizes="(min-width: 48rem) 14rem, 45vw"
-                  aspect="1"
+                  sizes="(min-width: 600px) 190px, 40vw"
                 />
               </a>
               <div class="body">
                 <h2><a href={`/equipe/${a.slug}/`}>{a.name}</a></h2>
-                <p class="role small muted">{a.role}</p>
-                {
-                  toE164(a.phone) && (
-                    <p class="small">
-                      <a class="tel" href={`tel:${toE164(a.phone)}`}>{a.phone}</a>
-                    </p>
-                  )
-                }
-                {count > 0 && (
-                  <p class="small muted">{count} bien{count > 1 ? 's' : ''} suivi{count > 1 ? 's' : ''}</p>
+                <p class="role">{a.role}</p>
+                <p class="intro">{intro.text}</p>
+                <p class="meta small muted">
+                  {count > 0 ? `${count} bien${count > 1 ? 's' : ''} suivi${count > 1 ? 's' : ''}` : 'Aucun bien en cours'}
+                </p>
+                {toE164(a.phone) && (
+                  <p class="tel">
+                    <a href={`tel:${toE164(a.phone)}`}>{a.phone}</a>
+                  </p>
                 )}
               </div>
             </li>
@@ -88,23 +87,10 @@ const crumbs = [
   .team {
     display: grid;
     gap: var(--space-m);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    grid-template-columns: 1fr;
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-
-  .card {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .photo :global(img) {
-    border-radius: var(--radius-m) var(--radius-m) 0 0;
-  }
-
-  .body {
-    padding: var(--space-s);
   }
 
   .body h2 {
@@ -138,18 +124,69 @@ const crumbs = [
     white-space: nowrap;
   }
 
-  /* Cartes de l'equipe, style .membre_equipe du site d'origine. */
+  /* Cartes de l'equipe : portrait a gauche, texte a droite, comme sur la
+     page « Notre agence ». */
+  @media (min-width: 1100px) {
+    .team {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   .card {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    /* 190 / 0,8 : rapport 4:5 garanti pour le portrait. */
+    min-height: 238px;
     background-color: #ffffff;
     box-shadow: 0 3px 15px rgb(0 0 0 / 16%);
-    padding: 20px;
-    text-align: center;
+    text-align: left;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
+  }
+
+  .card .photo {
+    display: block;
+    overflow: hidden;
+    align-self: stretch;
+  }
+
+  .card .photo :global(picture),
+  .card .photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover .photo :global(img) {
+    transform: scale(1.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card:hover .photo :global(img) {
+      transform: none;
+    }
+  }
+
+  .card .body {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 22px;
+    min-width: 0;
   }
 
   .card h2 {
     color: var(--color-1);
     font-weight: 700;
-    font-size: 22px;
+    font-size: 21px;
+    margin: 0 0 2px;
   }
 
   .card h2 a {
@@ -159,6 +196,48 @@ const crumbs = [
   .card .role {
     color: var(--color-2-darken);
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
+    margin: 0 0 10px;
   }
+
+  .card .intro {
+    flex: 1;
+    margin: 0 0 10px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .card .meta {
+    margin: 0 0 10px;
+  }
+
+  .card .tel {
+    /* Le lien du titre s'etend sur toute la carte (.body h2 a::after) : sans
+       ce z-index, le numero serait recouvert et donc inclicable. */
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card .tel a {
+    color: var(--color-1);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  @media (max-width: 480px) {
+    .card {
+      grid-template-columns: 130px 1fr;
+      min-height: 163px;
+    }
+
+    .card .body {
+      padding: 16px;
+    }
+  }
+
 </style>

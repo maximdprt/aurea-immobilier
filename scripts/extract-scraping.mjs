@@ -571,7 +571,7 @@ const AGENT_EMAILS = {
 };
 
 /**
- * Telephones directs de l'equipe.
+ * Telephones directs et presentations de l'equipe.
  *
  * La page « Notre agence » liste les conseillers dans l'ordre : un titre h3
  * par nom, puis le numero en paragraphe. Les deux suites sont paralleles, on
@@ -580,7 +580,18 @@ const AGENT_EMAILS = {
  *
  * Source : scrapper_aurea/pages/content-5-notre-agence.json
  */
-function parseTeamPhones() {
+/**
+ * Repare les mots coupes par le scraping. Le HTML d'origine insere des retours
+ * a la ligne au milieu de certains mots accentues ; on recolle une syllabe
+ * isolee quand le fragment suivant commence par une voyelle accentuee, ce qui
+ * n'arrive jamais en francais en debut de mot.
+ *   « doit etre ma itrise » -> « doit etre maitrise »
+ */
+function mendWordBreaks(text) {
+  return String(text).replace(/\b(\w{1,3}) (?=[àâäéèêëîïôöùûü]\w)/gi, '$1');
+}
+
+function parseTeamContacts() {
   const file = join(PAGES, 'content-5-notre-agence.json');
   if (!existsSync(file)) return {};
   const d = readJson(file);
@@ -592,11 +603,20 @@ function parseTeamPhones() {
   // Les noms sont les h3 qui suivent « Notre équipe », jusqu'au pied de page.
   const STOP = new Set(['l-agence', 'nos-services', 'liens-utiles', 'nos-annonces']);
   const names = [];
+  const labels = [];
   for (const t of titres.slice(start + 1)) {
     if (t.niveau !== 3) continue;
     const slug = slugify(t.texte);
     if (STOP.has(slug)) break;
     names.push(slug);
+    // « Jill THÉPAUT » -> « Jill Thépaut ». Cette page est la seule du corpus
+    // qui porte les accents des noms : la page conseiller les a perdus.
+    labels.push(
+      fixText(t.texte)
+        .split(/\s+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
+    );
   }
 
   // Les numeros, dans le meme ordre. Un paragraphe peut coller le telephone
@@ -622,9 +642,35 @@ function parseTeamPhones() {
     return {};
   }
 
+  /*
+   * Presentation : sur cette page, chaque conseiller est suivi de son
+   * telephone, puis — quand il en a une — des paragraphes de sa presentation,
+   * jusqu'au « Consulter ses annonces » du suivant. Deux membres seulement en
+   * ont une aujourd'hui ; les autres restent sans texte plutot que d'en
+   * recevoir un invente.
+   */
+  const paragraphs = (d.paragraphes ?? []).map((x) => String(x).trim());
+  const isPhone = (t) => /^0[1-9](?:[ .-]?\d{2}){4}\b/.test(t);
+  const isNoise = (t) => /^consult(er|ez) ses annonces$/i.test(t) || t === '';
+
+  const bios = [];
+  for (let i = 0; i < paragraphs.length; i++) {
+    if (!/^0[67](?:[ .-]?\d{2}){4}/.test(paragraphs[i])) continue;
+    const chunk = [];
+    for (let j = i + 1; j < paragraphs.length; j++) {
+      const t = paragraphs[j];
+      if (isPhone(t)) break;
+      if (isNoise(t)) continue;
+      chunk.push(fixText(t));
+    }
+    // La reparation se fait APRES l'assemblage : le HTML d'origine coupe
+    // parfois un mot entre deux paragraphes (« ma » / « itrise »).
+    bios.push(chunk.length ? mendWordBreaks(chunk.join(' ')) : null);
+  }
+
   const out = {};
   names.forEach((slug, i) => {
-    out[slug] = phones[i];
+    out[slug] = { phone: phones[i], bio: bios[i] ?? null, name: labels[i] ?? null };
   });
   return out;
 }
@@ -633,7 +679,7 @@ function parseAgents() {
   const files = readdirSync(PAGES).filter((f) => /^annonces-agent-\d+-.*\.json$/.test(f));
   const agents = [];
   const localImages = readdirSync(join(SCRAP, 'images'));
-  const phones = parseTeamPhones();
+  const contacts = parseTeamContacts();
   for (const f of files) {
     const d = readJson(join(PAGES, f));
     if (d.url.includes('?')) continue;
@@ -652,10 +698,12 @@ function parseAgents() {
     agents.push({
       legacyId: id,
       slug,
-      name: pretty,
+      // La page « Notre agence » porte les accents ; la page conseiller non.
+      name: contacts[slug]?.name ?? pretty,
       role: AGENT_ROLES[id] ?? 'Négociateur',
       email: AGENT_EMAILS[id] ?? null,
-      phone: phones[slug] ?? null,
+      phone: contacts[slug]?.phone ?? null,
+      bio: contacts[slug]?.bio ?? null,
       photo,
       legacyUrl: `/annonces/agent/${id}-${slug}.html`,
     });
@@ -667,7 +715,8 @@ function parseAgents() {
     name: 'Marion Nicaise',
     role: 'Gestionnaire locative',
     email: 'marion.nicaise@aurea-immobilier.fr',
-    phone: phones['marion-nicaise'] ?? null,
+    phone: contacts['marion-nicaise']?.phone ?? null,
+    bio: contacts['marion-nicaise']?.bio ?? null,
     photo: localImages.find((i) => i.startsWith('marion-nicaise-')) ?? 'marion-nicaise.png',
     legacyUrl: null,
   });
@@ -966,11 +1015,11 @@ function buildSeedSql(listings, archives, agents, communes) {
   L.push('-- Conseillers --------------------------------------------------------------');
   for (const a of agents) {
     L.push(
-      `insert into public.agents (slug, name, role, email, phone, photo_file, legacy_id) values (${sqlStr(
+      `insert into public.agents (slug, name, role, email, phone, bio, photo_file, legacy_id) values (${sqlStr(
         a.slug
       )}, ${sqlStr(a.name)}, ${sqlStr(a.role)}, ${sqlStr(a.email)}, ${sqlStr(
         a.phone
-      )}, ${sqlStr(a.photo)}, ${sqlStr(a.legacyId)}) on conflict (slug) do update set name = excluded.name, role = excluded.role, email = excluded.email, phone = excluded.phone, photo_file = excluded.photo_file;`
+      )}, ${sqlStr(a.bio)}, ${sqlStr(a.photo)}, ${sqlStr(a.legacyId)}) on conflict (slug) do update set name = excluded.name, role = excluded.role, email = excluded.email, phone = excluded.phone, bio = excluded.bio, photo_file = excluded.photo_file;`
     );
   }
   L.push('');

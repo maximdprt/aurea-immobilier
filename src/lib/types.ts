@@ -113,6 +113,8 @@ export interface Agent {
   email: string | null;
   /** Ligne directe publiee sur l'ancienne page « Notre agence ». */
   phone: string | null;
+  /** Presentation redigee par la personne, telle que publiee par l'agence. */
+  bio: string | null;
   photo: string | null;
   legacyUrl: string | null;
 }
