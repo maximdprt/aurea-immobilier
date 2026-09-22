@@ -1,0 +1,146 @@
+---
+/**
+ * Page de désinscription, ouverte depuis le lien d'un email d'alerte.
+ *
+ * Elle n'agit PAS au chargement. Les messageries visitent les liens qu'elles
+ * reçoivent pour les inspecter ; une désinscription déclenchée par un simple
+ * GET partirait donc toute seule, sans clic de personne. La page affiche un
+ * bouton, et c'est lui qui appelle /api/alerte-desabonnement/.
+ *
+ * Deux états : le formulaire (jeton en main), puis le résultat (`?etat=`),
+ * après la redirection de la route.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import { CONTACT } from '~/lib/site';
+
+export const prerender = false;
+
+const params = Astro.url.searchParams;
+const state = params.get('etat');
+const token = params.get('jeton') ?? '';
+
+/** `formulaire` tant qu'aucune action n'a eu lieu. */
+const view =
+  state === 'ok' || state === 'panne' || state === 'invalide'
+    ? state
+    : token && token.length <= 64
+      ? 'formulaire'
+      : 'invalide';
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Désinscription' },
+];
+
+const TITLES: Record<string, string> = {
+  formulaire: 'Ne plus recevoir nos alertes',
+  ok: 'Vous êtes désinscrit',
+  invalide: 'Ce lien n’est plus valable',
+  panne: 'Désinscription impossible pour le moment',
+};
+---
+
+<Base
+  title="Désinscription des alertes"
+  description="Ne plus recevoir les alertes nouveautés d’AUREA Immobilier."
+  path="/desabonnement/"
+  crumbs={crumbs}
+  noindex
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} onDark />
+      <h1>{TITLES[view]}</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <div class="panel">
+      {
+        view === 'formulaire' && (
+          <>
+            <p class="lede">
+              Un clic sur ce bouton et nous cessons de vous écrire. Votre adresse et vos critères
+              sont effacés de nos serveurs, pas seulement désactivés.
+            </p>
+            <form method="post" action="/api/alerte-desabonnement/">
+              <input type="hidden" name="jeton" value={token} />
+              <p class="actions">
+                <button class="btn" type="submit">Confirmer ma désinscription</button>
+                <a class="btn btn-secondary" href="/">Annuler</a>
+              </p>
+            </form>
+          </>
+        )
+      }
+
+      {
+        view === 'ok' && (
+          <>
+            <p class="lede">
+              C’est fait. Vous ne recevrez plus d’alerte, et votre adresse a été effacée.
+            </p>
+            <p>
+              Vous pourrez toujours revenir : la page d’alerte reste ouverte, et nos biens
+              disponibles sont consultables sans inscription.
+            </p>
+            <p class="actions">
+              <a class="btn" href="/acheter/">Voir les biens disponibles</a>
+              <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+            </p>
+          </>
+        )
+      }
+
+      {
+        view === 'invalide' && (
+          <>
+            <p class="lede">Ce lien de désinscription est incomplet ou n’est plus valable.</p>
+            <p>
+              Si vous vous êtes déjà désinscrit, il n’y a rien à faire : nous ne vous écrivons
+              plus. Sinon, utilisez le lien présent au bas du dernier email reçu, ou
+              écrivez-nous à <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> et nous
+              nous en chargeons.
+            </p>
+            <p class="actions">
+              <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+            </p>
+          </>
+        )
+      }
+
+      {
+        view === 'panne' && (
+          <>
+            <p class="lede">
+              Nous ne parvenons pas à traiter votre désinscription pour le moment.
+            </p>
+            <p>
+              Réessayez dans quelques minutes. Si cela persiste, écrivez-nous à{' '}
+              <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> ou appelez le{' '}
+              <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a> : nous supprimerons votre
+              inscription nous-mêmes.
+            </p>
+          </>
+        )
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .panel {
+    max-width: 62ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    margin-top: var(--space-l);
+    margin-bottom: 0;
+  }
+</style>

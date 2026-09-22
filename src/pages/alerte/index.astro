@@ -1,0 +1,418 @@
+---
+/**
+ * « Alerte des nouveautés » — le bloc de l'accueil pointe ici.
+ *
+ * Inscription en double opt-in (§20.5, §21.2) : le formulaire n'active rien,
+ * il déclenche l'envoi d'un email de confirmation. Tant que le lien n'est pas
+ * cliqué, l'inscription reste muette et la purge des sept jours l'efface.
+ *
+ * Le formulaire fonctionne sans JavaScript : la soumission part alors vers
+ * /api/alerte/ et la réponse JSON s'affiche telle quelle. Avec JavaScript,
+ * l'envoi se fait en arrière-plan et le message s'affiche en place — même
+ * mécanique que LeadForm.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Faq, { type FaqItem } from '~/components/Faq.astro';
+import { faqSchema } from '~/lib/schema';
+import { allCommunes } from '~/lib/catalog';
+import { PROPERTY_TYPE_LABELS } from '~/lib/alerts';
+import { CONTACT } from '~/lib/site';
+
+/* Communes triées par nom : la liste sert à choisir, pas à classer par volume. */
+const communes = [...allCommunes()].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const consentVersion = '2026-09-21';
+
+const faq: FaqItem[] = [
+  {
+    question: 'Que se passe-t-il après l’inscription ?',
+    answer:
+      'Vous recevez un email de confirmation. Tant que vous n’avez pas cliqué sur son lien, aucune alerte ne part et votre adresse est effacée au bout de sept jours. C’est ce double accord qui garantit que personne ne peut vous inscrire à votre place.',
+  },
+  {
+    question: 'À quelle fréquence vais-je recevoir des emails ?',
+    answer:
+      'Uniquement lorsqu’un bien correspond à vos critères. Nous ne publions que quelques biens par mois dans le Mantois : il n’y a ni lettre d’information, ni relance commerciale, ni envoi programmé.',
+  },
+  {
+    question: 'Comment me désinscrire ?',
+    answer:
+      'Chaque email porte un lien de désinscription en bas de page. Il ouvre une page où un seul bouton suffit. Votre adresse et vos critères sont alors effacés, pas simplement désactivés.',
+  },
+  {
+    question: 'Que faites-vous de mon adresse email ?',
+    answer:
+      'Elle sert uniquement à vous envoyer ces alertes. Elle n’est ni cédée, ni revendue, ni utilisée pour autre chose. Une inscription sans activité depuis trois ans est supprimée automatiquement.',
+  },
+  {
+    question: 'Puis-je modifier mes critères ?',
+    answer:
+      'Désinscrivez-vous avec le lien de votre dernier email, puis réinscrivez-vous avec vos nouveaux critères. Ce détour évite que quiconque connaissant votre adresse puisse modifier votre alerte à votre place.',
+  },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Alerte nouveautés' },
+];
+---
+
+<Base
+  title="Alerte nouveautés dans le Mantois"
+  description="Soyez prévenu par email dès qu’un bien correspond à votre recherche dans le Mantois. Inscription gratuite, sans compte, désinscription en un clic."
+  path="/alerte/"
+  crumbs={crumbs}
+  schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} onDark />
+      <h1>Alerte des nouveautés</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <div class="layout">
+      <div>
+        <header class="head">
+          <p class="lede">
+            Les biens qui se vendent vite partent souvent avant d’avoir été vus. Dites-nous ce que
+            vous cherchez : nous vous écrivons dès qu’un bien y correspond, et à ce moment-là
+            seulement.
+          </p>
+        </header>
+
+        <section class="section-tight">
+          <h2>Ce que vous recevrez, et rien d’autre</h2>
+          <ul class="promises">
+            <li>
+              <strong>Un email par nouveauté correspondante.</strong> Pas de lettre d’information,
+              pas de relance, pas d’envoi programmé.
+            </li>
+            <li>
+              <strong>Aucun compte à créer.</strong> Une adresse email et vos critères, c’est tout
+              ce que nous conservons.
+            </li>
+            <li>
+              <strong>Une confirmation avant tout envoi.</strong> Sans votre clic dans l’email de
+              confirmation, votre adresse est effacée sous sept jours.
+            </li>
+            <li>
+              <strong>Une sortie en un clic.</strong> Le lien de désinscription figure en bas de
+              chaque email et efface vos données.
+            </li>
+          </ul>
+        </section>
+
+        <section class="section-tight">
+          <Faq items={faq} title="Vos questions avant de vous inscrire" />
+        </section>
+      </div>
+
+      <div class="form-col">
+        <section class="alert-form" id="alerte">
+          <h2>Créer mon alerte</h2>
+          <p class="muted">Gratuit, sans engagement, et sans compte à créer.</p>
+
+          <form method="post" action="/api/alerte/" data-alert-form novalidate>
+            <input type="hidden" name="consent_version" value={consentVersion} />
+
+            {/* Piege a robots : un humain ne le voit ni ne le remplit (§20.5) */}
+            <div class="hp-field" aria-hidden="true">
+              <label for="alerte-website">Ne pas remplir</label>
+              <input id="alerte-website" type="text" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <fieldset>
+              <legend>Je cherche à</legend>
+              <div class="choices">
+                <label class="choice">
+                  <input type="radio" name="transaction" value="vente" checked />
+                  <span>Acheter</span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="transaction" value="location" />
+                  <span>Louer</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <p class="field">
+              <label for="alerte-type">Type de bien</label>
+              <select id="alerte-type" name="property_type">
+                <option value="">Tous les types</option>
+                {
+                  Object.entries(PROPERTY_TYPE_LABELS).map(([value, label]) => (
+                    <option value={value}>{label}</option>
+                  ))
+                }
+              </select>
+            </p>
+
+            <p class="field">
+              <label for="alerte-commune">Commune</label>
+              <select id="alerte-commune" name="commune">
+                <option value="">Tout le Mantois</option>
+                {communes.map((c) => <option value={c.slug}>{c.name}</option>)}
+              </select>
+            </p>
+
+            <div class="two">
+              <p class="field">
+                <label for="alerte-budget">Budget maximum</label>
+                <input
+                  id="alerte-budget"
+                  name="budget_max"
+                  type="number"
+                  min="1"
+                  step="1000"
+                  inputmode="numeric"
+                  placeholder="€"
+                />
+              </p>
+              <p class="field">
+                <label for="alerte-surface">Surface minimum</label>
+                <input
+                  id="alerte-surface"
+                  name="area_min"
+                  type="number"
+                  min="1"
+                  max="10000"
+                  inputmode="numeric"
+                  placeholder="m²"
+                />
+              </p>
+            </div>
+
+            <p class="field">
+              <label for="alerte-pieces">Nombre de pièces minimum</label>
+              <input
+                id="alerte-pieces"
+                name="rooms_min"
+                type="number"
+                min="1"
+                max="20"
+                inputmode="numeric"
+                placeholder="Indifférent"
+              />
+            </p>
+
+            <p class="field">
+              <label for="alerte-email">Votre email <span aria-hidden="true">*</span></label>
+              <input
+                id="alerte-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                maxlength="254"
+              />
+              <span class="hint">Un email de confirmation vous y attend juste après.</span>
+            </p>
+
+            <p class="field consent">
+              <label>
+                <input type="checkbox" name="consent" value="1" required />
+                <span>
+                  J’accepte de recevoir par email les biens correspondant à ces critères. Je peux
+                  me désinscrire à tout moment depuis le lien présent dans chaque envoi.
+                  <a href="/confidentialite/">Politique de confidentialité</a>.
+                </span>
+              </label>
+            </p>
+
+            {
+              turnstileKey ? (
+                <div
+                  class="cf-turnstile"
+                  data-sitekey={turnstileKey}
+                  data-theme="light"
+                  data-language="fr"
+                />
+              ) : (
+                <p class="small muted">
+                  Protection anti-spam à activer : clé Cloudflare Turnstile non configurée.
+                </p>
+              )
+            }
+
+            <p class="actions">
+              <button class="btn" type="submit">Créer mon alerte</button>
+              <span class="small muted">
+                ou appelez-nous au <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
+              </span>
+            </p>
+
+            <p class="form-status" role="status" hidden data-status></p>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+</Base>
+
+{
+  turnstileKey && (
+    <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+  )
+}
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .promises {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .promises li {
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .promises strong {
+    color: var(--ink);
+  }
+
+  .alert-form {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: var(--space-m);
+  }
+
+  .alert-form h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3xs);
+  }
+
+  fieldset {
+    margin: 0 0 var(--space-s);
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    padding: 0;
+    font-weight: 650;
+    font-size: var(--step--1);
+  }
+
+  .choices {
+    display: flex;
+    gap: var(--space-s);
+    margin-top: var(--space-2xs);
+  }
+
+  .choice {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    font-weight: 400;
+  }
+
+  .two {
+    display: grid;
+    gap: 0 var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+
+  .consent label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2xs);
+    align-items: start;
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+
+  .consent input {
+    margin-top: 0.25rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    margin-bottom: 0;
+  }
+
+  .form-status {
+    margin-top: var(--space-s);
+    margin-bottom: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 30rem;
+      align-items: start;
+    }
+
+    .form-col {
+      position: sticky;
+      top: 5.5rem;
+    }
+  }
+</style>
+
+<script>
+  /* Amelioration progressive : envoi en arriere-plan, message en place. */
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-alert-form]')) {
+    const status = form.querySelector<HTMLElement>('[data-status]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type=submit]');
+
+    form.addEventListener('submit', async (event) => {
+      if (!form.reportValidity()) {
+        event.preventDefault();
+        return;
+      }
+      event.preventDefault();
+      submit?.setAttribute('disabled', '');
+      if (status) {
+        status.hidden = false;
+        status.dataset.state = '';
+        status.textContent = 'Envoi en cours…';
+      }
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = (await response.json().catch(() => ({}))) as { message?: string };
+        if (!response.ok) throw new Error(data.message ?? 'Envoi impossible');
+        if (status) {
+          status.dataset.state = 'ok';
+          status.textContent =
+            'Presque terminé : ouvrez l’email que nous venons de vous envoyer et cliquez sur le lien de confirmation. Sans ce clic, aucune alerte ne partira.';
+        }
+        form.reset();
+      } catch (error) {
+        if (status) {
+          status.dataset.state = 'error';
+          status.textContent =
+            error instanceof Error && error.message
+              ? error.message
+              : 'Envoi impossible pour le moment.';
+        }
+      } finally {
+        submit?.removeAttribute('disabled');
+      }
+    });
+  }
+</script>

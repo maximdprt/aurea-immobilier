@@ -1,7 +1,7 @@
 -- =============================================================================
 -- AUREA Immobilier — migrations consolidees pour le SQL Editor Supabase
 -- Projet : esgygaazfyjzzzdrvcey
--- Genere le 2026-09-21 depuis supabase/migrations/ (3 fichiers, dans l'ordre).
+-- Genere depuis supabase/migrations/ (4 fichiers, dans l'ordre).
 --
 -- MODE D'EMPLOI
 --   1. Dashboard Supabase > SQL Editor > New query.
@@ -22,7 +22,7 @@
 
 
 -- #############################################################################
--- 1/3 — SCHEMA : tables, types, index, vues
+-- 1/4 — SCHEMA : tables, types, index, vues
 -- source : supabase/migrations/20260921090000_schema.sql
 -- #############################################################################
 
@@ -375,7 +375,7 @@ create trigger leads_touch before update on public.leads
   for each row execute function private.touch_updated_at();
 
 -- #############################################################################
--- 2/3 — RLS : politiques, grants, roles
+-- 2/4 — RLS : politiques, grants, roles
 -- source : supabase/migrations/20260921091000_rls.sql
 -- #############################################################################
 
@@ -663,7 +663,7 @@ where l.status in ('published', 'under_offer');
 grant select on public.published_listings to anon, authenticated;
 
 -- #############################################################################
--- 3/3 — HOOKS & CRON : jeton JWT, audit, purges
+-- 3/4 — HOOKS & CRON : jeton JWT, audit, purges
 -- source : supabase/migrations/20260921092000_hooks_and_cron.sql
 -- #############################################################################
 
@@ -840,3 +840,30 @@ select cron.schedule(
   '15 3 * * *',
   $$select private.run_retention();$$
 );
+
+-- #############################################################################
+-- 4/4 — INDEX DES JETONS D'ALERTE
+-- source : supabase/migrations/20260922100000_alert_token_indexes.sql
+-- #############################################################################
+
+-- =============================================================================
+-- AUREA Immobilier — index des jetons d'alerte
+--
+-- §20.3 : toute colonne servant de filtre porte un index. Les deux pages
+-- atteintes depuis un email — /alerte/confirmation/ et /desabonnement/ —
+-- retrouvent une inscription par l'EMPREINTE de son jeton, jamais par son
+-- identifiant. Sans index, chaque clic dans un email provoque un parcours
+-- complet de `alert_subscriptions`.
+--
+-- Index PARTIELS dans les deux cas : les colonnes sont nulles la plupart du
+-- temps (`confirm_token_hash` est vide des que le jeton a servi), et un index
+-- partiel ne porte que sur les lignes qu'on interroge reellement.
+-- =============================================================================
+
+create index if not exists alerts_confirm_token_idx
+  on public.alert_subscriptions (confirm_token_hash)
+  where confirm_token_hash is not null;
+
+create index if not exists alerts_unsubscribe_token_idx
+  on public.alert_subscriptions (unsubscribe_token_hash)
+  where unsubscribe_token_hash is not null;

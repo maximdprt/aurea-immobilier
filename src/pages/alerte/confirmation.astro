@@ -1,0 +1,169 @@
+---
+/**
+ * Second temps du double opt-in : le lien reçu par email.
+ *
+ * Le jeton est à usage unique. Une fois consommé, son empreinte est effacée —
+ * un lien qui traîne dans une boîte email ne doit pas rester une clé active.
+ * C'est pourquoi le message d'échec couvre volontairement deux situations à la
+ * fois (lien déjà utilisé, lien expiré) : les distinguer supposerait de garder
+ * le jeton en base après usage, et répondrait à qui teste des liens.
+ *
+ * Rendu à la demande : la page dépend d'un paramètre d'URL.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import { formsClient } from '~/lib/server/supabase-admin';
+import { hashToken } from '~/lib/server/tokens';
+import { describeCriteria, readCriteria } from '~/lib/alerts';
+import { CONTACT } from '~/lib/site';
+
+export const prerender = false;
+
+type Outcome = 'ok' | 'invalide' | 'panne';
+
+const token = Astro.url.searchParams.get('jeton') ?? '';
+let outcome: Outcome = 'invalide';
+let summary: string | null = null;
+
+/* Un jeton de 32 octets fait 43 caractères en base64url : au-delà, ou en
+   dessous, inutile d'interroger la base. */
+if (token && token.length <= 64) {
+  const db = formsClient();
+  if (!db) {
+    outcome = 'panne';
+    console.warn('[alerte] confirmation impossible : client Supabase non configuré');
+  } else {
+    const hash = await hashToken(token);
+    const { data: row, error } = await db
+      .from('alert_subscriptions')
+      .select('id, criteria')
+      .eq('confirm_token_hash', hash)
+      .maybeSingle();
+
+    if (error) {
+      outcome = 'panne';
+      console.warn('[alerte] lecture impossible', error.code);
+    } else if (row) {
+      const { error: updateError } = await db
+        .from('alert_subscriptions')
+        .update({ confirmed_at: new Date().toISOString(), confirm_token_hash: null })
+        .eq('id', row.id);
+
+      if (updateError) {
+        outcome = 'panne';
+        console.warn('[alerte] confirmation non enregistrée', updateError.code);
+      } else {
+        outcome = 'ok';
+        const criteria = readCriteria(row.criteria);
+        summary = criteria ? describeCriteria(criteria) : null;
+      }
+    }
+  }
+}
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Alerte', href: '/alerte/' },
+  { label: 'Confirmation' },
+];
+
+const TITLES: Record<Outcome, string> = {
+  ok: 'Votre alerte est active',
+  invalide: 'Ce lien n’est plus valable',
+  panne: 'Confirmation impossible pour le moment',
+};
+---
+
+<Base
+  title="Confirmation de votre alerte"
+  description="Confirmation de votre inscription aux alertes nouveautés d’AUREA Immobilier."
+  path="/alerte/confirmation/"
+  crumbs={crumbs}
+  noindex
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} onDark />
+      <h1>{TITLES[outcome]}</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <div class="panel">
+      {
+        outcome === 'ok' && (
+          <>
+            <p class="lede">
+              C’est fait : vous serez prévenu dès qu’un bien correspondra à votre recherche.
+            </p>
+            {summary && <p class="criteria">{summary}</p>}
+            <p>
+              Chaque email que nous vous enverrons porte un lien de désinscription, actif en un
+              clic. Vous n’avez rien d’autre à faire.
+            </p>
+            <p class="actions">
+              <a class="btn" href="/acheter/">Voir les biens disponibles</a>
+              <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+            </p>
+          </>
+        )
+      }
+
+      {
+        outcome === 'invalide' && (
+          <>
+            <p class="lede">
+              Ce lien de confirmation a déjà servi, ou il a expiré.
+            </p>
+            <p>
+              S’il a déjà servi, votre alerte est active et vous n’avez rien à faire. Dans le
+              doute, réinscrivez-vous : si l’alerte existe déjà, nous vous le dirons par email
+              sans rien modifier.
+            </p>
+            <p class="actions">
+              <a class="btn" href="/alerte/">Créer une alerte</a>
+              <a class="btn btn-secondary" href="/contact/">Nous contacter</a>
+            </p>
+          </>
+        )
+      }
+
+      {
+        outcome === 'panne' && (
+          <>
+            <p class="lede">
+              Nous ne parvenons pas à enregistrer votre confirmation pour le moment.
+            </p>
+            <p>
+              Votre inscription n’est pas perdue. Réessayez dans quelques minutes en recliquant
+              sur le lien de votre email, ou appelez-nous au{' '}
+              <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>.
+            </p>
+          </>
+        )
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .panel {
+    max-width: 62ch;
+  }
+
+  .criteria {
+    padding: var(--space-s) var(--space-m);
+    background: var(--surface);
+    border-left: 3px solid var(--color-2);
+    font-weight: 650;
+    color: var(--color-1);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-l);
+  }
+</style>

@@ -37,6 +37,10 @@ const FORBIDDEN = [
   { pattern: /ORISHA_FEED_TOKEN\s*[:=]\s*["'][^"']+["']/g, label: 'jeton du flux Orisha' },
   { pattern: /EMAIL_API_KEY\s*[:=]\s*["'][^"']+["']/g, label: 'clé du service d’emailing' },
   { pattern: /IP_HASH_SALT\s*[:=]\s*["'][^"']+["']/g, label: 'sel de hachage des IP' },
+  {
+    pattern: /ALERT_TOKEN_SECRET\s*[:=]\s*["'][^"']+["']/g,
+    label: 'secret des jetons d’alerte',
+  },
 ];
 
 const SCANNED_EXTENSIONS = ['.js', '.mjs', '.css', '.html', '.json', '.txt', '.map'];
@@ -83,6 +87,7 @@ const SERVER_ONLY = [
   'ORISHA_FEED_TOKEN',
   'EMAIL_API_KEY',
   'IP_HASH_SALT',
+  'ALERT_TOKEN_SECRET',
 ];
 
 const envExample = existsSync(join(ROOT, '.env.example'))
