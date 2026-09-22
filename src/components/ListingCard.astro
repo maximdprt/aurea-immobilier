@@ -294,9 +294,18 @@ const heading = listingHeading(listing);
 <script>
   /* « Ma selection » : conservee dans le navigateur, comme sur l'ancien site. */
   const KEY = 'aurea-selection';
+  /*
+   * `JSON.parse` rend ce qu'on lui donne : une valeur stockee valide mais qui
+   * n'est pas un tableau (objet, nombre) passe le `try` sans erreur, et c'est
+   * le `new Set(...)` suivant qui leve — hors du filet. Le script entier
+   * s'arrete alors, et plus aucun cœur de la page ne fonctionne. On verifie
+   * donc la FORME, pas seulement la syntaxe.
+   */
   const read = (): number[] => {
     try {
-      return JSON.parse(localStorage.getItem(KEY) ?? '[]');
+      const parsed: unknown = JSON.parse(localStorage.getItem(KEY) ?? '[]');
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map(Number).filter(Number.isFinite);
     } catch {
       return [];
     }

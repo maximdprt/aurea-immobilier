@@ -20,8 +20,24 @@ const archivedSlugs = new Set(
     .map((listing) => `/bien/${listing.slug}/`)
 );
 
-/** Pages techniques, jamais indexables. */
-const NEVER_INDEXED = ['/404/', '/contenu-supprime/', '/admin', '/api/'];
+/**
+ * Pages techniques, jamais indexables. Toute page portant `noindex` doit
+ * figurer ici : l'audit SEO echoue si le sitemap annonce une page que la page
+ * elle-meme demande d'ignorer.
+ *
+ * `/selection/` en fait partie : son contenu est propre a chaque visiteur (les
+ * biens mis de cote dans son navigateur) et n'existe pas cote serveur.
+ */
+const NEVER_INDEXED = [
+  '/404/',
+  '/contenu-supprime/',
+  '/admin',
+  '/api/',
+  '/selection/',
+  // Pages atteintes par un lien porteur de jeton, propres a une inscription.
+  '/alerte/confirmation/',
+  '/desabonnement/',
+];
 
 /**
  * Astro en mode hybride (prompt v3 §6) : tout le contenu public est pre-rendu,

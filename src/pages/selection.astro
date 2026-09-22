@@ -1,0 +1,305 @@
+---
+/**
+ * « Ma selection » — les biens mis de cote par le visiteur.
+ *
+ * Pas de compte client au lancement (brief §817) : la selection vit dans le
+ * `localStorage` du navigateur, sous la cle `aurea-selection` qu'ecrit le cœur
+ * de `ListingCard`. Rien n'est envoye au serveur, donc rien n'est connu de
+ * nous, donc la page ne peut pas etre rendue a l'avance pour un visiteur
+ * donne.
+ *
+ * D'ou le parti pris : la page rend TOUTES les fiches du catalogue, masquees,
+ * et ne revele au chargement que celles qui figurent dans le stockage. Le
+ * catalogue tient en une vingtaine de biens — le cout est negligeable, et cela
+ * evite de recopier le balisage de `ListingCard` dans un gabarit JavaScript
+ * qui divergerait a la premiere retouche. Les images sont en `loading="lazy"` :
+ * une carte masquee n'en telecharge aucune.
+ *
+ * `noindex` : la page n'a pas de contenu propre, et son contenu differe pour
+ * chaque visiteur.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import ListingCard from '~/components/ListingCard.astro';
+import { allListings } from '~/lib/catalog';
+import { CONTACT } from '~/lib/site';
+
+/*
+ * Toutes les fiches, y compris vendues et louees : un bien mis de cote depuis
+ * « Nos reussites » doit pouvoir se retrouver ici, meme s'il n'est plus a
+ * vendre. Sa carte porte deja son statut.
+ */
+const listings = allListings();
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Ma sélection' },
+];
+---
+
+<Base
+  title="Ma sélection de biens"
+  description="Retrouvez les biens que vous avez mis de côté pendant votre recherche, comparez-les et transmettez leurs références à un conseiller AUREA Immobilier."
+  path="/selection/"
+  crumbs={crumbs}
+  noindex
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} onDark />
+      <h1>Ma sélection</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section" data-selection>
+    <header class="head">
+      <p class="lede">
+        Les biens que vous avez mis de côté avec le cœur affiché sous chaque annonce.
+      </p>
+      <p class="small muted">
+        Cette liste est conservée par votre navigateur, sur cet appareil. Elle ne nous est pas
+        transmise et ne demande aucun compte.
+      </p>
+    </header>
+
+    {/* Etat par defaut du document : c'est aussi ce que voit un visiteur sans
+        JavaScript, pour qui la selection n'a de toute facon jamais pu etre
+        enregistree. */}
+    <div class="empty" data-empty>
+      <p class="notice">Votre sélection est vide pour le moment.</p>
+      <p>
+        Pendant votre recherche, le cœur affiché sous chaque annonce met le bien de côté. Vous le
+        retrouvez ensuite ici, pour comparer à tête reposée et ne pas repartir de zéro à chaque
+        visite.
+      </p>
+      <p class="actions">
+        <a class="btn" href="/acheter/">Voir les biens à vendre</a>
+        <a class="btn btn-secondary" href="/louer/">Voir les locations</a>
+      </p>
+    </div>
+
+    {/* Stockage inaccessible (navigation privee verrouillee, cookies bloques) :
+        sans ce message, la page semblerait simplement avoir perdu la selection. */}
+    <p class="notice" data-unavailable hidden>
+      Votre navigateur n’autorise pas le stockage local : les biens mis de côté ne peuvent pas être
+      conservés d’une page à l’autre. Vous pouvez relever leurs références et nous appeler au{' '}
+      <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>.
+    </p>
+
+    <div class="results" data-results hidden>
+      <div class="toolbar">
+        <p class="count" data-count></p>
+        <button type="button" class="btn-link" data-clear>Vider ma sélection</button>
+      </div>
+
+      <div class="grid">
+        {
+          listings.map((l) => (
+            <div class="listing-item" data-item data-ref={l.reference} hidden>
+              <ListingCard listing={l} />
+            </div>
+          ))
+        }
+      </div>
+
+      <aside class="next">
+        <h2>Faire le point sur cette sélection</h2>
+        <p>
+          Un conseiller peut regrouper plusieurs de ces visites sur un même déplacement, et vous
+          dire lesquelles valent vraiment le trajet.
+        </p>
+        <p class="refs small muted">
+          Références retenues : <span data-refs>—</span>. Indiquez-les dans votre message, nous
+          préparerons le rendez-vous.
+        </p>
+        <p class="actions">
+          <a class="btn" href="/contact/">Nous transmettre ma sélection</a>
+          <span class="small muted">
+            ou appelez le <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
+          </span>
+        </p>
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .empty p,
+  .next p {
+    max-width: 62ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    margin-top: var(--space-m);
+    margin-bottom: 0;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-bottom: var(--space-s);
+  }
+
+  .count {
+    margin: 0;
+    font-weight: 650;
+    color: var(--color-1);
+  }
+
+  .btn-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .btn-link:hover {
+    color: var(--color-1);
+  }
+
+  /* Meme grille que la liste des biens, pour que les cartes gardent la largeur
+     a laquelle elles ont ete dessinees. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+  }
+
+  .listing-item[hidden] {
+    display: none;
+  }
+
+  .next {
+    margin-top: var(--space-xl);
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .next h2 {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .refs [data-refs] {
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script>
+  /*
+   * Meme cle que le cœur de ListingCard. Les deux doivent rester identiques :
+   * si l'une change, la selection devient invisible ici sans qu'aucune erreur
+   * ne se produise.
+   */
+  const KEY = 'aurea-selection';
+
+  const root = document.querySelector<HTMLElement>('[data-selection]');
+  if (root) {
+    const empty = root.querySelector<HTMLElement>('[data-empty]');
+    const unavailable = root.querySelector<HTMLElement>('[data-unavailable]');
+    const results = root.querySelector<HTMLElement>('[data-results]');
+    const count = root.querySelector<HTMLElement>('[data-count]');
+    const refsOut = root.querySelector<HTMLElement>('[data-refs]');
+    const clear = root.querySelector<HTMLButtonElement>('[data-clear]');
+    const items = [...root.querySelectorAll<HTMLElement>('[data-item]')];
+
+    /**
+     * `null` signale un stockage inaccessible, a distinguer d'une selection
+     * vide : le premier merite un message, le second est l'etat normal d'un
+     * nouveau visiteur.
+     */
+    const read = (): number[] | null => {
+      let raw: string | null;
+      try {
+        raw = localStorage.getItem(KEY);
+      } catch {
+        return null;
+      }
+      try {
+        const parsed: unknown = JSON.parse(raw ?? '[]');
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map(Number).filter(Number.isFinite);
+      } catch {
+        // Valeur corrompue : on repart d'une selection vide plutot que
+        // d'accuser le navigateur.
+        return [];
+      }
+    };
+
+    const render = () => {
+      const refs = read();
+
+      if (refs === null) {
+        unavailable?.removeAttribute('hidden');
+        return;
+      }
+      unavailable?.setAttribute('hidden', '');
+
+      const wanted = new Set(refs);
+      let shown = 0;
+      for (const item of items) {
+        const on = wanted.has(Number(item.dataset.ref));
+        item.hidden = !on;
+        if (on) shown++;
+      }
+
+      /* Une reference stockee dont la fiche a quitte le catalogue ne doit pas
+         etre comptee : on compte ce qui est reellement affiche. */
+      if (count) count.textContent = `${shown} bien${shown > 1 ? 's' : ''} dans ma sélection`;
+      if (refsOut) {
+        refsOut.textContent = items
+          .filter((item) => !item.hidden)
+          .map((item) => item.dataset.ref)
+          .join(', ');
+      }
+
+      const some = shown > 0;
+      if (results) results.hidden = !some;
+      if (empty) empty.hidden = some;
+    };
+
+    clear?.addEventListener('click', () => {
+      try {
+        localStorage.removeItem(KEY);
+      } catch {
+        /* stockage indisponible : il n'y avait rien a vider */
+      }
+      render();
+    });
+
+    /*
+     * Le cœur de chaque carte reste actif ici : le retirer doit faire sortir la
+     * carte de la liste. Le clic est ecoute sur le conteneur, donc APRES le
+     * gestionnaire porte par le bouton lui-meme — le stockage est deja a jour
+     * au moment ou l'on redessine.
+     */
+    root.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement | null)?.closest('[data-fav]')) render();
+    });
+
+    /* La selection peut changer dans un autre onglet : on se resynchronise. */
+    window.addEventListener('storage', (event) => {
+      if (event.key === null || event.key === KEY) render();
+    });
+
+    render();
+  }
+</script>

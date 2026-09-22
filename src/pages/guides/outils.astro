@@ -1,0 +1,256 @@
+---
+/**
+ * « Nos outils » — page de regroupement liee depuis la colonne « Nos services »
+ * du pied de page (FOOTER_SERVICES dans src/lib/site.ts).
+ *
+ * Elle ne cree aucun outil : elle rassemble ceux que le site rend deja, avec
+ * pour chacun ce qu'il produit reellement et ce qu'il ne produit pas. Rien
+ * n'est annonce ici qui n'existe pas ailleurs dans le site — la regle du §0
+ * vaut pour les fonctionnalites comme pour les chiffres.
+ *
+ * C'est pourquoi « Ma selection » est decrite sans lien : la fonction existe
+ * (le cœur de chaque carte, conserve dans le navigateur) mais sa page dediee
+ * `/selection/` n'est pas encore ecrite. Et c'est pourquoi l'alerte nouveautes
+ * ne figure pas du tout : ni page, ni formulaire, ni envoi. Lier ou annoncer
+ * l'un des deux ferait de cette page une promesse.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Faq, { type FaqItem } from '~/components/Faq.astro';
+import { faqSchema } from '~/lib/schema';
+import { catalogStats } from '~/lib/catalog';
+import { CONTACT } from '~/lib/site';
+
+const stats = catalogStats();
+
+/**
+ * Chaque entree renvoie a une page qui existe. `produces` dit ce qu'on obtient,
+ * `limit` ce que l'outil ne fait pas : un outil dont on tait les limites se
+ * paie en deception, et en appels au standard.
+ */
+const TOOLS = [
+  {
+    href: '/estimation/',
+    name: 'Estimation de votre bien',
+    lede:
+      'Vous décrivez votre bien étape par étape ; un conseiller reprend la main et vous remet un avis de valeur écrit après visite.',
+    produces: 'Un avis de valeur écrit, gratuit et sans engagement.',
+    limit:
+      'Aucun prix n’est calculé automatiquement à l’écran : la valeur est arrêtée par un conseiller, après visite.',
+    cta: 'Faire estimer mon bien',
+  },
+  {
+    href: '/prix-immobilier-mantes-la-jolie/',
+    name: 'Prix au m² dans le Mantois',
+    lede:
+      'Les prix constatés commune par commune, avec la source et la date du relevé sous chaque chiffre.',
+    produces: 'Un ordre de grandeur pour situer votre bien avant d’aller plus loin.',
+    limit:
+      'Ce sont des médianes de marché : elles ne tiennent compte ni de l’état, ni de l’exposition, ni du DPE de votre bien.',
+    cta: 'Consulter les prix',
+  },
+  {
+    href: '/acheter/',
+    name: 'Recherche multicritère',
+    lede:
+      'Localisation, type de bien, surface, budget, pièces et chambres : la liste se filtre et se trie sans recharger la page. Le cœur affiché sous chaque annonce met le bien de côté pour le retrouver plus tard — cette sélection reste dans votre navigateur, sur cet appareil, et ne nous est pas transmise.',
+    produces: `L’ensemble des biens disponibles, soit ${stats.active} annonce${stats.active > 1 ? 's' : ''} en ligne aujourd’hui.`,
+    limit:
+      'Les biens en location ont leur propre liste, sur la page « Louer ». La sélection mise de côté disparaît si vous effacez les données de navigation du site.',
+    cta: 'Chercher un bien',
+  },
+  {
+    href: '/gestion-locative/',
+    name: 'Gestion locative',
+    lede:
+      'Le détail de ce qui est pris en charge pour un bien confié en gestion, du choix du locataire au suivi des travaux.',
+    produces: 'Le périmètre exact de la prestation et son coût, avant de nous confier quoi que ce soit.',
+    limit:
+      'La garantie loyers impayés est une option distincte, à chiffrer selon le dossier du locataire.',
+    cta: 'Voir la gestion locative',
+  },
+  {
+    href: '/honoraires/',
+    name: 'Barème des honoraires',
+    lede:
+      'Le barème affiché en agence, dans son intégralité : vente, location et gestion locative.',
+    produces: 'Le montant de nos honoraires et la partie qui les règle, avant tout rendez-vous.',
+    limit: 'Les frais de notaire n’y figurent pas : ils ne nous reviennent pas.',
+    cta: 'Voir le barème',
+  },
+  {
+    href: '/guides/',
+    name: 'Guides et conseils',
+    lede:
+      'Les questions qui reviennent en rendez-vous, traitées une par une, signées et datées.',
+    produces:
+      'Des réponses sourcées sur le mandat, les frais de notaire, le DPE, la gestion locative et l’estimation.',
+    limit:
+      'Un guide ne remplace pas un conseil sur votre dossier : chaque situation a ses particularités.',
+    cta: 'Lire les guides',
+  },
+] as const;
+
+const faq: FaqItem[] = [
+  {
+    question: 'Faut-il créer un compte pour utiliser ces outils ?',
+    answer:
+      'Non. Aucun de ces outils ne demande de compte, et aucun ne vous identifie. Les biens que vous mettez de côté sont conservés par votre navigateur, pas par nous.',
+  },
+  {
+    question: 'Les biens mis de côté sont-ils conservés si je change d’appareil ?',
+    answer:
+      'Non. Ils sont stockés dans le navigateur que vous utilisez, sur cet appareil uniquement. Ils ne nous sont jamais transmis, et ils disparaissent si vous effacez les données de navigation du site.',
+  },
+  {
+    question: 'L’estimation en ligne donne-t-elle un prix immédiat ?',
+    answer:
+      'Non, et c’est délibéré. Le formulaire recueille les caractéristiques de votre bien, puis un conseiller vous rappelle et se déplace. Le prix est arrêté après la visite, jamais par un calcul automatique.',
+  },
+  {
+    question: 'Puis-je être prévenu des nouveaux biens par email ?',
+    answer:
+      'Pas encore automatiquement. Dites-nous vos critères par téléphone ou via la page contact : un conseiller vous prévient dès qu’un bien correspondant entre au catalogue.',
+  },
+];
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Guides', href: '/guides/' },
+  { label: 'Nos outils' },
+];
+---
+
+<Base
+  title="Nos outils : estimation, prix et recherche"
+  description="Estimation, prix au m² dans le Mantois, recherche multicritère, gestion locative et barème d’honoraires : les outils du site, et ce que chacun produit vraiment."
+  path="/guides/outils/"
+  crumbs={crumbs}
+  schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+>
+  <div class="page-band">
+    <div class="wrap">
+      <Breadcrumb crumbs={crumbs} onDark />
+      <h1>Nos outils</h1>
+    </div>
+  </div>
+  <div class="border-header" aria-hidden="true"></div>
+
+  <div class="wrap section">
+    <header class="head">
+      <p class="lede">
+        Six outils, tous gratuits et sans création de compte. Pour chacun, ce qu’il vous donne — et
+        ce qu’il ne vous donne pas, parce qu’un outil dont on tait les limites ne rend pas service.
+      </p>
+    </header>
+
+    <ul class="tools">
+      {
+        TOOLS.map((tool) => (
+          <li class="tool">
+            <h2>
+              <a href={tool.href}>{tool.name}</a>
+            </h2>
+            <p class="lede-tool">{tool.lede}</p>
+            <dl>
+              <dt>Ce que vous obtenez</dt>
+              <dd>{tool.produces}</dd>
+              <dt>Ce qu’il ne fait pas</dt>
+              <dd class="limit">{tool.limit}</dd>
+            </dl>
+            <p class="cta">
+              <a class="btn" href={tool.href}>
+                {tool.cta}
+              </a>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <section class="section-tight">
+      <Faq items={faq} title="Ce qu’il faut savoir avant de s’en servir" />
+    </section>
+
+    <p class="notice">
+      Un outil ne remplace pas un conseiller. Pour un point précis sur votre projet, appelez-nous au{' '}
+      <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a> ou passez par la{' '}
+      <a href="/contact/">page contact</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  .tools {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    list-style: none;
+    margin: 0 0 var(--space-xl);
+    padding: 0;
+  }
+
+  .tool {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-m);
+    background: #ffffff;
+    box-shadow: 0 3px 15px rgb(0 0 0 / 16%);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .tool:hover {
+    box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
+  }
+
+  .tool h2 {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-3xs);
+  }
+
+  .tool h2 a {
+    color: var(--color-1);
+    text-decoration: none;
+  }
+
+  .tool h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .lede-tool {
+    margin-bottom: var(--space-s);
+    color: var(--ink-soft);
+  }
+
+  .tool dl {
+    flex: 1;
+    margin: 0 0 var(--space-s);
+  }
+
+  .tool dt {
+    font-size: var(--step--1);
+    font-weight: 650;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-2-darken);
+  }
+
+  .tool dd {
+    margin: 0 0 var(--space-2xs);
+  }
+
+  /* La limite est une reserve, pas un argument : elle se lit, elle ne crie pas. */
+  .tool dd.limit {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    margin-bottom: 0;
+  }
+
+  .cta {
+    margin: 0;
+  }
+</style>
