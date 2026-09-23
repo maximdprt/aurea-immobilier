@@ -43,8 +43,16 @@ const SUPABASE_KEY = process.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '';
 const listings = JSON.parse(readFileSync(join(DATA, 'listings.json'), 'utf8'));
 const agents = JSON.parse(readFileSync(join(DATA, 'agents.json'), 'utf8'));
 
-const AVIF = { quality: 46, effort: 6, chromaSubsampling: '4:2:0' };
-const WEBP = { quality: 64, effort: 5 };
+/*
+ * Effort d'encodage : eleve en local (le build est hors ligne, on a le
+ * temps), reduit sur une machine de build partagee (Vercel, CI) ou l'AVIF a
+ * effort 6 prenait dix minutes pour les seules photos de biens — la limite
+ * de duree d'un build n'est pas loin. La difference de poids est de l'ordre
+ * de 10 %, celle de temps d'un facteur 5.
+ */
+const FAST = Boolean(process.env.VERCEL || process.env.CI);
+const AVIF = { quality: 46, effort: FAST ? 2 : 6, chromaSubsampling: '4:2:0' };
+const WEBP = { quality: 64, effort: FAST ? 2 : 5 };
 
 /*
  * Portraits : reglages plus genereux que pour les photos de biens.
@@ -55,8 +63,8 @@ const WEBP = { quality: 64, effort: 5 };
  *   yeux. Un portrait fait quelques dizaines de Ko : la depense est minime.
  * - qualite plus haute, effort maximal a l'encodage (le build est hors ligne).
  */
-const AVIF_PORTRAIT = { quality: 62, effort: 9, chromaSubsampling: '4:4:4' };
-const WEBP_PORTRAIT = { quality: 86, effort: 6, smartSubsample: true };
+const AVIF_PORTRAIT = { quality: 62, effort: FAST ? 3 : 9, chromaSubsampling: '4:4:4' };
+const WEBP_PORTRAIT = { quality: 86, effort: FAST ? 2 : 6, smartSubsample: true };
 const manifest = {};
 let written = 0;
 let bytes = 0;
