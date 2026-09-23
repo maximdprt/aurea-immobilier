@@ -1,23 +1,20 @@
 ---
 /**
- * En-tête du site.
+ * En-tête du site, sur le modèle de l'identité AUREA : bandeau marine plein,
+ * grand logo doré à gauche, six rubriques en capitales (Notre agence, Nos
+ * biens, Nos réussites, Gestion locative, Nos services, Nous contacter), puis
+ * la sélection (cœur) et l'espace agence (compte).
  *
- *  - Barre d'informations marine (adresse, téléphone, email, réseaux) : elle
- *    défile avec la page, seule la barre principale reste collée en haut.
- *  - Barre principale : logo, quatre intentions (Acheter, Vendre, Louer,
- *    L'agence) qui ouvrent chacune un méga-menu, Contact, puis les outils :
- *    téléphone, sélection, et l'appel à l'action « Estimer mon bien ».
- *  - Chaque méga-menu montre les sous-rubriques avec une ligne d'explication
- *    et une carte mise en avant (le dernier bien, l'estimation, la gestion,
- *    l'agence) : le visiteur sait où il va avant de cliquer.
- *  - Sur l'accueil, la barre est transparente sur la photo et devient blanche
- *    dès que l'on fait défiler ou qu'un menu s'ouvre.
- *  - Sous 1100 px : tiroir latéral avec rubriques dépliables, gros boutons
- *    d'appel et d'estimation, horaires.
+ * Les rubriques qui regroupent plusieurs pages (Notre agence, Nos biens, Nos
+ * services) ouvrent un méga-menu : sous-rubriques avec une ligne
+ * d'explication, et une carte mise en avant à droite.
  *
- * Accessibilité : les rubriques sont des boutons `aria-expanded` pilotant
- * leur panneau ; Échap ferme, le focus revient au déclencheur ; sans
- * JavaScript, les panneaux s'ouvrent au survol et au focus clavier.
+ * Sous 1216 px : tiroir latéral avec rubriques dépliables, gros boutons
+ * d'estimation et d'appel, horaires.
+ *
+ * Accessibilité : les rubriques à sous-menu sont des boutons `aria-expanded` ;
+ * Échap ferme et rend le focus ; sans JavaScript, les panneaux s'ouvrent au
+ * survol et au focus clavier.
  */
 import Icon, { type IconName } from '~/components/Icon.astro';
 import Picture from '~/components/Picture.astro';
@@ -33,7 +30,6 @@ const { path } = Astro.props;
 const logo = logoMedia();
 const contact = agency();
 const stats = catalogStats();
-const isHome = path === '/';
 
 const isCurrent = (href: string) => path === href.split('?')[0];
 const isActive = (item: NavItem) =>
@@ -42,47 +38,24 @@ const isActive = (item: NavItem) =>
 /* Cartes mises en avant, calculées une fois au build. */
 const latest = activeListings('vente')[0] ?? null;
 const latestPhoto = latest ? (listingMedia(latest.reference)?.photos[0] ?? null) : null;
-const gestionPhoto = editorialMedia('gestion-locative');
 const agencePhoto = editorialMedia('agence');
 const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instagram' : 'tiktok');
 ---
 
-<div class="topbar">
-  <div class="wrap topbar-inner">
-    <p class="tb-left">
-      <a href="/contact/"><Icon name="pin" size={15} /> {contact.street}, {contact.city}</a>
-      <span class="tb-sep" aria-hidden="true"></span>
-      <a href="/contact/#horaires"><Icon name="clock" size={15} /> Horaires &amp; accès</a>
-    </p>
-    <p class="tb-right">
-      <a href={`mailto:${contact.email}`}><Icon name="mail" size={15} /> {contact.email}</a>
-      <span class="tb-sep" aria-hidden="true"></span>
-      {
-        SOCIAL.map((s) => (
-          <a href={s.url} rel="me noopener" target="_blank" class="tb-social">
-            <Icon name={socialIcon(s.label)} size={15} />
-            <span class="visually-hidden">{s.label} (nouvel onglet)</span>
-          </a>
-        ))
-      }
-    </p>
-  </div>
-</div>
-
-<header class:list={['site-header', isHome && 'is-top']} data-header data-transparent={isHome ? '' : undefined}>
-  <div class="wrap bar">
+<header class="site-header" data-header>
+  <div class="bar">
     <a href="/" class="logo" aria-label={`${COMPANY.name} — accueil`}>
       {
         logo && (
           <picture>
-            <source type="image/avif" srcset={`${logo.base}-180.avif 180w, ${logo.base}-360.avif 360w`} sizes="108px" />
+            <source type="image/avif" srcset={`${logo.base}-180.avif 180w, ${logo.base}-360.avif 360w`} sizes="140px" />
             <img
               src={`${logo.base}-360.png`}
               srcset={`${logo.base}-180.png 180w, ${logo.base}-360.png 360w`}
-              sizes="108px"
+              sizes="140px"
               alt={COMPANY.legalName}
-              width="108"
-              height={Math.round(108 / logo.ratio)}
+              width="140"
+              height={Math.round(140 / logo.ratio)}
               fetchpriority="high"
               decoding="sync"
             />
@@ -105,7 +78,6 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
                   data-nav-trigger
                 >
                   {item.label}
-                  <Icon name="chevron" size={16} class="chev" />
                 </button>
 
                 <div class="panel" id={`panel-${i}`} data-nav-panel hidden>
@@ -113,7 +85,7 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
                     <div class="panel-links">
                       <p class="panel-title">
                         <a href={item.href} class="link-arrow">
-                          {item.label === 'L’agence' ? 'Découvrir l’agence' : `${item.label} avec AUREA`}
+                          {item.label}
                         </a>
                       </p>
                       <ul>
@@ -146,7 +118,8 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
                       )}
                       {item.feature === 'achat' && (
                         <p class="feat-note">
-                          <strong>{stats.forSale}</strong> biens à vendre en ce moment dans le Mantois.
+                          <strong>{stats.forSale}</strong> biens à vendre et <strong>{stats.forRent}</strong> à
+                          louer en ce moment.
                         </p>
                       )}
 
@@ -165,28 +138,21 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
                         </div>
                       )}
 
-                      {item.feature === 'location' && (
-                        <a class="feat feat-photo" href="/gestion-locative/">
-                          <Picture media={gestionPhoto} alt="" aspect="4 / 3" sizes="20rem" />
-                          <span class="feat-body">
-                            <span class="feat-kicker">Propriétaire bailleur</span>
-                            <span class="feat-title">
-                              Loyers encaissés, locataire choisi, travaux suivis : confiez-nous votre bien.
-                            </span>
-                          </span>
-                        </a>
-                      )}
-
                       {item.feature === 'agence' && (
                         <div class="feat feat-plain">
                           <Picture media={agencePhoto} alt="" aspect="16 / 10" sizes="20rem" class="feat-img" />
                           <span class="feat-kicker">Passez nous voir</span>
-                          <span class="feat-title">{contact.street}, {contact.postalCode} {contact.city}</span>
+                          <span class="feat-title">
+                            {contact.street}, {contact.postalCode} {contact.city}
+                          </span>
                           <ul class="feat-hours">
                             {contact.hours.map((h) => (
                               <li>{h}</li>
                             ))}
                           </ul>
+                          <a class="feat-phone tnum" href={`tel:${contact.phoneE164}`}>
+                            <Icon name="phone" size={16} /> {contact.phone}
+                          </a>
                         </div>
                       )}
                     </aside>
@@ -195,7 +161,11 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
               </li>
             ) : (
               <li class="nav-item">
-                <a href={item.href} class:list={['nav-trigger', isActive(item) && 'is-active']} aria-current={isActive(item) ? 'page' : undefined}>
+                <a
+                  href={item.href}
+                  class:list={['nav-trigger', isActive(item) && 'is-active']}
+                  aria-current={isActive(item) ? 'page' : undefined}
+                >
                   {item.label}
                 </a>
               </li>
@@ -206,22 +176,17 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     </nav>
 
     <div class="tools">
-      <a class="tool tool-phone" href={`tel:${contact.phoneE164}`}>
-        <Icon name="phone" size={18} />
-        <span class="tool-phone-text">
-          <span class="tool-phone-label">Une question ?</span>
-          <span class="tnum">{contact.phone}</span>
-        </span>
-        <span class="visually-hidden">Appeler l’agence</span>
-      </a>
-      <a class="tool tool-fav" href="/selection/" title="Ma sélection">
-        <Icon name="heart" size={20} />
+      <a class="tool" href="/selection/" title="Ma sélection">
+        <Icon name="heart" size={22} />
         <span class="visually-hidden">Ma sélection</span>
         <span class="fav-count" data-fav-count hidden></span>
       </a>
-      <a class="btn cta" href="/estimation/">Estimer mon bien</a>
+      <a class="tool" href="/admin/" title="Espace agence" rel="nofollow">
+        <Icon name="user" size={22} />
+        <span class="visually-hidden">Espace agence</span>
+      </a>
       <button class="tool burger" type="button" aria-expanded="false" aria-controls="drawer" data-burger>
-        <Icon name="menu" size={24} />
+        <Icon name="menu" size={26} />
         <span class="visually-hidden">Ouvrir le menu</span>
       </button>
     </div>
@@ -233,7 +198,7 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
 <aside id="drawer" class="drawer" aria-label="Menu" data-drawer hidden>
   <div class="drawer-head">
     <a href="/" class="drawer-logo" aria-label={`${COMPANY.name} — accueil`}>
-      {logo && <img src={`${logo.base}-180.png`} alt="" width="96" height={Math.round(96 / logo.ratio)} loading="lazy" />}
+      {logo && <img src={`${logo.base}-180.png`} alt="" width="100" height={Math.round(100 / logo.ratio)} loading="lazy" />}
     </a>
     <button type="button" class="drawer-close" data-drawer-close>
       <Icon name="close" size={24} />
@@ -299,12 +264,8 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
   const header = document.querySelector<HTMLElement>('[data-header]');
   const items = [...document.querySelectorAll<HTMLElement>('[data-nav-item]')];
 
-  /* --- État de la barre : transparente en haut de l'accueil ------------ */
-  const paintBar = () => {
-    if (!header) return;
-    header.classList.toggle('is-top', window.scrollY < 12);
-    header.classList.toggle('is-stuck', window.scrollY > 40);
-  };
+  /* --- Ombre une fois la page défilée ----------------------------------- */
+  const paintBar = () => header?.classList.toggle('is-stuck', window.scrollY > 10);
   paintBar();
   window.addEventListener('scroll', paintBar, { passive: true });
 
@@ -324,7 +285,6 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     trigger.setAttribute('aria-expanded', 'false');
     panel.hidden = true;
     if (openItem === item) openItem = null;
-    header?.classList.toggle('menu-active', Boolean(openItem));
     if (focusBack) trigger.focus();
   };
 
@@ -334,7 +294,6 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     trigger.setAttribute('aria-expanded', 'true');
     panel.hidden = false;
     openItem = item;
-    header?.classList.add('menu-active');
   };
 
   for (const item of items) {
@@ -407,7 +366,7 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && drawer && !drawer.hidden) setDrawer(false);
   });
-  window.matchMedia('(min-width: 68.75rem)').addEventListener('change', (e) => {
+  window.matchMedia('(min-width: 76rem)').addEventListener('change', (e) => {
     if (e.matches && drawer && !drawer.hidden) setDrawer(false);
   });
 
@@ -432,88 +391,30 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
 </script>
 
 <style>
-  /* ------------------------------------------------------ Barre d'infos -- */
-  .topbar {
-    display: none;
-    background: var(--navy-950);
-    color: rgb(255 255 255 / 0.78);
-    font-size: 0.8rem;
-  }
-
-  .topbar-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    height: 2.25rem;
-  }
-
-  .topbar p {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    margin: 0;
-  }
-
-  .topbar a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .topbar a:hover {
-    color: var(--gold-300);
-  }
-
-  .topbar svg {
-    color: var(--gold-300);
-  }
-
-  .tb-sep {
-    width: 1px;
-    height: 0.9rem;
-    background: rgb(255 255 255 / 0.2);
-  }
-
-  .tb-social {
-    padding: 0.2rem;
-  }
-
   /* ---------------------------------------------------- Barre principale -- */
   .site-header {
-    --fg: var(--navy-900);
+    --nav-size: 0.98rem;
+    --nav-pad: 0.55rem;
     position: sticky;
     top: 0;
     z-index: 100;
-    /* Pas de backdrop-filter : il fait peindre le méga-menu (descendant qui
-       déborde de la barre) à moitié transparent dans Chrome. */
-    background: #ffffff;
-    color: var(--fg);
-    border-bottom: 1px solid var(--line);
-    transition:
-      background var(--dur) var(--ease-out),
-      box-shadow var(--dur) var(--ease-out),
-      border-color var(--dur) var(--ease-out);
+    background: var(--navy-900);
+    color: #ffffff;
+    transition: box-shadow var(--dur) var(--ease-out);
   }
 
   .site-header.is-stuck {
-    box-shadow: 0 8px 30px rgb(0 31 65 / 0.08);
+    box-shadow: 0 10px 30px rgb(0 19 42 / 0.35);
   }
 
-  /* Accueil : transparente sur la photo tant qu'on est en haut. */
-  .site-header[data-transparent].is-top:not(.menu-active) {
-    --fg: #ffffff;
-    background: transparent;
-    border-bottom-color: rgb(255 255 255 / 0.18);
-  }
-
+  /* Plus large que le contenu : le logo et les icônes respirent aux bords. */
   .bar {
     display: flex;
     align-items: center;
     gap: var(--space-m);
+    width: min(100% - var(--gutter) * 2, 92rem);
     height: var(--header-height);
+    margin-inline: auto;
   }
 
   .logo {
@@ -523,7 +424,7 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
   }
 
   .logo img {
-    width: 88px;
+    width: 104px;
     height: auto;
   }
 
@@ -547,31 +448,40 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     align-items: center;
   }
 
+  /* Capitales à empattement, comme l'identité d'origine. */
   .nav-trigger {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
     height: 100%;
-    padding: 0 0.95rem;
+    padding: 0 var(--nav-pad);
     border: 0;
     background: none;
-    color: var(--fg);
-    font: inherit;
-    font-size: 0.95rem;
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: var(--nav-size);
     font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     text-decoration: none;
-    cursor: pointer;
     white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease-out);
   }
 
-  /* Filet or sous l'entrée survolée, ouverte ou active. */
+  .nav-trigger:hover,
+  .nav-trigger:focus-visible,
+  .nav-trigger[aria-expanded='true'] {
+    color: var(--gold-300);
+  }
+
+  /* Filet or sous l'entrée active ou ouverte. */
   .nav-trigger::after {
     content: '';
     position: absolute;
-    left: 0.95rem;
-    right: 0.95rem;
-    bottom: -1px;
+    left: var(--nav-pad);
+    right: var(--nav-pad);
+    bottom: calc(50% - 1.05em);
     height: 2px;
     border-radius: 2px;
     background: var(--gold-400);
@@ -585,19 +495,6 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     transform: scaleX(1);
   }
 
-  .nav-trigger:hover {
-    color: var(--fg);
-  }
-
-  .nav-trigger :global(.chev) {
-    opacity: 0.6;
-    transition: transform var(--dur) var(--ease-out);
-  }
-
-  .nav-trigger[aria-expanded='true'] :global(.chev) {
-    transform: rotate(180deg);
-  }
-
   /* --- Méga-menu ------------------------------------------------------------ */
   .panel {
     position: absolute;
@@ -606,8 +503,8 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     right: 0;
     background: #fff;
     color: var(--ink);
-    border-top: 1px solid var(--line);
-    box-shadow: 0 30px 60px -20px rgb(0 31 65 / 0.25);
+    border-top: 3px solid var(--gold-400);
+    box-shadow: 0 30px 60px -20px rgb(0 31 65 / 0.35);
     animation: panel-in var(--dur) var(--ease-out);
   }
 
@@ -821,62 +718,48 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
   }
 
   .feat-hours {
-    margin: 0.3rem 0 0;
+    margin: 0.3rem 0 0.4rem;
     padding: 0;
     list-style: none;
     font-size: 0.82rem;
     color: var(--ink-muted);
   }
 
+  .feat-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 700;
+    color: var(--navy-900);
+    text-decoration: none;
+  }
+
   /* --- Outils ---------------------------------------------------------------- */
   .tools {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.15rem;
   }
 
   .tool {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.55rem;
-    min-width: 2.75rem;
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
     height: 2.75rem;
-    padding: 0 0.55rem;
     border: 0;
     border-radius: var(--radius-s);
     background: none;
-    color: var(--fg);
+    color: #ffffff;
     text-decoration: none;
     cursor: pointer;
-    transition: background var(--dur-fast) var(--ease-out);
+    transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
   }
 
-  .tool:hover {
-    background: rgb(0 31 65 / 0.06);
-    color: var(--fg);
-  }
-
-  .site-header[data-transparent].is-top:not(.menu-active) .tool:hover {
-    background: rgb(255 255 255 / 0.12);
-  }
-
-  .tool-phone-text {
-    display: none;
-    line-height: 1.15;
-    text-align: left;
-  }
-
-  .tool-phone-label {
-    display: block;
-    font-size: 0.72rem;
-    opacity: 0.7;
-  }
-
-  .tool-phone-text .tnum {
-    font-weight: 700;
-    font-size: 0.95rem;
+  .tool:hover,
+  .tool:focus-visible {
+    color: var(--gold-300);
+    background: rgb(255 255 255 / 0.06);
   }
 
   .fav-count {
@@ -893,11 +776,6 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     font-weight: 700;
     line-height: 1.15rem;
     text-align: center;
-  }
-
-  .cta {
-    display: none;
-    margin-left: 0.35rem;
   }
 
   /* --- Tiroir mobile --------------------------------------------------------- */
@@ -951,7 +829,7 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--line);
+    background: var(--navy-900);
   }
 
   .drawer-close {
@@ -961,8 +839,8 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     height: 2.75rem;
     border: 0;
     border-radius: var(--radius-s);
-    background: var(--sand-50);
-    color: var(--navy-900);
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
     cursor: pointer;
   }
 
@@ -981,8 +859,10 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     justify-content: space-between;
     padding: 1rem 0;
     font-family: var(--font-display);
-    font-size: 1.55rem;
+    font-size: 1.3rem;
     font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     color: var(--navy-900);
     text-decoration: none;
     cursor: pointer;
@@ -1080,28 +960,18 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
   }
 
   /* --- Points de rupture ---------------------------------------------------- */
-  @media (min-width: 40rem) {
-    .cta {
-      display: inline-flex;
-    }
-  }
-
-  @media (min-width: 68.75rem) {
-    .topbar {
-      display: block;
-    }
-
+  @media (min-width: 76rem) {
     .logo {
-      margin-right: var(--space-s);
+      margin-right: var(--space-m);
     }
 
     .logo img {
-      width: 108px;
+      width: 140px;
     }
 
     .nav {
       display: block;
-      margin-right: auto;
+      margin-inline: auto;
     }
 
     .burger {
@@ -1109,9 +979,17 @@ const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instag
     }
   }
 
-  @media (min-width: 82rem) {
-    .tool-phone-text {
-      display: block;
+  @media (min-width: 84rem) {
+    .site-header {
+      --nav-size: 1.08rem;
+      --nav-pad: 0.9rem;
+    }
+  }
+
+  @media (min-width: 100rem) {
+    .site-header {
+      --nav-size: 1.15rem;
+      --nav-pad: 1.15rem;
     }
   }
 

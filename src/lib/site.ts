@@ -269,45 +269,8 @@ export interface NavItem {
 
 export const NAV: readonly NavItem[] = [
   {
-    href: '/acheter/',
-    label: 'Acheter',
-    feature: 'achat',
-    match: ['/acheter/', '/bien/', '/agence-immobiliere/', '/selection/', '/alerte/'],
-    children: [
-      { href: '/acheter/', label: 'Tous les biens à vendre', hint: 'Prix honoraires inclus, DPE affiché', icon: 'home' },
-      { href: '/acheter/?type=maison', label: 'Maisons', hint: 'Avec jardin, de ville ou de campagne', icon: 'garden' },
-      { href: '/acheter/?type=appartement', label: 'Appartements', hint: 'Du studio au grand familial', icon: 'building' },
-      { href: '/alerte/', label: 'Alerte nouveautés', hint: 'Prévenu avant tout le monde', icon: 'bell' },
-      { href: '/selection/', label: 'Ma sélection', hint: 'Les biens que vous avez aimés', icon: 'heart' },
-      { href: '/prix-immobilier-mantes-la-jolie/', label: 'Prix au m² à Mantes', hint: 'Nos ventes, bien par bien', icon: 'chart' },
-    ],
-  },
-  {
-    href: '/vendre/',
-    label: 'Vendre',
-    feature: 'vente',
-    match: ['/vendre/', '/estimation/', '/biens-vendus/', '/honoraires/'],
-    children: [
-      { href: '/estimation/', label: 'Estimation gratuite', hint: 'Avis de valeur écrit sous 48 h', icon: 'chart' },
-      { href: '/vendre/', label: 'Notre méthode de vente', hint: 'Cinq étapes, un seul interlocuteur', icon: 'handshake' },
-      { href: '/biens-vendus/', label: 'Nos réussites', hint: 'Les biens vendus et loués', icon: 'check' },
-      { href: '/honoraires/', label: 'Nos honoraires', hint: 'Le barème, en toute transparence', icon: 'euro' },
-    ],
-  },
-  {
-    href: '/louer/',
-    label: 'Louer',
-    feature: 'location',
-    match: ['/louer/', '/gestion-locative/'],
-    children: [
-      { href: '/louer/', label: 'Biens à louer', hint: 'Loyer charges comprises affiché', icon: 'key' },
-      { href: '/gestion-locative/', label: 'Gestion locative', hint: 'Propriétaires : on s’occupe de tout', icon: 'shield' },
-      { href: '/alerte/', label: 'Alerte location', hint: 'Soyez prévenu des nouveautés', icon: 'bell' },
-    ],
-  },
-  {
     href: '/agence/',
-    label: 'L’agence',
+    label: 'Notre agence',
     feature: 'agence',
     match: ['/agence/', '/equipe/', '/avis/', '/actualites/', '/guides/'],
     children: [
@@ -318,7 +281,37 @@ export const NAV: readonly NavItem[] = [
       { href: '/guides/', label: 'Guides pratiques', hint: 'Réponses aux questions fréquentes', icon: 'file' },
     ],
   },
-  { href: '/contact/', label: 'Contact' },
+  {
+    href: '/acheter/',
+    label: 'Nos biens',
+    feature: 'achat',
+    match: ['/acheter/', '/louer/', '/bien/', '/agence-immobiliere/', '/selection/'],
+    children: [
+      { href: '/acheter/', label: 'Acheter', hint: 'Tous nos biens à vendre', icon: 'home' },
+      { href: '/louer/', label: 'Louer', hint: 'Nos biens à louer', icon: 'key' },
+      { href: '/acheter/?type=maison', label: 'Maisons', hint: 'Avec jardin, de ville ou de campagne', icon: 'garden' },
+      { href: '/acheter/?type=appartement', label: 'Appartements', hint: 'Du studio au grand familial', icon: 'building' },
+      { href: '/alerte/', label: 'Alerte nouveautés', hint: 'Prévenu avant tout le monde', icon: 'bell' },
+      { href: '/selection/', label: 'Ma sélection', hint: 'Les biens que vous avez aimés', icon: 'heart' },
+    ],
+  },
+  { href: '/biens-vendus/', label: 'Nos réussites' },
+  { href: '/gestion-locative/', label: 'Gestion locative', match: ['/gestion-locative/'] },
+  {
+    href: '/estimation/',
+    label: 'Nos services',
+    feature: 'vente',
+    match: ['/estimation/', '/vendre/', '/honoraires/', '/alerte/', '/prix-immobilier-mantes-la-jolie/'],
+    children: [
+      { href: '/estimation/', label: 'Estimation gratuite', hint: 'Avis de valeur écrit sous 48 h', icon: 'chart' },
+      { href: '/vendre/', label: 'Vendre avec AUREA', hint: 'Cinq étapes, un seul interlocuteur', icon: 'handshake' },
+      { href: '/gestion-locative/', label: 'Gestion locative', hint: 'Propriétaires : on s’occupe de tout', icon: 'shield' },
+      { href: '/alerte/', label: 'Alerte nouveautés', hint: 'Soyez prévenu des nouveaux biens', icon: 'bell' },
+      { href: '/prix-immobilier-mantes-la-jolie/', label: 'Prix au m² à Mantes', hint: 'Nos ventes, bien par bien', icon: 'euro' },
+      { href: '/honoraires/', label: 'Nos honoraires', hint: 'Le barème, en toute transparence', icon: 'file' },
+    ],
+  },
+  { href: '/contact/', label: 'Nous contacter' },
 ];
 
 /** Colonne « Services » du pied de page. */

@@ -100,7 +100,7 @@
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --content-max: 76rem;
   --content-narrow: 46rem;
-  --header-height: 5rem;
+  --header-height: 5.25rem;
 
   /* --- Formes -------------------------------------------------------------- */
   --radius-xs: 4px;
@@ -119,6 +119,13 @@
   --dur-fast: 140ms;
   --dur: 240ms;
   --dur-slow: 620ms;
+}
+
+/* Bandeau plus haut sur grand écran, pour un logo lisible. */
+@media (min-width: 76rem) {
+  :root {
+    --header-height: 6.75rem;
+  }
 }
 
 /**
