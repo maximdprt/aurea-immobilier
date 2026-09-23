@@ -4,14 +4,15 @@
  *
  * Pourquoi des CGU et pas des CGV : le site ne vend rien en ligne. Les
  * prestations de l'agence sont encadrées par des mandats écrits régis par la
- * loi Hoguet, et leur prix est donné par le barème des honoraires. Des CGV de
- * vente en ligne seraient inadaptées, voire trompeuses.
+ * loi Hoguet, et leur prix est donné par le barème des honoraires.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
 
-const LEGAL_VERSION = 1;
-const UPDATED = '21 septembre 2026';
+const recette = import.meta.env.PUBLIC_RECETTE === '1';
+
+const LEGAL_VERSION = 2;
+const UPDATED = '23 septembre 2026';
 
 const crumbs = [
   { label: 'Accueil', href: '/' },
@@ -25,15 +26,18 @@ const crumbs = [
   path="/cgu/"
   crumbs={crumbs}
 >
-  <Breadcrumb crumbs={crumbs} />
+  <PageHeader title="Conditions générales d’utilisation" crumbs={crumbs} width="narrow">
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+  </PageHeader>
 
   <div class="wrap-narrow section prose">
-    <h1>Conditions générales d’utilisation</h1>
-    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
-
-    <p class="notice">
-      <strong>À faire valider par un juriste avant publication.</strong>
-    </p>
+    {
+      recette && (
+        <p class="notice">
+          <strong>À faire valider par un juriste avant publication.</strong>
+        </p>
+      )
+    }
 
     <h2>1. Objet et acceptation</h2>
     <p>
@@ -146,16 +150,31 @@ const crumbs = [
       compétents.
     </p>
 
-    <aside class="notice">
+    <aside class="notice notice-info">
       <p>
         <strong>Pourquoi des CGU et non des CGV ?</strong> Ce site ne commercialise aucun service
         en ligne : il ne comporte ni panier, ni paiement. Les prestations de l’agence — transaction,
         location, gestion — sont encadrées par des mandats écrits régis par la loi Hoguet, avec
-        leurs propres conditions, et leur prix figure au barème des honoraires. Des conditions
-        générales de vente en ligne seraient inadaptées et pourraient induire en erreur. Si un
-        service payant en ligne était créé, une page de CGV distincte devrait être rédigée et
-        validée juridiquement.
+        leurs propres conditions, et leur prix figure au <a href="/honoraires/">barème des honoraires</a>.
       </p>
     </aside>
   </div>
 </Base>
+
+<style>
+  .updated {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+  }
+
+  aside {
+    margin-top: var(--space-l);
+  }
+
+  aside p {
+    margin: 0;
+  }
+</style>

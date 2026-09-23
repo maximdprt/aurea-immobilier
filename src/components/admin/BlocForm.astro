@@ -1,0 +1,79 @@
+---
+/**
+ * Formulaire d'un bloc de contenu, engendré depuis le registre.
+ *
+ * Toutes les rubriques manipulent la même chose — un document JSON dans
+ * `site_content` — et partagent donc ce formulaire.
+ *
+ * Un champ laissé vide n'est PAS enregistré : le site retombe alors sur la
+ * valeur de repli du registre. C'est ce qui permet d'annuler une modification
+ * en vidant la case, sans avoir à retrouver le texte d'origine.
+ */
+import type { ContentBlock } from '~/lib/content-schema';
+
+interface Props {
+  block: ContentBlock;
+  /** Valeurs enregistrées, ou `null` si le bloc n'a jamais été modifié. */
+  saved: Record<string, unknown> | null;
+}
+const { block, saved } = Astro.props;
+
+const shown = (name: string): string => {
+  const field = block.fields.find((f) => f.name === name);
+  if (!field) return '';
+  const value = saved?.[name];
+  if (field.kind === 'liste') {
+    const list = Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : null;
+    return (list?.length ? list : (field.fallbackList ?? [])).join('\n');
+  }
+  return typeof value === 'string' && value !== '' ? value : field.fallback;
+};
+
+const isSaved = (name: string): boolean => {
+  const value = saved?.[name];
+  if (Array.isArray(value)) return value.length > 0;
+  return typeof value === 'string' && value.trim() !== '';
+};
+
+const rows = (name: string, kind: string) => {
+  const lines = shown(name).split('\n').length;
+  return kind === 'liste' ? Math.min(14, Math.max(4, lines + 1)) : Math.min(12, Math.max(3, lines + 1));
+};
+---
+
+<form class="bo-card" method="post" id={`bloc-${block.key.replace(/\./g, '-')}`}>
+  <input type="hidden" name="cle" value={block.key} />
+
+  <div class="bo-card-head">
+    <h2>{block.title}</h2>
+    <a href={block.page} target="_blank" rel="noopener">Voir la page {block.page} ↗</a>
+  </div>
+
+  {block.intro && <p class="bo-card-intro">{block.intro}</p>}
+
+  {
+    block.fields.map((f) => (
+      <p class="bo-f">
+        <label for={`${block.key}-${f.name}`}>
+          {f.label}
+          {isSaved(f.name) ? <em class="bo-tag on">modifié</em> : <em class="bo-tag">texte d’origine</em>}
+        </label>
+
+        {f.kind === 'ligne' ? (
+          <input id={`${block.key}-${f.name}`} name={f.name} value={shown(f.name)} maxlength="300" />
+        ) : (
+          <textarea id={`${block.key}-${f.name}`} name={f.name} rows={rows(f.name, f.kind)} maxlength="6000">
+            {shown(f.name)}
+          </textarea>
+        )}
+
+        {f.hint && <span class="bo-hint">{f.hint}</span>}
+      </p>
+    ))
+  }
+
+  <div class="bo-card-foot">
+    <span class="bo-hint">Une case vidée revient au texte d’origine. L’enregistrement relance la mise en ligne.</span>
+    <button class="bo-btn" type="submit">Enregistrer</button>
+  </div>
+</form>

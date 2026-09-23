@@ -17,4 +17,4 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   return redirect('/admin/connexion/', 303);
 };
 
-export const GET: APIRoute = ({ redirect }) => redirect('/admin/', 303);
+export const GET: APIRoute = ({ redirect }) => redirect('/admin/demandes/', 303);

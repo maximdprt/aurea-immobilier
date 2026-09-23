@@ -4,16 +4,12 @@
  *
  * Objectif du brief (§21.4) : aucun cookie soumis a consentement n'est depose
  * au chargement. Le site n'utilise ni regie publicitaire, ni widget tiers, ni
- * analytics a cookie ; les contenus tiers (carte, visite virtuelle, video) sont
- * derriere une facade cliquable. Il n'y a donc rien a consentir au chargement,
- * et afficher un bandeau de consentement serait trompeur.
+ * analytics a cookie ; les contenus tiers (carte, video) sont derriere une
+ * facade cliquable. Il n'y a donc rien a consentir au chargement, et afficher
+ * un bandeau de consentement serait trompeur.
  *
  * Ce bandeau est purement informatif, s'affiche une fois, se ferme, et sa
  * fermeture est memorisee en localStorage — pas en cookie.
- *
- * Si un traceur soumis a consentement etait ajoute plus tard, il faudrait le
- * remplacer par un vrai bandeau CNIL : « Tout accepter » et « Tout refuser »
- * de meme niveau, choix par finalite, aucun depot avant consentement.
  */
 ---
 
@@ -23,7 +19,7 @@
     techniques nécessaires à la sécurité des formulaires sont utilisés.
     <a href="/cookies/">En savoir plus</a>.
   </p>
-  <button type="button" class="btn btn-secondary" data-cookie-dismiss>J’ai compris</button>
+  <button type="button" class="btn btn-sm btn-navy" data-cookie-dismiss>J’ai compris</button>
 </aside>
 
 <style>
@@ -35,10 +31,10 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-s);
-    max-width: min(34rem, calc(100% - var(--space-s) * 2));
+    max-width: min(30rem, calc(100% - var(--space-s) * 2));
     padding: var(--space-s) var(--space-m);
     background: var(--surface);
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line);
     border-radius: var(--radius-m);
     box-shadow: var(--shadow-l);
     font-size: var(--step--1);
@@ -46,7 +42,8 @@
 
   .cookie-notice p {
     margin: 0;
-    flex: 1 1 16rem;
+    flex: 1 1 14rem;
+    color: var(--ink-soft);
   }
 
   @media (max-width: 48rem) {
@@ -62,7 +59,6 @@
   const box = document.querySelector<HTMLElement>('[data-cookie-notice]');
   if (box) {
     let seen = false;
-    // Le stockage local peut etre bloque (navigation privee, site data effacees)
     try {
       seen = localStorage.getItem(KEY) === '1';
     } catch {

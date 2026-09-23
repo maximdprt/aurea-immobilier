@@ -1,0 +1,26 @@
+---
+/** Rubrique « Page d'accueil » : formulaire engendré depuis le registre `accueil`. */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import BlocForm from '~/components/admin/BlocForm.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { groupPage } from '~/lib/server/admin-blocs';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const { blocks, notice, saved, loadError } = await groupPage(Astro.request, 'accueil');
+---
+
+<AdminContenu
+  title="Page d’accueil"
+  section="accueil"
+  heading="Page d’accueil"
+  intro="Les textes de l’accueil, bloc par bloc, dans l’ordre où ils apparaissent sur la page. Les biens, l’équipe, les avis et les actualités s’y affichent automatiquement depuis leurs rubriques."
+>
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+  {blocks.map((b) => <BlocForm block={b} saved={saved[b.key] ?? null} />)}
+</AdminContenu>

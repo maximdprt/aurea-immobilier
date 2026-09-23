@@ -11,11 +11,13 @@
  * après la redirection de la route.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
-import { CONTACT } from '~/lib/site';
+import PageHeader from '~/components/PageHeader.astro';
+import Icon from '~/components/Icon.astro';
+import { agency } from '~/lib/content';
 
 export const prerender = false;
 
+const contact = agency();
 const params = Astro.url.searchParams;
 const state = params.get('etat');
 const token = params.get('jeton') ?? '';
@@ -47,17 +49,16 @@ const TITLES: Record<string, string> = {
   path="/desabonnement/"
   crumbs={crumbs}
   noindex
+  noActionBar
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>{TITLES[view]}</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader title={TITLES[view]} crumbs={crumbs} kicker="Alerte nouveautés" width="narrow" />
 
-  <div class="wrap section">
-    <div class="panel">
+  <div class="wrap-narrow section">
+    <div class="result">
+      <span class:list={['mark', view === 'ok' && 'is-ok']}>
+        <Icon name={view === 'ok' ? 'check' : view === 'formulaire' ? 'bell' : 'info'} size={26} />
+      </span>
+
       {
         view === 'formulaire' && (
           <>
@@ -67,9 +68,9 @@ const TITLES: Record<string, string> = {
             </p>
             <form method="post" action="/api/alerte-desabonnement/">
               <input type="hidden" name="jeton" value={token} />
-              <p class="actions">
-                <button class="btn" type="submit">Confirmer ma désinscription</button>
-                <a class="btn btn-secondary" href="/">Annuler</a>
+              <p class="cluster">
+                <button class="btn btn-navy" type="submit">Confirmer ma désinscription</button>
+                <a class="btn btn-outline" href="/">Annuler</a>
               </p>
             </form>
           </>
@@ -79,16 +80,14 @@ const TITLES: Record<string, string> = {
       {
         view === 'ok' && (
           <>
-            <p class="lede">
-              C’est fait. Vous ne recevrez plus d’alerte, et votre adresse a été effacée.
-            </p>
+            <p class="lede">C’est fait. Vous ne recevrez plus d’alerte, et votre adresse a été effacée.</p>
             <p>
-              Vous pourrez toujours revenir : la page d’alerte reste ouverte, et nos biens
-              disponibles sont consultables sans inscription.
+              Vous pourrez toujours revenir : la page d’alerte reste ouverte, et nos biens disponibles
+              sont consultables sans inscription.
             </p>
-            <p class="actions">
+            <p class="cluster">
               <a class="btn" href="/acheter/">Voir les biens disponibles</a>
-              <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+              <a class="btn btn-outline" href="/">Retour à l’accueil</a>
             </p>
           </>
         )
@@ -99,13 +98,12 @@ const TITLES: Record<string, string> = {
           <>
             <p class="lede">Ce lien de désinscription est incomplet ou n’est plus valable.</p>
             <p>
-              Si vous vous êtes déjà désinscrit, il n’y a rien à faire : nous ne vous écrivons
-              plus. Sinon, utilisez le lien présent au bas du dernier email reçu, ou
-              écrivez-nous à <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> et nous
-              nous en chargeons.
+              Si vous vous êtes déjà désinscrit, il n’y a rien à faire : nous ne vous écrivons plus.
+              Sinon, utilisez le lien présent au bas du dernier email reçu, ou écrivez-nous à{' '}
+              <a href={`mailto:${contact.email}`}>{contact.email}</a> et nous nous en chargeons.
             </p>
-            <p class="actions">
-              <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+            <p class="cluster">
+              <a class="btn btn-outline" href="/">Retour à l’accueil</a>
             </p>
           </>
         )
@@ -114,14 +112,12 @@ const TITLES: Record<string, string> = {
       {
         view === 'panne' && (
           <>
-            <p class="lede">
-              Nous ne parvenons pas à traiter votre désinscription pour le moment.
-            </p>
+            <p class="lede">Nous ne parvenons pas à traiter votre désinscription pour le moment.</p>
             <p>
               Réessayez dans quelques minutes. Si cela persiste, écrivez-nous à{' '}
-              <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> ou appelez le{' '}
-              <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a> : nous supprimerons votre
-              inscription nous-mêmes.
+              <a href={`mailto:${contact.email}`}>{contact.email}</a> ou appelez le{' '}
+              <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a> : nous
+              supprimerons votre inscription nous-mêmes.
             </p>
           </>
         )
@@ -131,16 +127,31 @@ const TITLES: Record<string, string> = {
 </Base>
 
 <style>
-  .panel {
-    max-width: 62ch;
+  .result {
+    padding: var(--space-l);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
   }
 
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-s);
-    margin-top: var(--space-l);
+  .mark {
+    display: inline-grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin-bottom: var(--space-s);
+    border-radius: var(--radius-pill);
+    background: var(--gold-100);
+    color: var(--gold-700);
+  }
+
+  .mark.is-ok {
+    background: var(--ok-bg);
+    color: var(--ok);
+  }
+
+  .cluster {
+    margin-top: var(--space-m);
     margin-bottom: 0;
   }
 </style>

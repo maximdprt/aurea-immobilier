@@ -1,0 +1,220 @@
+---
+/**
+ * Article d'actualite. Le corps est du HTML sur, rendu au build par
+ * `renderSimpleMarkdown` a partir du texte saisi dans le back-office.
+ */
+import Base from '~/layouts/Base.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Picture from '~/components/Picture.astro';
+import Icon from '~/components/Icon.astro';
+import NewsCard from '~/components/NewsCard.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import { allNews, type NewsItem } from '~/lib/news';
+import { agentBySlug, agentMedia, newsMedia } from '~/lib/catalog';
+import { clampDescription, frDate } from '~/lib/format';
+import { articleSchema } from '~/lib/schema';
+import { plainText } from '~/lib/markdown';
+
+export function getStaticPaths() {
+  return allNews().map((item) => ({ params: { slug: item.slug }, props: { item } }));
+}
+
+interface Props {
+  item: NewsItem;
+}
+const { item } = Astro.props;
+
+const cover = item.coverKey ? newsMedia(item.slug) : null;
+const author = item.authorSlug ? agentBySlug(item.authorSlug) : undefined;
+const others = allNews()
+  .filter((n) => n.slug !== item.slug)
+  .slice(0, 3);
+const path = `/actualites/${item.slug}/`;
+const description = clampDescription(item.excerpt || plainText(item.body) || item.title);
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Actualités', href: '/actualites/' },
+  { label: item.title },
+];
+---
+
+<Base
+  title={item.title}
+  description={description}
+  path={path}
+  crumbs={crumbs}
+  ogType="article"
+  image={cover?.og ?? null}
+  schemas={[
+    articleSchema({
+      title: item.title,
+      description,
+      path,
+      published: item.publishedAt,
+      modified: item.updatedAt,
+      authorSlug: author?.slug ?? null,
+      image: cover?.og ?? null,
+    }),
+  ]}
+>
+  <article class="article">
+    <header class="head">
+      <div class="wrap-narrow">
+        <Breadcrumb crumbs={crumbs} />
+        <p class="kicker">Actualité</p>
+        <h1>{item.title}</h1>
+        <p class="meta">
+          <Icon name="calendar" size={16} />
+          <time datetime={item.publishedAt}>{frDate(item.publishedAt)}</time>
+          {author && (
+            <>
+              <span aria-hidden="true">·</span>
+              <a href={`/equipe/${author.slug}/`}>{author.name}</a>
+            </>
+          )}
+        </p>
+      </div>
+    </header>
+
+    {
+      cover && (
+        <div class="wrap cover">
+          <Picture media={cover} alt="" aspect="16 / 9" sizes="(min-width: 64rem) 64rem, 100vw" priority />
+        </div>
+      )
+    }
+
+    <div class="wrap-narrow body">
+      {item.excerpt && <p class="lede">{item.excerpt}</p>}
+      <div class="prose" set:html={item.html} />
+
+      {
+        author && (
+          <aside class="author">
+            <Picture media={agentMedia(author.slug)} alt={`Portrait de ${author.name}`} sizes="72px" aspect="1" class="author-photo" />
+            <div>
+              <p class="author-name"><a href={`/equipe/${author.slug}/`}>{author.name}</a></p>
+              <p class="small muted">{author.role} chez AUREA Immobilier</p>
+            </div>
+          </aside>
+        )
+      }
+
+      <p class="back">
+        <a class="link-arrow" href="/actualites/">Toutes les actualités</a>
+      </p>
+    </div>
+  </article>
+
+  {
+    others.length > 0 && (
+      <section class="section section-alt">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="kicker">À lire aussi</p>
+              <h2>D’autres actualités</h2>
+            </div>
+          </div>
+          <div class="grid-cards">
+            {others.map((n) => (
+              <NewsCard item={n} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand />
+</Base>
+
+<style>
+  .head {
+    background: var(--sand-50);
+    border-bottom: 1px solid var(--line);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .head :global(.breadcrumb) {
+    margin-bottom: var(--space-s);
+  }
+
+  .head h1 {
+    margin-bottom: var(--space-xs);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+
+  .meta svg {
+    color: var(--gold-600);
+  }
+
+  .cover {
+    margin-top: calc(-1 * clamp(1rem, 3vw, 2rem));
+    padding-top: clamp(1rem, 3vw, 2rem);
+  }
+
+  .cover :global(img) {
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-l);
+  }
+
+  .body {
+    padding-block: var(--space-xl);
+  }
+
+  .body .lede {
+    margin-bottom: var(--space-l);
+  }
+
+  .prose :global(h2),
+  .prose :global(h3) {
+    color: var(--navy-900);
+  }
+
+  .author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    margin-top: var(--space-xl);
+    padding: var(--space-s) var(--space-m);
+    background: var(--sand-50);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .author :global(.author-photo img) {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: var(--radius-pill);
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .author p {
+    margin: 0;
+  }
+
+  .author-name {
+    font-weight: 600;
+  }
+
+  .author-name a {
+    text-decoration: none;
+    color: var(--navy-900);
+  }
+
+  .back {
+    margin: var(--space-l) 0 0;
+  }
+</style>

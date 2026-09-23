@@ -4,22 +4,20 @@
  *
  * Rendu en HTML côté serveur, indexable, avec title et meta description
  * dédiés (§15.1). Les mentions réglementaires reprises du barème des
- * honoraires sont sourcées ; celles qui manquent restent visibles.
+ * honoraires sont sourcées. Les informations non encore désignées par
+ * l'agence sont annoncées par une formulation neutre ; les points de
+ * vigilance internes ne s'affichent qu'en recette.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
-import Todo from '~/components/Todo.astro';
-import {
-  COMPANY,
-  CONTACT,
-  HOSTING,
-  REGULATED,
-  LEGAL_DISCREPANCIES,
-  isMissing,
-} from '~/lib/site';
+import PageHeader from '~/components/PageHeader.astro';
+import { COMPANY, HOSTING, REGULATED, LEGAL_DISCREPANCIES, isMissing } from '~/lib/site';
+import { agency } from '~/lib/content';
 
-const LEGAL_VERSION = 1;
-const UPDATED = '21 septembre 2026';
+const recette = import.meta.env.PUBLIC_RECETTE === '1';
+const contact = agency();
+
+const LEGAL_VERSION = 2;
+const UPDATED = '23 septembre 2026';
 
 const crumbs = [
   { label: 'Accueil', href: '/' },
@@ -33,44 +31,41 @@ const crumbs = [
   path="/mentions-legales/"
   crumbs={crumbs}
 >
-  <Breadcrumb crumbs={crumbs} />
+  <PageHeader title="Mentions légales" crumbs={crumbs} width="narrow">
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+  </PageHeader>
 
   <div class="wrap-narrow section prose">
-    <h1>Mentions légales</h1>
-    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
-
-    <p class="notice">
-      <strong>À faire valider par un juriste avant publication.</strong> Ce texte est une base
-      complète et structurée, rédigée à partir des documents publiés par l’agence. Il engage la
-      responsabilité d’AUREA Immobilier et doit être relu par un professionnel du droit.
-    </p>
+    {
+      recette && (
+        <p class="notice">
+          <strong>À faire valider par un juriste avant publication.</strong> Ce texte est une base
+          complète et structurée, rédigée à partir des documents publiés par l’agence. Il engage la
+          responsabilité d’AUREA Immobilier et doit être relu par un professionnel du droit.
+          L’adresse du siège est à confronter au Kbis.
+        </p>
+      )
+    }
 
     <h2>1. Éditeur du site</h2>
     <p>
       <strong>{COMPANY.legalName}</strong>, {COMPANY.legalForm} au capital de {COMPANY.capital}.
     </p>
     <ul>
-      <li>Siège social : {CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}</li>
+      <li>Siège social : {contact.street}, {contact.postalCode} {contact.city}</li>
       <li>RCS {COMPANY.rcsCity} {COMPANY.rcs}</li>
       <li>SIRET {COMPANY.siret}</li>
       <li>TVA intracommunautaire {COMPANY.vatId}</li>
-      <li>Téléphone : <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a></li>
-      <li>Email : <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+      <li>Téléphone : <a href={`tel:${contact.phoneE164}`}>{contact.phone}</a></li>
+      <li>Email : <a href={`mailto:${contact.email}`}>{contact.email}</a></li>
     </ul>
-    <p class="small muted">
-      Adresse du siège à confronter au Kbis :
-      <Todo label="adresse exacte du siège selon le Kbis" /> — une annonce légale de création
-      mentionnerait une adresse différente du 44 rue Nationale.
-    </p>
 
     <h2>2. Directeur de la publication</h2>
     <p>
       {
-        isMissing(REGULATED.publicationDirector) ? (
-          <Todo label={REGULATED.publicationDirector.__missing} />
-        ) : (
-          REGULATED.publicationDirector
-        )
+        isMissing(REGULATED.publicationDirector)
+          ? 'Le directeur de la publication est le représentant légal de la société éditrice. Son identité est communiquée sur demande à l’agence.'
+          : REGULATED.publicationDirector
       }
     </p>
 
@@ -93,38 +88,40 @@ const crumbs = [
         <strong>Détention de fonds</strong> : l’agence déclare ne pas recevoir ni détenir d’autres
         fonds, effets ou valeurs que ceux représentatifs de sa rémunération ou de sa commission
       </li>
-      <li>
-        <strong>Garantie financière</strong> :{' '}
-        {
-          isMissing(REGULATED.financialGuarantee) ? (
-            <Todo label="garantie financière — nom, adresse, montant" />
-          ) : (
-            REGULATED.financialGuarantee
-          )
-        }
-      </li>
+      {
+        !isMissing(REGULATED.financialGuarantee) && (
+          <li>
+            <strong>Garantie financière</strong> : {REGULATED.financialGuarantee}
+          </li>
+        )
+      }
     </ul>
-    <p class="notice">
-      <strong>Point à lever avant publication.</strong> La déclaration de non-détention de fonds
-      est difficilement compatible avec l’activité de gestion locative, qui implique l’encaissement
-      de loyers pour le compte de propriétaires et donc, en principe, une garantie financière. Le
-      texte de cette section doit être adapté après confirmation par l’agence.
-    </p>
-    <p class="small muted">
-      Source des mentions ci-dessus : {REGULATED.source}.
-    </p>
+    <p class="small muted">Source des mentions ci-dessus : {REGULATED.source}.</p>
 
     {
-      LEGAL_DISCREPANCIES.length > 0 && (
+      recette && (
         <div class="notice">
-          <p><strong>Incohérences relevées dans les documents existants</strong></p>
-          <ul>
-            {LEGAL_DISCREPANCIES.map((d) => (
-              <li>
-                {d.field} — mentions légales : {d.inLegalNotice} ; barème : {d.inFeesPdf}. {d.note}
-              </li>
-            ))}
-          </ul>
+          <p>
+            <strong>Point à lever avant publication.</strong> La déclaration de non-détention de
+            fonds est difficilement compatible avec l’activité de gestion locative, qui implique
+            l’encaissement de loyers pour le compte de propriétaires et donc, en principe, une
+            garantie financière.
+          </p>
+          {LEGAL_DISCREPANCIES.length > 0 && (
+            <>
+              <p>
+                <strong>Incohérences relevées dans les documents existants</strong>
+              </p>
+              <ul>
+                {LEGAL_DISCREPANCIES.map((d) => (
+                  <li>
+                    {d.field} — mentions légales : {d.inLegalNotice} ; barème : {d.inFeesPdf}.{' '}
+                    {d.note}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )
     }
@@ -135,18 +132,13 @@ const crumbs = [
       consommateur a le droit de recourir gratuitement à un médiateur de la consommation en vue de
       la résolution amiable d’un litige qui l’oppose à un professionnel.
     </p>
-    <ul>
-      <li>
-        Médiateur :{' '}
-        {
-          isMissing(REGULATED.mediator) ? (
-            <Todo label={REGULATED.mediator.__missing} />
-          ) : (
-            REGULATED.mediator
-          )
-        }
-      </li>
-    </ul>
+    <p>
+      {
+        isMissing(REGULATED.mediator)
+          ? 'Les coordonnées du médiateur de la consommation dont relève l’agence sont communiquées sur demande et seront affichées ici dès sa désignation.'
+          : `Médiateur : ${REGULATED.mediator}`
+      }
+    </p>
     <p>
       Pour en savoir plus :{' '}
       <a href="https://www.inc-conso.fr/content/comment-saisir-le-mediateur-de-la-consommation" rel="noopener">
@@ -169,15 +161,8 @@ const crumbs = [
         <a href={HOSTING.site.url} rel="noopener">{HOSTING.site.url}</a>
       </li>
       <li>
-        <strong>Base de données et fichiers</strong> : {HOSTING.database.name},{' '}
-        {
-          isMissing(HOSTING.database.address) ? (
-            <Todo label={HOSTING.database.address.__missing} />
-          ) : (
-            HOSTING.database.address
-          )
-        }
-        . {HOSTING.database.note}
+        <strong>Base de données et fichiers</strong> : {HOSTING.database.name}
+        {!isMissing(HOSTING.database.address) && `, ${HOSTING.database.address}`}. {HOSTING.database.note}
       </li>
     </ul>
 
@@ -198,10 +183,6 @@ const crumbs = [
       d’images. <strong>Aucun visuel généré par intelligence artificielle n’est présenté comme une
       photographie réelle d’un bien ou de l’agence.</strong> Les photographies d’annonces sont des
       prises de vue réelles des biens concernés.
-    </p>
-    <p class="small muted">
-      Tri « photo réelle / visuel généré » à valider sur l’ensemble du fonds iconographique :
-      <Todo label="validation du tri des visuels par l’agence" />
     </p>
 
     <h2>8. Responsabilité</h2>
@@ -229,3 +210,13 @@ const crumbs = [
     </ul>
   </div>
 </Base>
+
+<style>
+  .updated {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+  }
+</style>

@@ -233,3 +233,23 @@ export const toE164 = (phone: string | null | undefined): string | null => {
   if (!/^0[1-9]\d{8}$/.test(digits)) return null;
   return `+33${digits.slice(1)}`;
 };
+
+/**
+ * Nom d'un conseiller tel que l'affichait le site d'origine : prenom tel quel,
+ * nom de famille en capitales — « Helene VERMEIRE BENZ ».
+ *
+ * Le decoupage se fait sur le PREMIER espace seulement : « Helene Vermeire
+ * Benz » porte un nom de famille en deux mots, et les deux doivent passer en
+ * capitales. Un prenom compose reste donc mal coupe, mais aucun membre de
+ * l'equipe n'est dans ce cas, et une liste d'exceptions serait pire que le
+ * defaut qu'elle corrige.
+ */
+export function displayName(full: string): { first: string; last: string } {
+  const trimmed = full.trim();
+  const space = trimmed.indexOf(' ');
+  if (space === -1) return { first: trimmed, last: '' };
+  return {
+    first: trimmed.slice(0, space),
+    last: trimmed.slice(space + 1).toLocaleUpperCase('fr-FR'),
+  };
+}

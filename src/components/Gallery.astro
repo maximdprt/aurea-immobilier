@@ -2,12 +2,16 @@
 /**
  * Galerie de fiche bien.
  *
- * Premiere image prioritaire (c'est le LCP), les suivantes en lazy.
- * Defilement tactile par scroll-snap natif : aucune librairie de carrousel,
- * aucune animation automatique (prompt v3 §14). Le seul JS est la
- * synchronisation des vignettes, et la galerie reste utilisable sans lui.
+ * Sur grand ecran : une mosaique (grande photo + quatre vignettes) qui donne
+ * d'un coup d'œil l'ampleur du reportage. Sur mobile : un defilement tactile
+ * par scroll-snap natif avec compteur. Dans les deux cas, un clic ouvre la
+ * visionneuse (`<dialog>` natif) avec toutes les photos.
+ *
+ * Premiere image prioritaire (c'est le LCP), les suivantes en lazy. Aucune
+ * librairie, aucune animation automatique (prompt v3 §14).
  */
 import Picture from '~/components/Picture.astro';
+import Icon from '~/components/Icon.astro';
 import type { ListingMedia } from '~/lib/types';
 
 interface Props {
@@ -16,150 +20,394 @@ interface Props {
 }
 const { media, heading } = Astro.props;
 const photos = media?.photos ?? [];
+const mosaic = photos.slice(0, 5);
 ---
 
 {
-  photos.length > 0 && (
-    <figure class="gallery">
-      <div class="track" id="galerie" tabindex="0" aria-label={`Photos — ${heading}`}>
+  photos.length > 0 ? (
+    <figure class="gallery" data-gallery>
+      {/* --- Mobile : defilement tactile ------------------------------------ */}
+      <div class="track" tabindex="0" aria-label={`Photos — ${heading}`} data-track>
         {photos.map((p, i) => (
-          <div class="slide" id={`photo-${i}`}>
+          <button type="button" class="slide" data-open={i} aria-label={`Agrandir la photo ${i + 1}`}>
             <Picture
               media={p}
               alt={p.alt || `${heading} — photo ${i + 1} sur ${photos.length}`}
-              sizes="(min-width: 64rem) 62rem, 100vw"
+              sizes="100vw"
               priority={i === 0}
               loading={i === 0 ? 'eager' : 'lazy'}
+              aspect="3 / 2"
             />
-          </div>
+          </button>
         ))}
       </div>
+      <p class="counter" aria-live="polite">
+        <Icon name="camera" size={16} /> <span data-counter>1</span> / {photos.length}
+      </p>
 
-      {photos.length > 1 && (
-        <figcaption>
-          <ol class="thumbs" aria-label="Vignettes">
-            {photos.map((p, i) => (
-              <li>
-                <a href={`#photo-${i}`} aria-label={`Voir la photo ${i + 1}`}>
-                  <picture>
-                    <source type="image/avif" srcset={`${p.base}-400.avif`} />
-                    <img
-                      src={`${p.base}-${p.fallbackWidth ?? 800}.webp`}
-                      alt=""
-                      width="96"
-                      height="72"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </picture>
-                </a>
-              </li>
-            ))}
-          </ol>
-          <p class="count small muted">{photos.length} photos</p>
-        </figcaption>
-      )}
+      {/* --- Grand ecran : mosaique ---------------------------------------- */}
+      <div class:list={['mosaic', `n${Math.min(mosaic.length, 5)}`]}>
+        {mosaic.map((p, i) => (
+          <button type="button" class="tile" data-open={i} aria-label={`Agrandir la photo ${i + 1}`}>
+            <Picture
+              media={p}
+              alt={p.alt || `${heading} — photo ${i + 1} sur ${photos.length}`}
+              sizes={i === 0 ? '(min-width: 64rem) 46rem, 100vw' : '(min-width: 64rem) 22rem, 50vw'}
+              priority={i === 0}
+              aspect={i === 0 ? '4 / 3' : '4 / 3'}
+            />
+          </button>
+        ))}
+        <button type="button" class="btn btn-light all" data-open="0">
+          <Icon name="camera" size={18} /> Voir les {photos.length} photos
+        </button>
+      </div>
+
+      {/* --- Visionneuse ---------------------------------------------------- */}
+      <dialog class="lightbox" data-lightbox aria-label={`Photos — ${heading}`}>
+        <div class="lb-bar">
+          <p class="lb-count"><span data-lb-counter>1</span> / {photos.length}</p>
+          <button type="button" class="lb-close" data-close aria-label="Fermer">
+            <Icon name="close" size={22} />
+          </button>
+        </div>
+        <div class="lb-track" data-lb-track tabindex="0">
+          {photos.map((p, i) => (
+            <div class="lb-slide" id={`lb-photo-${i}`}>
+              <Picture
+                media={p}
+                alt={p.alt || `${heading} — photo ${i + 1} sur ${photos.length}`}
+                sizes="100vw"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+        <button type="button" class="lb-nav lb-prev" data-prev aria-label="Photo précédente">
+          <Icon name="chevron" size={26} />
+        </button>
+        <button type="button" class="lb-nav lb-next" data-next aria-label="Photo suivante">
+          <Icon name="chevron" size={26} />
+        </button>
+      </dialog>
     </figure>
+  ) : (
+    <div class="no-photo">
+      <Icon name="image" size={28} />
+      <p>Les photos de ce bien seront ajoutées prochainement. Contactez-nous pour les recevoir.</p>
+    </div>
   )
 }
 
 <style>
   .gallery {
     margin: 0;
+    position: relative;
   }
 
+  /* --- Mobile --------------------------------------------------------------- */
   .track {
     display: flex;
-    gap: var(--space-2xs);
+    gap: 0.5rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
+    scrollbar-width: none;
     border-radius: var(--radius-m);
     overscroll-behavior-x: contain;
-    scrollbar-width: thin;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
   }
 
   .slide {
     flex: 0 0 100%;
     scroll-snap-align: center;
-  }
-
-  .slide :global(img) {
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
+    padding: 0;
+    border: 0;
+    background: var(--sand-100);
     border-radius: var(--radius-m);
+    overflow: hidden;
+    cursor: zoom-in;
   }
 
-  figcaption {
-    display: flex;
+  .counter {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    display: inline-flex;
     align-items: center;
-    gap: var(--space-s);
-    margin-top: var(--space-2xs);
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: rgb(0 19 42 / 0.7);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    pointer-events: none;
   }
 
-  .thumbs {
-    display: flex;
-    gap: var(--space-3xs);
-    overflow-x: auto;
-    list-style: none;
+  /* --- Mosaique ------------------------------------------------------------- */
+  .mosaic {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .track,
+    .counter {
+      display: none;
+    }
+
+    .mosaic {
+      position: relative;
+      display: grid;
+      gap: 0.6rem;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      border-radius: var(--radius-l);
+      overflow: hidden;
+    }
+
+    .mosaic.n1 {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+
+    .mosaic.n2 {
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: auto;
+    }
+
+    .mosaic.n3 {
+      grid-template-columns: 2fr 1fr;
+    }
+
+    .mosaic.n4 {
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto;
+    }
+
+    .tile {
+      padding: 0;
+      border: 0;
+      background: var(--sand-100);
+      overflow: hidden;
+      cursor: zoom-in;
+    }
+
+    .tile:first-child {
+      grid-row: 1 / -1;
+    }
+
+    .n2 .tile:first-child,
+    .n4 .tile:first-child {
+      grid-row: auto;
+    }
+
+    .tile :global(img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--dur-slow) var(--ease-out);
+    }
+
+    .tile:hover :global(img) {
+      transform: scale(1.03);
+    }
+
+    .all {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+    }
+  }
+
+  /* --- Visionneuse ---------------------------------------------------------- */
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
     margin: 0;
     padding: 0;
-    flex: 1;
-    scrollbar-width: thin;
+    border: 0;
+    background: var(--navy-950);
+    color: #fff;
   }
 
-  .thumbs img {
-    width: 5rem;
-    height: 3.75rem;
-    object-fit: cover;
-    border-radius: var(--radius-xs);
-    opacity: 0.72;
-    transition: opacity var(--dur) var(--ease-out);
+  .lightbox::backdrop {
+    background: rgb(0 19 42 / 0.9);
   }
 
-  .thumbs a:hover img,
-  .thumbs a:focus-visible img,
-  .thumbs li[aria-current='true'] img {
-    opacity: 1;
+  .lb-bar {
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
   }
 
-  .thumbs li[aria-current='true'] img {
-    outline: 2px solid var(--gold-600);
-    outline-offset: 1px;
-  }
-
-  .count {
-    flex: none;
+  .lb-count {
     margin: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
 
-  @media (min-width: 48rem) {
-    .slide {
-      flex-basis: min(100%, 62rem);
-    }
+  .lb-close,
+  .lb-nav {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .lb-close:hover,
+  .lb-nav:hover {
+    background: rgb(255 255 255 / 0.25);
+  }
+
+  .lb-track {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .lb-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lb-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    display: grid;
+    place-items: center;
+    padding: 4rem 1rem 2rem;
+  }
+
+  .lb-slide :global(picture),
+  .lb-slide :global(img) {
+    max-height: calc(100dvh - 6rem);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  .lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lb-prev {
+    left: 0.75rem;
+  }
+
+  .lb-prev :global(svg) {
+    transform: rotate(90deg);
+  }
+
+  .lb-next {
+    right: 0.75rem;
+  }
+
+  .lb-next :global(svg) {
+    transform: rotate(-90deg);
+  }
+
+  .no-photo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: var(--space-l);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-m);
+    background: var(--sand-50);
+    color: var(--ink-soft);
+  }
+
+  .no-photo p {
+    margin: 0;
   }
 </style>
 
 <script>
-  // Marque la vignette correspondant a la photo visible. Sans ce script la
-  // galerie fonctionne toujours : les vignettes restent des ancres.
-  const track = document.getElementById('galerie');
-  const thumbs = Array.from(document.querySelectorAll<HTMLLIElement>('.thumbs li'));
-  if (track && thumbs.length) {
-    const slides = Array.from(track.querySelectorAll<HTMLElement>('.slide'));
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const index = slides.indexOf(entry.target as HTMLElement);
-          thumbs.forEach((t, i) =>
-            i === index ? t.setAttribute('aria-current', 'true') : t.removeAttribute('aria-current')
-          );
-        }
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-track]');
+    const counter = root.querySelector<HTMLElement>('[data-counter]');
+    const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox]');
+    const lbTrack = root.querySelector<HTMLElement>('[data-lb-track]');
+    const lbCounter = root.querySelector<HTMLElement>('[data-lb-counter]');
+    const slides = lbTrack ? [...lbTrack.querySelectorAll<HTMLElement>('.lb-slide')] : [];
+
+    // Compteur du defilement mobile.
+    if (track && counter) {
+      const items = [...track.querySelectorAll<HTMLElement>('.slide')];
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) counter.textContent = String(items.indexOf(e.target as HTMLElement) + 1);
+          }
+        },
+        { root: track, threshold: 0.6 }
+      );
+      items.forEach((s) => io.observe(s));
+    }
+
+    if (!dialog || !lbTrack) return;
+
+    const current = () => {
+      const w = slides[0]?.offsetWidth || 1;
+      return Math.round(lbTrack.scrollLeft / w);
+    };
+    const goTo = (i: number, smooth = true) => {
+      const n = slides.length;
+      const target = ((i % n) + n) % n;
+      lbTrack.scrollTo({ left: target * (slides[0]?.offsetWidth || 0), behavior: smooth ? 'smooth' : 'auto' });
+      if (lbCounter) lbCounter.textContent = String(target + 1);
+    };
+
+    root.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        dialog.showModal();
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => goTo(Number(btn.dataset.open), false));
+      });
+    });
+
+    const close = () => {
+      dialog.close();
+      document.body.style.overflow = '';
+    };
+    dialog.querySelector('[data-close]')?.addEventListener('click', close);
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) close();
+    });
+    dialog.addEventListener('close', () => (document.body.style.overflow = ''));
+    dialog.querySelector('[data-prev]')?.addEventListener('click', () => goTo(current() - 1));
+    dialog.querySelector('[data-next]')?.addEventListener('click', () => goTo(current() + 1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') goTo(current() + 1);
+      if (e.key === 'ArrowLeft') goTo(current() - 1);
+    });
+    lbTrack.addEventListener(
+      'scroll',
+      () => {
+        if (lbCounter) lbCounter.textContent = String(current() + 1);
       },
-      { root: track, threshold: 0.6 }
+      { passive: true }
     );
-    slides.forEach((s) => io.observe(s));
-  }
+  });
 </script>

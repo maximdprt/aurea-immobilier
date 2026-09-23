@@ -1,17 +1,21 @@
 ---
 /**
- * Page 404 utile : recherche et liens vers les biens (§9).
+ * Page 404 utile : liens vers les biens et les communes (§9).
  *
  * L'ancien site laissait 18 URL en 404 encore liées depuis ses propres pages.
  * Toutes sont désormais redirigées ; cette page ne doit donc être atteinte que
  * par un lien externe ancien ou une faute de frappe.
  */
 import Base from '~/layouts/Base.astro';
+import PageHeader from '~/components/PageHeader.astro';
 import ListingCard from '~/components/ListingCard.astro';
+import Icon from '~/components/Icon.astro';
 import { activeListings, communesWithPage } from '~/lib/catalog';
+import { agency } from '~/lib/content';
 
 const suggestions = activeListings().slice(0, 3);
-const communes = communesWithPage().slice(0, 8);
+const communes = communesWithPage().slice(0, 10);
+const contact = agency();
 ---
 
 <Base
@@ -20,24 +24,29 @@ const communes = communesWithPage().slice(0, 8);
   path="/404/"
   noindex
 >
-  <div class="wrap section">
-    <header class="head">
-      <h1>Cette page n’existe pas</h1>
-      <p class="lede">
-        Le lien est peut-être ancien, ou le bien que vous cherchiez a été vendu. Voici par où
-        continuer.
-      </p>
-      <p class="cluster">
-        <a class="btn" href="/acheter/">Voir les biens à vendre</a>
-        <a class="btn btn-secondary" href="/louer/">Voir les biens à louer</a>
-        <a class="btn btn-secondary" href="/contact/">Nous contacter</a>
-      </p>
-    </header>
+  <PageHeader
+    title="Cette page n’existe pas"
+    kicker="Erreur 404"
+    lede="Le lien est peut-être ancien, ou le bien que vous cherchiez a été vendu. Voici par où continuer."
+  >
+    <p class="cluster">
+      <a class="btn" href="/acheter/">Voir les biens à vendre</a>
+      <a class="btn btn-outline" href="/louer/">Voir les biens à louer</a>
+      <a class="btn btn-outline" href="/contact/">Nous contacter</a>
+    </p>
+  </PageHeader>
 
+  <div class="wrap section">
     {
       suggestions.length > 0 && (
-        <section class="section-tight">
-          <h2>Nos biens du moment</h2>
+        <section class="bloc">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Nos biens</p>
+              <h2>Les biens du moment</h2>
+            </div>
+            <p><a class="link-arrow" href="/acheter/">Tous les biens</a></p>
+          </div>
           <div class="grid-cards">
             {suggestions.map((l) => (
               <ListingCard listing={l} />
@@ -47,39 +56,73 @@ const communes = communesWithPage().slice(0, 8);
       )
     }
 
-    <section class="section-tight">
-      <h2>Nos communes</h2>
+    <section class="bloc">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Notre secteur</p>
+          <h2>Nos communes</h2>
+        </div>
+        <p><a class="link-arrow" href="/plan-du-site/">Plan du site complet</a></p>
+      </div>
       <ul class="communes">
         {
           communes.map((c) => (
             <li>
-              <a class="badge" href={`/agence-immobiliere/${c.slug}/`}>
-                {c.name}
+              <a href={`/agence-immobiliere/${c.slug}/`}>
+                <Icon name="pin" size={14} /> {c.name}
               </a>
             </li>
           ))
         }
       </ul>
-      <p class="small"><a href="/plan-du-site/">Voir le plan du site complet</a></p>
+      <p class="small muted help">
+        Vous cherchiez un bien précis ? Appelez-nous au{' '}
+        <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a> : un conseiller vous
+        dira s’il est encore disponible.
+      </p>
     </section>
   </div>
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
-    max-width: var(--measure);
+  .bloc + .bloc {
+    margin-top: var(--space-xl);
   }
 
   .communes {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs);
+    gap: 0.5rem;
     list-style: none;
+    margin: 0 0 var(--space-m);
     padding: 0;
   }
 
-  .communes .badge {
+  .communes a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.9rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    color: var(--navy-900);
+    font-size: var(--step--1);
+    font-weight: 500;
     text-decoration: none;
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  }
+
+  .communes a:hover {
+    border-color: var(--gold-400);
+    background: var(--gold-50);
+  }
+
+  .communes svg {
+    color: var(--gold-600);
+  }
+
+  .help {
+    margin: 0;
   }
 </style>

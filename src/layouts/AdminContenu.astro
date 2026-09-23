@@ -1,0 +1,109 @@
+---
+/**
+ * Gabarit du back-office de contenu.
+ *
+ * Barre laterale sombre, zone de travail claire. Separe du gabarit public
+ * (aucun fil d'Ariane, aucun JSON-LD) et separe aussi de `Admin.astro`, qui
+ * sert l'espace des demandes : les deux espaces n'ont ni la meme
+ * authentification ni le meme public.
+ *
+ * `noindex` en dur. Le `robots.txt` n'est pas une protection ; vercel.json
+ * pose en plus `X-Robots-Tag` sur `/admin/*` (§20.4).
+ */
+import '~/styles/admin.css';
+import Icon, { type IconName } from '~/components/Icon.astro';
+import { COMPANY } from '~/lib/site';
+
+interface Props {
+  title: string;
+  /** Cle de la rubrique courante, pour marquer l'entree active. */
+  section?: string;
+  heading?: string;
+  surtitle?: string;
+  intro?: string;
+  /** Barre laterale masquee sur l'ecran de saisie du code. */
+  bare?: boolean;
+}
+const { title, section = '', heading, surtitle = 'Espace de l’agence', intro, bare = false } = Astro.props;
+
+const SECTIONS: { key: string; href: string; label: string; icon: IconName }[] = [
+  { key: 'accueil', href: '/admin/accueil/', label: 'Page d’accueil', icon: 'home' },
+  { key: 'textes', href: '/admin/textes/', label: 'Textes des pages', icon: 'file' },
+  { key: 'medias', href: '/admin/medias/', label: 'Photos & visuels', icon: 'image' },
+  { key: 'actualites', href: '/admin/actualites/', label: 'Actualités', icon: 'sparkle' },
+  { key: 'equipe', href: '/admin/equipe/', label: 'Équipe', icon: 'users' },
+  { key: 'biens', href: '/admin/biens/', label: 'Biens', icon: 'building' },
+  { key: 'avis', href: '/admin/avis/', label: 'Avis clients', icon: 'star' },
+  { key: 'coordonnees', href: '/admin/coordonnees/', label: 'Coordonnées & horaires', icon: 'pin' },
+  { key: 'honoraires', href: '/admin/honoraires/', label: 'Honoraires', icon: 'euro' },
+];
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} — Administration {COMPANY.name}</title>
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+  </head>
+
+  <body class:list={['bo', bare && 'bo-bare']}>
+    {
+      !bare && (
+        <aside class="bo-side">
+          <a class="bo-brand" href="/admin/">
+            <strong>AUREA IMMOBILIER</strong>
+            <span>Administration</span>
+          </a>
+
+          <nav aria-label="Rubriques">
+            <a class:list={['bo-nav', section === 'tableau' && 'is-on']} href="/admin/">
+              <Icon name="layers" size={18} /> Vue d’ensemble
+            </a>
+
+            <p class="bo-group">Contenu du site</p>
+            {SECTIONS.map((s) => (
+              <a class:list={['bo-nav', section === s.key && 'is-on']} href={s.href}>
+                <Icon name={s.icon} size={18} /> {s.label}
+              </a>
+            ))}
+
+            <p class="bo-group">Autre</p>
+            <a class="bo-nav" href="/admin/demandes/">
+              <Icon name="mail" size={18} /> Demandes reçues
+            </a>
+          </nav>
+
+          <div class="bo-foot">
+            <form method="post" action="/admin/publier/">
+              <button class="bo-publish" type="submit" title="Relance la construction du site avec le contenu actuel">
+                Publier le site
+              </button>
+            </form>
+            <a class="bo-nav" href="/" target="_blank" rel="noopener">
+              <Icon name="external" size={18} /> Voir le site
+            </a>
+            <form method="post" action="/admin/sortie/">
+              <button class="bo-nav bo-out" type="submit">Se déconnecter</button>
+            </form>
+          </div>
+        </aside>
+      )
+    }
+
+    <main class="bo-main">
+      {
+        heading && (
+          <header class="bo-head">
+            <p class="bo-sur">{surtitle}</p>
+            <h1>{heading}</h1>
+            {intro && <p class="bo-intro">{intro}</p>}
+          </header>
+        )
+      }
+      <slot />
+    </main>
+  </body>
+</html>

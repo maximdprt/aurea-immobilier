@@ -1,567 +1,720 @@
 ---
 /**
- * Accueil — reproduction de https://www.aurea-immobilier.fr/ (template Orisha
- * « camus », page `page_home dark-mode`), dans l'ordre exact de l'original :
+ * Accueil.
  *
- *   #header.no-slope        hero plein ecran (HOME1a), moteur de recherche en
- *                           bas de l'ecran, apparition `appears` sur 2 s
- *   #box_selection          « Nos nouveautes » : carrousel 3/2/1,5/1 par vue,
- *                           defilement auto toutes les 10 s, puces, fleches
- *   #box_home_disclaimer    4 blocs : Recherche personnalisee / Estimation en
- *                           ligne / Alerte des nouveautes / AUREA Immobilier
- *   #box_home_content       presentation de l'agence + visuel lateral
- *                           (apparition au defilement)
- *   #footer.no-slope        pied de page
+ * Construit pour un visiteur qui arrive avec une intention et peu de temps :
+ *  1. le hero dit ce que fait l'agence, ou, et propose la recherche ;
+ *  2. trois entrees — acheter, vendre, louer/confier ;
+ *  3. les biens du moment ;
+ *  4. pourquoi cette agence (arguments concrets, pas de superlatifs) ;
+ *  5. comment se passe une vente ;
+ *  6. l'equipe, les avis, le secteur, les actualites ;
+ *  7. un appel a l'action final.
  *
- * Le corps de page est sable (--color-2), les cartes et blocs blancs.
+ * Tous les textes sont modifiables dans le back-office (registre `accueil.*`).
  */
 import Base from '~/layouts/Base.astro';
 import Picture from '~/components/Picture.astro';
+import Icon from '~/components/Icon.astro';
 import SearchBar from '~/components/SearchBar.astro';
 import ListingCard from '~/components/ListingCard.astro';
-import { activeListings, editorialMedia } from '~/lib/catalog';
-import { COMPANY, CONTACT } from '~/lib/site';
+import AgentCard from '~/components/AgentCard.astro';
+import NewsCard from '~/components/NewsCard.astro';
+import Reviews from '~/components/Reviews.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import { getCollection } from 'astro:content';
+import { activeListings, allAgents, catalogStats, communesWithPage, editorialMedia } from '~/lib/catalog';
+import { CONTACT } from '~/lib/site';
+import { field, fieldPairs } from '~/lib/content';
+import { latestNews } from '~/lib/news';
+import { googleRating } from '~/lib/reviews';
+import { frDate } from '~/lib/format';
 
-const featured = activeListings().slice(0, 9);
+const featured = activeListings().slice(0, 6);
 const hero = editorialMedia('hero-accueil');
-const content = editorialMedia('content1') ?? editorialMedia('agence');
+const agencyPhoto = editorialMedia('agence');
+const stats = catalogStats();
+const agents = allAgents().slice(0, 5);
+const communes = communesWithPage();
+const news = latestNews(3);
+const rating = googleRating();
+const guides = (await getCollection('guides', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.updated.valueOf() - a.data.updated.valueOf())
+  .slice(0, 3);
+
+const ARG_ICONS = ['chart', 'camera', 'shield', 'phone'] as const;
+const args = fieldPairs('accueil.pourquoi', 'arguments');
+const steps = fieldPairs('accueil.etapes', 'etapes');
 ---
 
 <Base
-  title="Agence immobilière Mantes-la-Jolie – AUREA Immobilier"
-  description="AUREA Immobilier, agence immobilière à Mantes-la-Jolie : vente, location, estimation gratuite et gestion locative dans le Mantois. Une agence haut de gamme au service de tous."
+  title="Agence immobilière à Mantes-la-Jolie – AUREA Immobilier"
+  description="AUREA Immobilier, agence indépendante à Mantes-la-Jolie : biens à vendre et à louer, estimation gratuite sous 48 h, gestion locative, conseiller joignable en direct."
   path="/"
   crumbs={[{ label: 'Accueil', href: '/' }]}
 >
-  <!-- #header : hero plein ecran + moteur de recherche -->
-  <section id="header" class="no-slope">
-    <div class="container-slider-home" aria-hidden="true">
-      <Picture
-        media={hero}
-        alt=""
-        sizes="100vw"
-        priority
-        class="slide"
-      />
+  <!-- 1. Hero -->
+  <section class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <Picture media={hero} alt="" sizes="100vw" priority class="hero-img" />
     </div>
-    <div class="container caption">
-      <h1>{COMPANY.name}</h1>
-    </div>
-    <div class="header-main">
-      <div class="wrap">
-        <p class="main-title hero-title">Trouvez votre bien à Mantes-la-Jolie et dans le Mantois</p>
-        <SearchBar />
+    <div class="wrap hero-inner">
+      <div class="hero-text">
+        <p class="kicker rise">Agence immobilière indépendante · Mantes-la-Jolie</p>
+        <h1 class="rise rise-2">{field('accueil.hero', 'titre')}</h1>
+        <p class="hero-sub rise rise-3">{field('accueil.hero', 'sous_titre')}</p>
+      </div>
+      <div class="hero-search rise rise-3">
+        <SearchBar onDark />
       </div>
     </div>
   </section>
 
-  <!-- #box_selection : Nos nouveautes -->
-  <section id="box_selection" class="even box_product-selection">
-    <div class="wrap">
-      <h2 class="main-title">Nos nouveautés</h2>
-
+  <!-- Chiffres -->
+  <section class="proof">
+    <dl class="wrap stats">
+      <div>
+        <dd>{stats.archivedTotal}</dd>
+        <dt>biens vendus ou loués depuis 2024</dt>
+      </div>
+      <div>
+        <dd>{stats.communes}</dd>
+        <dt>communes où nous sommes présents</dt>
+      </div>
+      <div>
+        <dd>{allAgents().length}</dd>
+        <dt>conseillers, chacun avec sa ligne directe</dt>
+      </div>
       {
-        featured.length ? (
-          <div class="box-home-products-slider" data-slider>
-            <div id="home-products-selection" class="swiper" data-track tabindex="0" aria-label="Nos nouveautés, carrousel">
-              <div class="swiper-wrapper">
-                {featured.map((l, i) => (
-                  <div class="swiper-slide">
-                    <ListingCard listing={l} priority={i < 3} />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div class="swiper-pagination" data-bullets role="tablist" aria-label="Pages du carrousel"></div>
-            <div class="swiper-navigation">
-              <button type="button" class="swiper-button-prev" data-prev aria-label="Biens précédents"></button>
-              <button type="button" class="swiper-button-next" data-next aria-label="Biens suivants"></button>
-            </div>
+        rating ? (
+          <div>
+            <dd>{rating.rating}<small>/5</small></dd>
+            <dt>{rating.count} avis Google</dt>
           </div>
         ) : (
-          <p class="notice">Aucun bien actif dans le catalogue pour le moment.</p>
+          <div>
+            <dd>48 h</dd>
+            <dt>pour une estimation argumentée, gratuite</dt>
+          </div>
         )
       }
+    </dl>
+  </section>
 
-      <p class="cta">
-        <a class="btn btn-navy" href="/acheter/">Voir tous nos biens</a>
-      </p>
+  <!-- 2. Trois entrees -->
+  <section class="section intents">
+    <div class="wrap">
+      <ul class="intent-grid">
+        <li>
+          <a href="/acheter/" class="intent">
+            <span class="icon-pill"><Icon name="search" /></span>
+            <h2>{field('accueil.intentions', 'acheter_titre')}</h2>
+            <p>{field('accueil.intentions', 'acheter_texte')}</p>
+            <span class="link-arrow">Voir les biens à vendre</span>
+          </a>
+        </li>
+        <li>
+          <a href="/estimation/" class="intent is-featured">
+            <span class="icon-pill"><Icon name="chart" /></span>
+            <h2>{field('accueil.intentions', 'vendre_titre')}</h2>
+            <p>{field('accueil.intentions', 'vendre_texte')}</p>
+            <span class="link-arrow">Estimer mon bien gratuitement</span>
+          </a>
+        </li>
+        <li>
+          <a href="/louer/" class="intent">
+            <span class="icon-pill"><Icon name="key" /></span>
+            <h2>{field('accueil.intentions', 'louer_titre')}</h2>
+            <p>{field('accueil.intentions', 'louer_texte')}</p>
+            <span class="link-arrow">Voir les locations et la gestion</span>
+          </a>
+        </li>
+      </ul>
     </div>
   </section>
 
-  <!-- #box_home_disclaimer : 4 blocs -->
-  <section id="box_home_disclaimer" class="even disclaimer dark-mode">
-    <div class="wrap blocs">
-      <div class="bloc">
-        <div class="bloc__wrapper">
-          <h3 class="title-bloc">Recherche personnalisée</h3>
-          <p>
-            Vous cherchez un bien ? Trouvez celui qui vous correspond, grâce à notre recherche
-            personnalisée, en vente ou location.
+  <!-- 3. Biens du moment -->
+  {
+    featured.length > 0 && (
+      <section class="section section-alt">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Nos biens</p>
+              <h2>Les biens du moment</h2>
+            </div>
+            <p>
+              <a class="link-arrow" href="/acheter/">
+                Tous les biens ({stats.active})
+              </a>
+            </p>
+          </div>
+          <div class="grid-cards">
+            {featured.map((l, i) => (
+              <ListingCard listing={l} priority={i < 3} />
+            ))}
+          </div>
+          <p class="center">
+            <a class="btn btn-navy" href="/acheter/">Voir tous les biens à vendre</a>
+            <a class="btn btn-outline" href="/louer/">Voir les locations</a>
           </p>
-          <a class="btn btn-light" href="/acheter/">Voir les biens</a>
         </div>
+      </section>
+    )
+  }
+
+  <!-- 4. Pourquoi AUREA -->
+  <section class="section why">
+    <div class="wrap why-inner">
+      <div class="why-text">
+        <p class="kicker">Notre méthode</p>
+        <h2>{field('accueil.pourquoi', 'titre')}</h2>
+        <p class="lede">{field('accueil.pourquoi', 'intro')}</p>
+        <p class="cluster">
+          <a class="btn btn-navy" href="/agence/">Découvrir l’agence</a>
+          <a class="btn btn-outline" href="/equipe/">Rencontrer l’équipe</a>
+        </p>
+        {
+          agencyPhoto && (
+            <Picture
+              media={agencyPhoto}
+              alt="L’intérieur de l’agence AUREA Immobilier, 44 rue Nationale à Mantes-la-Jolie"
+              sizes="(min-width: 64rem) 32rem, 92vw"
+              aspect="4 / 3"
+              class="why-photo"
+            />
+          )
+        }
       </div>
-      <div class="bloc estimation">
-        <div class="bloc__wrapper">
-          <h3 class="title-bloc">Estimation en ligne</h3>
-          <p>
-            Vous souhaitez vendre votre bien ? La première étape est d’estimer le prix de votre
-            bien afin de le vendre au plus vite.
-          </p>
-          <a class="btn btn-navy" href="/estimation/">Estimer</a>
-        </div>
-      </div>
-      <div class="bloc">
-        <div class="bloc__wrapper">
-          <h3 class="title-bloc">Alerte des nouveautés</h3>
-          <p>
-            Restez à l’affût des nouveautés ! Recevez en avant-première l’information des biens
-            qui correspondent à vos critères.
-          </p>
-          <a class="btn btn-light" href="/alerte/">Créer une alerte</a>
-        </div>
-      </div>
-      <div class="bloc">
-        <div class="bloc__wrapper">
-          <h3 class="title-bloc">{COMPANY.name}</h3>
-          <p>
-            Une maison, un foyer et des projets pour la vie, voilà ce que représente l’immobilier
-            pour AUREA.
-          </p>
-          <a class="btn btn-light" href="/agence/">En savoir plus</a>
-        </div>
-      </div>
+      <ul class="args">
+        {
+          args.map(([title, text], i) => (
+            <li>
+              <span class="icon-pill icon-pill-navy">
+                <Icon name={ARG_ICONS[i % ARG_ICONS.length]} />
+              </span>
+              <div>
+                <h3>{title}</h3>
+                {text && <p>{text}</p>}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <!-- #box_home_content : presentation de l'agence -->
-  <section id="box_home_content" class="odd">
-    <div class="wrap content-bloc">
-      <div class="text-content">
-        <h2 class="main-title">{COMPANY.name}</h2>
-        <p>
-          Une maison, un foyer et des projets pour la vie, voilà ce que représente l’immobilier
-          pour AUREA.
-        </p>
-        <p>
-          Vous offrir les meilleures prestations, un service personnalisé, afin de faire de votre
-          vente ou votre acquisition un moment agréable dont vous vous souviendrez.
-        </p>
-        <p>
-          Grâce à notre modernité, nous offrons à nos clients tous les avantages que notre
-          société peut nous apporter : la visite virtuelle, les vidéos par drone, des reportages
-          photos professionnels et une disponibilité pour tous à chaque instant.
-        </p>
-        <p class="actions">
-          <a class="btn btn-navy" href="/agence/">En savoir plus</a>
-          <a class="btn btn-secondary" href="/honoraires/">Nos honoraires</a>
-        </p>
-        <p class="address small">
-          {CONTACT.street}, {CONTACT.postalCode} {CONTACT.city} ·{' '}
-          <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
-        </p>
+  <!-- 5. Etapes -->
+  <section class="section section-navy steps">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Vendre</p>
+          <h2>{field('accueil.etapes', 'titre')}</h2>
+          <p class="lede">{field('accueil.etapes', 'intro')}</p>
+        </div>
+        <p><a class="btn" href="/vendre/">Notre méthode de vente en détail</a></p>
       </div>
-      <div class="bg-content-side xyz-appear">
-        <Picture
-          media={content}
-          alt="AUREA Immobilier, agence immobilière à Mantes-la-Jolie"
-          sizes="(min-width: 992px) 45vw, 100vw"
-        />
-      </div>
+      <ol class="steps-list">
+        {
+          steps.map(([title, text], i) => (
+            <li>
+              <span class="num">{i + 1}</span>
+              <h3>{title}</h3>
+              {text && <p>{text}</p>}
+            </li>
+          ))
+        }
+      </ol>
     </div>
   </section>
-</Base>
 
-<script>
-  /* Carrousel « Nos nouveautes » : reglages du sliders.js d'origine
-     (Swiper 8) — 1 / 1,5 / 2 / 3 par vue, vitesse 600 ms, autoplay 10 s,
-     puces cliquables, fleches, arret de l'autoplay au clic sur un bien. */
-  document.querySelectorAll<HTMLElement>('[data-slider]').forEach((root) => {
-    const track = root.querySelector<HTMLElement>('[data-track]');
-    const bullets = root.querySelector<HTMLElement>('[data-bullets]');
-    const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
-    const next = root.querySelector<HTMLButtonElement>('[data-next]');
-    if (!track || !bullets) return;
-    const slides = [...track.querySelectorAll<HTMLElement>('.swiper-slide')];
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  <!-- 6. Equipe -->
+  <section class="section team">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">L’équipe</p>
+          <h2>{field('accueil.equipe', 'titre')}</h2>
+          <p class="lede">{field('accueil.equipe', 'texte')}</p>
+        </div>
+        <p><a class="link-arrow" href="/equipe/">Toute l’équipe</a></p>
+      </div>
+      <ul class="team-grid">
+        {agents.map((a) => <li><AgentCard agent={a} sizes="(min-width: 64rem) 14rem, 45vw" /></li>)}
+      </ul>
+    </div>
+  </section>
 
-    const perView = () => {
-      const w = window.innerWidth;
-      return w >= 992 ? 3 : w >= 768 ? 2 : w >= 576 ? 1.5 : 1;
-    };
-    const perGroup = () => Math.max(1, Math.floor(perView()));
-    const pages = () => Math.max(1, Math.ceil(slides.length / perGroup()));
-    const current = () => {
-      const w = slides[0]?.offsetWidth || 1;
-      return Math.round(track.scrollLeft / (w * perGroup()));
-    };
+  <!-- 7. Avis -->
+  <div class="wrap">
+    <Reviews limit={3} linkAll />
+  </div>
 
-    const go = (p: number) => {
-      const n = pages();
-      const target = ((p % n) + n) % n;
-      const w = slides[0]?.offsetWidth || 0;
-      track.scrollTo({ left: target * w * perGroup(), behavior: reduce ? 'auto' : 'smooth' });
-    };
+  <!-- 8. Secteur -->
+  <section class="section section-alt area">
+    <div class="wrap area-inner">
+      <div>
+        <p class="kicker">Notre secteur</p>
+        <h2>Mantes-la-Jolie et le Mantois</h2>
+        <p class="lede">
+          Installés {CONTACT.street}, nous intervenons dans le Mantois, les Yvelines et jusqu’aux
+          communes voisines du Val-d’Oise et de l’Eure. Une page par commune où nous avons
+          réellement vendu ou loué.
+        </p>
+        <p class="cluster">
+          <a class="btn btn-outline" href="/prix-immobilier-mantes-la-jolie/">
+            <Icon name="chart" size={18} /> Prix immobilier à Mantes-la-Jolie
+          </a>
+        </p>
+      </div>
+      <ul class="communes">
+        {
+          communes.map((c) => (
+            <li>
+              <a href={`/agence-immobiliere/${c.slug}/`}>
+                <Icon name="pin" size={14} /> {c.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 
-    const paint = () => {
-      const n = pages();
-      const c = Math.min(current(), n - 1);
-      bullets.replaceChildren();
-      for (let i = 0; i < n; i++) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'swiper-pagination-bullet' + (i === c ? ' swiper-pagination-bullet-active' : '');
-        b.setAttribute('role', 'tab');
-        b.setAttribute('aria-label', `Page ${i + 1}`);
-        b.setAttribute('aria-selected', String(i === c));
-        b.addEventListener('click', () => {
-          stop();
-          go(i);
-        });
-        bullets.append(b);
+  <!-- 9. Actualites / guides -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">{news.length ? 'Actualités' : 'Guides'}</p>
+          <h2>{news.length ? 'La vie de l’agence' : 'Nos guides pour décider en connaissance de cause'}</h2>
+        </div>
+        <p>
+          <a class="link-arrow" href={news.length ? '/actualites/' : '/guides/'}>
+            {news.length ? 'Toutes les actualités' : 'Tous les guides'}
+          </a>
+        </p>
+      </div>
+      {
+        news.length ? (
+          <div class="grid-cards">
+            {news.map((n) => (
+              <NewsCard item={n} />
+            ))}
+          </div>
+        ) : (
+          <ul class="guides">
+            {guides.map((g) => (
+              <li>
+                <a href={`/guides/${g.id}/`}>
+                  <span class="guide-date">Mis à jour le {frDate(g.data.updated)}</span>
+                  <h3>{g.data.title}</h3>
+                  <p>{g.data.answer}</p>
+                  <span class="link-arrow">Lire le guide</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
       }
-    };
+    </div>
+  </section>
 
-    let timer: number | undefined;
-    const start = () => {
-      if (reduce || slides.length <= perGroup()) return;
-      timer = window.setInterval(() => go(current() + 1), 10000);
-    };
-    const stop = () => {
-      if (timer) window.clearInterval(timer);
-      timer = undefined;
-    };
-
-    prev?.addEventListener('click', () => {
-      stop();
-      go(current() - 1);
-    });
-    next?.addEventListener('click', () => {
-      stop();
-      go(current() + 1);
-    });
-    track.addEventListener('scroll', () => window.requestAnimationFrame(paint), { passive: true });
-    track.addEventListener('pointerdown', stop, { passive: true });
-    track.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') go(current() + 1);
-      if (e.key === 'ArrowLeft') go(current() - 1);
-    });
-    track.querySelectorAll('a').forEach((a) => a.addEventListener('click', stop));
-    window.addEventListener('resize', paint);
-
-    paint();
-    start();
-  });
-</script>
+  <CtaBand />
+</Base>
 
 <style>
   /* ---------------------------------------------------------- Hero ------ */
-  #header {
+  .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: min(88vh, 46rem);
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    align-items: flex-end;
+    background: var(--navy-900);
+    color: #fff;
     overflow: hidden;
-    background: var(--color-1);
   }
 
-  .container-slider-home {
+  .hero-media {
     position: absolute;
     inset: 0;
-    z-index: 0;
-    overflow: hidden;
   }
 
-  .container-slider-home :global(picture),
-  .container-slider-home :global(img) {
-    display: block;
+  .hero-media :global(picture),
+  .hero-media :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    animation: hero-in 1.4s var(--ease-out) both;
   }
 
-  /* Le site d'origine masque le H1 du hero (caption display:none) ; il
-     reste dans le DOM pour les moteurs et les lecteurs d'ecran. */
-  .caption {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-
-  .header-main {
-    position: relative;
-    z-index: 2;
-    padding-bottom: 10vh;
-    animation: appears 2s;
-  }
-
-  .hero-title {
-    color: #ffffff;
-    text-shadow: -1px -1px 6px #969696;
-    font-size: 26px;
-    margin-bottom: 20px;
-  }
-
-  .hero-title::after {
-    background-color: #ffffff;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .header-main {
-      animation: none;
+  @keyframes hero-in {
+    from {
+      transform: scale(1.05);
+    }
+    to {
+      transform: none;
     }
   }
 
-  /* ---------------------------------------------------- Sections -------- */
-  .even,
-  .odd {
-    padding: 100px 0 130px;
+  .hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgb(0 19 42 / 0.15) 0%, rgb(0 19 42 / 0.55) 55%, rgb(0 19 42 / 0.85) 100%),
+      linear-gradient(90deg, rgb(0 19 42 / 0.55) 0%, rgb(0 19 42 / 0.1) 70%);
   }
 
-  #box_selection .main-title {
-    margin-bottom: 10px;
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-l);
+    padding-block: clamp(3.5rem, 8vw, 6rem) clamp(2rem, 5vw, 3.5rem);
   }
 
-  .cta {
-    margin: 30px 0 0;
+  .hero-text {
+    max-width: 44rem;
+  }
+
+  .hero .kicker {
+    color: var(--gold-300);
+  }
+
+  .hero .kicker::before {
+    background: var(--gold-300);
+  }
+
+  .hero h1 {
+    color: #fff;
+    margin-bottom: var(--space-s);
+    text-shadow: 0 2px 30px rgb(0 19 42 / 0.5);
+  }
+
+  .hero-sub {
+    margin: 0;
+    max-width: 40rem;
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+    color: rgb(255 255 255 / 0.88);
+  }
+
+  /* ------------------------------------------------------ Chiffres ------ */
+  .proof {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .proof .stats {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 0;
+  }
+
+  .proof .stats > div {
+    padding: var(--space-m) var(--space-s);
     text-align: center;
   }
 
-  /* --------------------------------------------------- Carrousel -------- */
-  .box-home-products-slider {
-    position: relative;
-    margin-top: 30px;
+  .proof .stats > div + div {
+    border-left: 1px solid var(--line);
   }
 
-  .swiper {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    padding: 10px 0;
+  .proof dd small {
+    font-size: 1rem;
+    color: var(--ink-muted);
   }
 
-  .swiper::-webkit-scrollbar {
-    display: none;
-  }
-
-  .swiper-wrapper {
-    display: flex;
-    gap: 15px;
-  }
-
-  .swiper-slide {
-    flex: 0 0 calc((100% - 30px) / 3);
-    scroll-snap-align: start;
-  }
-
-  @media (max-width: 991px) {
-    .swiper-slide {
-      flex-basis: calc((100% - 15px) / 2);
+  @media (max-width: 40rem) {
+    .proof .stats {
+      grid-template-columns: 1fr 1fr;
+    }
+    .proof .stats > div:nth-child(3) {
+      border-left: 0;
+    }
+    .proof .stats > div:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
     }
   }
 
-  @media (max-width: 767px) {
-    .swiper-slide {
-      flex-basis: calc((100% - 7.5px) / 1.5);
-    }
-  }
-
-  @media (max-width: 575px) {
-    .swiper-slide {
-      flex-basis: 100%;
-    }
-  }
-
-  .swiper-pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 16px;
-  }
-
-  .swiper-pagination :global(.swiper-pagination-bullet) {
-    width: 10px;
-    height: 10px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: var(--color-1);
-    opacity: 1;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .swiper-pagination :global(.swiper-pagination-bullet-active) {
-    background: var(--color-2-darken);
-    transform: scale(1.2);
-  }
-
-  .swiper-button-prev,
-  .swiper-button-next {
-    position: absolute;
-    top: 45%;
-    width: 44px;
-    height: 44px;
-    border: 0;
-    background: var(--color-1);
-    color: #ffffff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .swiper-button-prev {
-    left: -56px;
-  }
-
-  .swiper-button-next {
-    right: -56px;
-  }
-
-  .swiper-button-prev::after,
-  .swiper-button-next::after {
-    content: '';
-    display: block;
-    width: 12px;
-    height: 12px;
-    margin: auto;
-    border-top: 2px solid currentColor;
-    border-right: 2px solid currentColor;
-    transform: rotate(45deg);
-  }
-
-  .swiper-button-prev::after {
-    transform: rotate(-135deg);
-  }
-
-  .swiper-button-prev:hover,
-  .swiper-button-next:hover {
-    background: var(--color-2);
-    color: var(--color-1);
-  }
-
-  @media (max-width: 1279px) {
-    .swiper-button-prev {
-      left: -8px;
-    }
-
-    .swiper-button-next {
-      right: -8px;
-    }
-  }
-
-  /* -------------------------------------------------- Disclaimer -------- */
-  #box_home_disclaimer {
-    background: var(--color-1);
-    color: #ffffff;
-  }
-
-  .blocs {
+  /* ------------------------------------------------------- Intentions --- */
+  .intent-grid {
     display: grid;
-    gap: 20px;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
-  @media (min-width: 600px) {
-    .blocs {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 992px) {
-    .blocs {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  .bloc {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-    padding: 30px 24px;
-    display: flex;
-  }
-
-  .bloc__wrapper {
+  .intent {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 100%;
+    height: 100%;
+    padding: 1.6rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    color: inherit;
+    text-decoration: none;
+    transition: box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
   }
 
-  .bloc__wrapper p {
-    flex: 1;
-    margin: 0;
+  .intent:hover {
+    box-shadow: var(--shadow-l);
+    transform: translateY(-3px);
+    border-color: transparent;
+    color: inherit;
   }
 
-  .title-bloc {
-    color: #ffffff;
-    font-size: 20px;
-    margin: 0;
+  .intent h2 {
+    font-family: var(--font-body);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 1rem 0 0.4rem;
   }
 
-  .bloc.estimation {
-    background: var(--color-2);
-    color: #000000;
+  .intent p {
+    color: var(--ink-soft);
+    margin-bottom: 1rem;
   }
 
-  .bloc.estimation .title-bloc {
-    color: var(--color-1);
+  .intent .link-arrow {
+    margin-top: auto;
+    color: var(--navy-900);
   }
 
-  .bloc .btn {
-    align-self: flex-start;
+  .intent.is-featured {
+    background: var(--navy-900);
+    border-color: var(--navy-900);
+    color: #fff;
   }
 
-  /* ------------------------------------------------- Bloc agence -------- */
-  #box_home_content {
-    padding-bottom: 100px;
+  .intent.is-featured h2 {
+    color: #fff;
   }
 
-  .content-bloc {
+  .intent.is-featured p {
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .intent.is-featured .link-arrow {
+    color: var(--gold-300);
+  }
+
+  .intent.is-featured .icon-pill {
+    background: var(--gold-400);
+    color: var(--navy-900);
+  }
+
+  .center {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2xs);
+    margin: var(--space-l) 0 0;
+  }
+
+  /* ------------------------------------------------------- Pourquoi ----- */
+  .why-inner {
     display: grid;
-    gap: var(--space-l);
-    align-items: center;
+    gap: var(--space-xl);
+    align-items: start;
   }
 
-  @media (min-width: 992px) {
-    .content-bloc {
+  @media (min-width: 64rem) {
+    .why-inner {
       grid-template-columns: 1fr 1fr;
     }
   }
 
-  .text-content p {
-    margin-bottom: 14px;
+  .why-text .cluster {
+    margin-bottom: var(--space-l);
   }
 
-  .actions {
+  .why-text :global(.why-photo img) {
+    border-radius: var(--radius-l);
+  }
+
+  .args {
+    display: grid;
+    gap: var(--space-s);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .args li {
+    display: flex;
+    gap: 1rem;
+    padding: 1.2rem 1.3rem;
+    background: var(--sand-50);
+    border: 1px solid var(--sand-100);
+    border-radius: var(--radius-m);
+  }
+
+  .args h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+  }
+
+  .args p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  /* --------------------------------------------------------- Etapes ----- */
+  .steps .lede {
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .steps-list {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: step;
+  }
+
+  .steps-list li {
+    position: relative;
+    padding: 1.4rem 1.3rem 1.3rem;
+    background: rgb(255 255 255 / 0.06);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--radius-m);
+  }
+
+  .num {
+    display: inline-grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    margin-bottom: 0.9rem;
+    border-radius: var(--radius-pill);
+    background: var(--gold-400);
+    color: var(--navy-900);
+    font-weight: 700;
+  }
+
+  .steps-list h3 {
+    margin-bottom: 0.35rem;
+    font-size: 1.05rem;
+  }
+
+  .steps-list p {
+    margin: 0;
+    color: rgb(255 255 255 / 0.78);
+    font-size: var(--step--1);
+  }
+
+  /* --------------------------------------------------------- Equipe ----- */
+  .team-grid {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* --------------------------------------------------------- Secteur ---- */
+  .area-inner {
+    display: grid;
+    gap: var(--space-l);
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    .area-inner {
+      grid-template-columns: 1fr 1.2fr;
+    }
+  }
+
+  .communes {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 24px;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
-  .address {
-    color: var(--ink-muted);
+  .communes a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.9rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    color: var(--navy-900);
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
   }
 
-  .bg-content-side {
-    height: 500px;
+  .communes a:hover {
+    border-color: var(--gold-400);
+    background: var(--gold-50);
   }
 
-  .bg-content-side :global(picture),
-  .bg-content-side :global(img) {
-    display: block;
-    width: 100%;
+  .communes svg {
+    color: var(--gold-600);
+  }
+
+  /* ---------------------------------------------------------- Guides ---- */
+  .guides {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .guides a {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    object-fit: contain;
+    padding: 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    color: inherit;
+    text-decoration: none;
+    transition: box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
   }
 
-  @media (max-width: 991px) {
-    .bg-content-side {
-      height: auto;
-    }
+  .guides a:hover {
+    box-shadow: var(--shadow-l);
+    transform: translateY(-3px);
+    color: inherit;
+  }
+
+  .guide-date {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .guides h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .guides p {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    margin-bottom: 1rem;
+  }
+
+  .guides .link-arrow {
+    margin-top: auto;
+    color: var(--gold-700);
   }
 </style>

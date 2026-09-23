@@ -10,8 +10,10 @@
 import { getCollection, render } from 'astro:content';
 import Base from '~/layouts/Base.astro';
 import Breadcrumb from '~/components/Breadcrumb.astro';
-import Picture from '~/components/Picture.astro';
-import { agentBySlug, agentMedia, linkedCommune } from '~/lib/catalog';
+import AgentCard from '~/components/AgentCard.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import Icon from '~/components/Icon.astro';
+import { agentBySlug, linkedCommune } from '~/lib/catalog';
 import { frDate } from '~/lib/format';
 import { articleSchema, faqSchema } from '~/lib/schema';
 import type { CollectionEntry } from 'astro:content';
@@ -33,6 +35,27 @@ const path = `/guides/${guide.id}/`;
 const related = (await getCollection('guides', ({ data }) => !data.draft))
   .filter((g) => g.id !== guide.id && g.data.cluster === guide.data.cluster)
   .slice(0, 3);
+
+const CLUSTERS: Record<string, string> = {
+  prix: 'Prix et estimation',
+  vendre: 'Vendre',
+  acheter: 'Acheter',
+  louer: 'Louer',
+  gestion: 'Gestion locative',
+  'vivre-ici': 'Vivre dans le Mantois',
+};
+
+const communes = guide.data.communes
+  .map((name) =>
+    linkedCommune(
+      name
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+    )
+  )
+  .filter((c): c is NonNullable<typeof c> => c !== null);
 
 const crumbs = [
   { label: 'Accueil', href: '/' },
@@ -60,21 +83,27 @@ const crumbs = [
     faqSchema([{ question: guide.data.question, answer: guide.data.answer }]),
   ]}
 >
-  <Breadcrumb crumbs={crumbs} />
+  <header class="head">
+    <div class="wrap-narrow">
+      <Breadcrumb crumbs={crumbs} />
+      <p class="kicker">{CLUSTERS[guide.data.cluster] ?? 'Guide'}</p>
+      <h1>{guide.data.title}</h1>
+      <p class="updated">
+        <Icon name="calendar" size={15} />
+        Publié le {frDate(guide.data.published)} · mis à jour le {frDate(guide.data.updated)}
+        {author && <> · par <a href={`/equipe/${author.slug}/`}>{author.name}</a></>}
+      </p>
+    </div>
+  </header>
 
   <article class="guide">
     <div class="wrap-narrow">
-      <header class="head">
-        <h1>{guide.data.title}</h1>
-        <p class="updated">
-          Publié le {frDate(guide.data.published)} · Mis à jour le {frDate(guide.data.updated)}
-        </p>
-      </header>
-
       {/* Reponse directe : c'est ce bloc que les moteurs generatifs extraient */}
       <div class="answer">
-        <h2>{guide.data.question}</h2>
-        <p>{guide.data.answer}</p>
+        <p class="answer-q">
+          <Icon name="quote" size={18} /> {guide.data.question}
+        </p>
+        <p class="answer-a">{guide.data.answer}</p>
       </div>
 
       <div class="prose">
@@ -87,9 +116,8 @@ const crumbs = [
           {
             guide.data.sources.map((s) => (
               <li>
-                <a href={s.url} rel="noopener">
-                  {s.label}
-                </a>
+                <Icon name="external" size={15} />
+                <a href={s.url} rel="noopener">{s.label}</a>
               </li>
             ))
           }
@@ -103,48 +131,24 @@ const crumbs = [
       {
         author && (
           <section class="author">
-            <Picture
-              media={agentMedia(author.slug)}
-              alt={`Portrait de ${author.name}`}
-              sizes="80px"
-              class="author-photo"
-            />
-            <div>
-              <p class="author-name">
-                <a href={`/equipe/${author.slug}/`}>{author.name}</a>
-              </p>
-              <p class="small muted">{author.role} chez AUREA Immobilier</p>
-              <p class="small">
-                Une question sur votre situation ?{' '}
-                <a href="/contact/">Écrivez-nous</a> ou appelez le{' '}
-                <a href="tel:+33130635050">01 30 63 50 50</a>.
-              </p>
-            </div>
+            <h2>L’auteur</h2>
+            <AgentCard agent={author} variant="row" sizes="120px" />
           </section>
         )
       }
 
       {
-        guide.data.communes.length > 0 && (
+        communes.length > 0 && (
           <section class="communes">
             <h2>Communes concernées</h2>
             <ul class="cluster">
-              {guide.data.communes.map((name) => {
-                const commune = linkedCommune(
-                  name
-                    .normalize('NFD')
-                    .replace(/[̀-ͯ]/g, '')
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                );
-                return commune ? (
-                  <li>
-                    <a class="badge" href={`/agence-immobiliere/${commune.slug}/`}>
-                      {commune.name}
-                    </a>
-                  </li>
-                ) : null;
-              })}
+              {communes.map((commune) => (
+                <li>
+                  <a class="badge badge-outline" href={`/agence-immobiliere/${commune.slug}/`}>
+                    <Icon name="pin" size={13} /> {commune.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </section>
         )
@@ -166,36 +170,69 @@ const crumbs = [
       }
     </div>
   </article>
+
+  <CtaBand
+    title="Une question sur votre situation ?"
+    text="Ce guide donne le cadre général. Pour votre bien et votre projet, un conseiller vous répond sous 24 h ouvrées."
+  />
 </Base>
 
 <style>
+  .head {
+    background: var(--sand-50);
+    border-bottom: 1px solid var(--line);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .head :global(.breadcrumb) {
+    margin-bottom: var(--space-s);
+  }
+
+  .head h1 {
+    font-size: var(--step-3);
+    margin-bottom: var(--space-xs);
+  }
+
+  .updated {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+  }
+
   .guide {
     padding-block: var(--space-l) var(--space-xl);
   }
 
-  .head {
-    margin-bottom: var(--space-m);
-  }
-
   .answer {
-    padding: var(--space-m);
+    padding: var(--space-m) var(--space-m);
     margin-bottom: var(--space-l);
     background: var(--gold-50);
-    border-left: 3px solid var(--gold-500);
-    border-radius: var(--radius-s);
+    border: 1px solid var(--gold-200);
+    border-left: 4px solid var(--gold-400);
+    border-radius: var(--radius-m);
   }
 
-  .answer h2 {
-    font-family: var(--font-body);
-    font-size: var(--step-0);
-    font-weight: 650;
-    margin-bottom: var(--space-2xs);
+  .answer-q {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0 0 var(--space-2xs);
+    font-weight: 600;
+    color: var(--gold-700);
   }
 
-  .answer p {
+  .answer-q svg {
+    flex: none;
+    margin-top: 0.15rem;
+  }
+
+  .answer-a {
     margin: 0;
     font-size: var(--step-1);
     line-height: var(--leading-snug);
+    color: var(--navy-900);
   }
 
   .prose :global(table) {
@@ -205,8 +242,8 @@ const crumbs = [
   .prose :global(blockquote) {
     margin: var(--space-m) 0;
     padding: var(--space-s) var(--space-m);
-    border-left: 3px solid var(--warn);
-    background: var(--warn-bg);
+    border-left: 3px solid var(--navy-700);
+    background: var(--navy-50);
     border-radius: var(--radius-s);
   }
 
@@ -229,43 +266,47 @@ const crumbs = [
   .related h2 {
     font-family: var(--font-body);
     font-size: var(--step-0);
-    font-weight: 650;
+    font-weight: 600;
+    margin-bottom: var(--space-s);
   }
 
-  .author {
+  .sources ul,
+  .related ul {
+    list-style: none;
+    margin: 0 0 var(--space-s);
+    padding: 0;
+  }
+
+  .sources li,
+  .related li {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-m);
-    align-items: start;
+    align-items: center;
+    gap: 0.5rem;
+    padding-block: 0.35rem;
   }
 
-  .author :global(.author-photo img) {
-    width: 5rem;
-    height: 5rem;
-    border-radius: var(--radius-m);
-    object-fit: cover;
-  }
-
-  .author-name {
-    margin: 0;
-    font-weight: 650;
-  }
-
-  .author-name a {
-    color: var(--ink);
-    text-decoration: none;
-  }
-
-  .author p {
-    margin-bottom: var(--space-3xs);
+  .sources svg {
+    flex: none;
+    color: var(--gold-600);
   }
 
   .communes ul {
     list-style: none;
     padding: 0;
+    margin: 0;
   }
 
   .communes .badge {
     text-decoration: none;
+    color: var(--navy-900);
+  }
+
+  .communes .badge:hover {
+    border-color: var(--gold-400);
+    background: var(--gold-50);
+  }
+
+  .related a {
+    font-weight: 500;
   }
 </style>

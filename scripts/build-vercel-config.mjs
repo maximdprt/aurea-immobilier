@@ -15,7 +15,9 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const redirects = JSON.parse(readFileSync(join(ROOT, 'src/data/redirects.json'), 'utf8'));
 
-const SUPABASE_HOST = process.env.PUBLIC_SUPABASE_URL ?? 'https://[[projet]].supabase.co';
+// L'URL du projet Supabase n'est pas un secret : elle figure dans chaque page
+// qui interroge la base. Le projet de production est fixe ici en repli.
+const SUPABASE_HOST = (process.env.PUBLIC_SUPABASE_URL ?? 'https://esgygaazfyjzzzdrvcey.supabase.co').replace(/\/$/, '');
 
 /**
  * CSP. Deployer d'abord une semaine en Content-Security-Policy-Report-Only,

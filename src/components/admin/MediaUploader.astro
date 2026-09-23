@@ -1,0 +1,166 @@
+---
+/**
+ * Bloc de remplacement d'un visuel : aperçu actuel, exigences, choix de
+ * fichier, envoi direct au bucket (voir admin-media.ts), retour à l'original.
+ *
+ * Le script est inclus une seule fois par page (Astro dédoublonne) et pilote
+ * tous les blocs de la page par délégation.
+ */
+import type { MediaSpec } from '~/lib/media-schema';
+
+interface Props {
+  spec: MediaSpec;
+  /** URL de l'aperçu du visuel actuellement affiché (téléversé ou d'origine). */
+  preview: string | null;
+  /** `true` si le visuel affiché est un téléversement (et non l'original). */
+  overridden: boolean;
+  /** Dimensions du téléversement, pour information. */
+  dims?: string | null;
+  portrait?: boolean;
+}
+const { spec, preview, overridden, dims = null, portrait = false } = Astro.props;
+---
+
+<div class="bo-media" data-media={spec.key} data-min-w={spec.minWidth} data-min-h={spec.minHeight}>
+  <div class:list={['preview', portrait && 'portrait']} data-preview>
+    {preview ? <img src={preview} alt="" loading="lazy" /> : null}
+  </div>
+  <div>
+    <h3>{spec.label}</h3>
+    <p class="usage">{spec.usage}</p>
+    <p class="state" data-state>
+      {
+        overridden ? (
+          <span class="bo-pill on">Photo importée{dims && ` · ${dims}`}</span>
+        ) : (
+          <span class="bo-pill">Visuel d’origine</span>
+        )
+      }
+    </p>
+    <div class="controls">
+      <input type="file" accept="image/jpeg,image/png,image/webp" data-file aria-label={`Fichier pour ${spec.label}`} />
+      <button type="button" class="bo-btn bo-btn-sm" data-send>Envoyer</button>
+      {
+        overridden && (
+          <button type="button" class="bo-btn bo-btn-ghost bo-btn-sm" data-remove>
+            Revenir à l’original
+          </button>
+        )
+      }
+    </div>
+    <p class="bo-hint">
+      {spec.advice} Minimum {spec.minWidth} × {spec.minHeight} px, JPEG, PNG ou WebP, 25 Mo maximum.
+    </p>
+    <p class="msg" data-msg hidden></p>
+  </div>
+</div>
+
+<script>
+  const post = async (url: string, body: unknown) => {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = (await res.json().catch(() => ({}))) as { message?: string; [k: string]: unknown };
+    if (!res.ok) throw new Error(data.message ?? 'Une erreur est survenue.');
+    return data;
+  };
+
+  /** Lit les dimensions dans le navigateur avant tout envoi : refus immédiat si trop petit. */
+  const measure = (file: File) =>
+    new Promise<{ w: number; h: number }>((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve({ w: img.naturalWidth, h: img.naturalHeight });
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Fichier illisible.'));
+      };
+      img.src = url;
+    });
+
+  document.querySelectorAll<HTMLElement>('[data-media]').forEach((box) => {
+    const key = box.dataset.media!;
+    const minW = Number(box.dataset.minW);
+    const minH = Number(box.dataset.minH);
+    const file = box.querySelector<HTMLInputElement>('[data-file]')!;
+    const send = box.querySelector<HTMLButtonElement>('[data-send]')!;
+    const remove = box.querySelector<HTMLButtonElement>('[data-remove]');
+    const msg = box.querySelector<HTMLElement>('[data-msg]')!;
+    const preview = box.querySelector<HTMLElement>('[data-preview]')!;
+    const state = box.querySelector<HTMLElement>('[data-state]')!;
+
+    const say = (text: string, kind: 'ok' | 'ko' | '') => {
+      msg.hidden = false;
+      msg.className = `msg ${kind}`;
+      msg.textContent = text;
+    };
+
+    send.addEventListener('click', async () => {
+      const f = file.files?.[0];
+      if (!f) return say('Choisissez d’abord un fichier.', 'ko');
+      send.disabled = true;
+      try {
+        say('Vérification…', '');
+        const { w, h } = await measure(f);
+        // La rotation EXIF n'est pas connue ici : on accepte si l'une des deux
+        // orientations passe, le serveur tranche après lecture des octets.
+        const fits = (w >= minW && h >= minH) || (h >= minW && w >= minH);
+        if (!fits) {
+          return say(`Image trop petite (${w} × ${h} px). Minimum ${minW} × ${minH} px.`, 'ko');
+        }
+
+        say('Préparation de l’envoi…', '');
+        const ticket = (await post('/admin/api/upload-url/', { key, mime: f.type, size: f.size })) as {
+          signedUrl: string;
+          path: string;
+        };
+
+        say('Envoi du fichier…', '');
+        const put = await fetch(ticket.signedUrl, {
+          method: 'PUT',
+          headers: { 'content-type': f.type, 'x-upsert': 'true' },
+          body: f,
+        });
+        if (!put.ok) throw new Error('Le serveur de stockage a refusé le fichier.');
+
+        say('Vérification du fichier reçu…', '');
+        const done = (await post('/admin/api/upload-done/', { key, path: ticket.path })) as {
+          message: string;
+          asset: { url: string; width: number; height: number };
+        };
+
+        preview.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = done.asset.url;
+        img.alt = '';
+        preview.append(img);
+        state.innerHTML = `<span class="bo-pill on">Photo importée · ${done.asset.width} × ${done.asset.height} px</span>`;
+        say(done.message, 'ok');
+        file.value = '';
+        if (!remove) setTimeout(() => location.reload(), 900);
+      } catch (error) {
+        say(error instanceof Error ? error.message : 'Envoi impossible.', 'ko');
+      } finally {
+        send.disabled = false;
+      }
+    });
+
+    remove?.addEventListener('click', async () => {
+      if (!confirm('Revenir au visuel d’origine ? La photo importée sera supprimée.')) return;
+      remove.disabled = true;
+      try {
+        const done = (await post('/admin/api/upload-remove/', { key })) as { message: string };
+        say(done.message, 'ok');
+        setTimeout(() => location.reload(), 900);
+      } catch (error) {
+        say(error instanceof Error ? error.message : 'Suppression impossible.', 'ko');
+        remove.disabled = false;
+      }
+    });
+  });
+</script>

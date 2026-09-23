@@ -1,0 +1,138 @@
+---
+/**
+ * Rubrique « Biens ».
+ *
+ * Écrit dans `listings`, que le site lit au build. La référence n'est pas
+ * modifiable : elle identifie le bien partout. Les caractéristiques
+ * techniques viennent du logiciel métier et servent aux filtres.
+ */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { AdminDataError, adminDataReady, readListings, updateListing, type AdminListing } from '~/lib/server/admin-data';
+import { publishMessage, publishSite } from '~/lib/server/publish';
+import { env } from '~/lib/server/env';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const STATUSES = [
+  { value: 'published', label: 'En ligne' },
+  { value: 'under_offer', label: 'Sous compromis' },
+  { value: 'sold', label: 'Vendu' },
+  { value: 'rented', label: 'Loué' },
+  { value: 'draft', label: 'Brouillon (masqué)' },
+];
+
+let notice: { text: string; ok: boolean } | null = null;
+
+const montant = (form: FormData, field: string): number | null => {
+  const raw = String(form.get(field) ?? '').replace(/[\s  ]/g, '').replace(',', '.');
+  if (raw === '') return null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 ? Math.round(n) : null;
+};
+
+if (Astro.request.method === 'POST') {
+  try {
+    const form = await Astro.request.formData();
+    const reference = Number(String(form.get('reference') ?? ''));
+    const title = String(form.get('title') ?? '').trim();
+    const status = String(form.get('status') ?? '');
+    if (!Number.isInteger(reference) || reference <= 0) throw new AdminDataError('Annonce inconnue.');
+    if (title.length < 3 || title.length > 160) throw new AdminDataError('Le titre doit faire entre 3 et 160 caractères.');
+    if (!STATUSES.some((s) => s.value === status)) throw new AdminDataError('Statut inconnu.');
+    const description = String(form.get('description') ?? '').replace(/\r\n/g, '\n').trim();
+    if (description.length > 20000) throw new AdminDataError('La description dépasse 20 000 caractères.');
+
+    await updateListing(reference, {
+      title,
+      status,
+      description: description || null,
+      price: montant(form, 'price'),
+      rent_total: montant(form, 'rent_total'),
+      is_exclusive: form.get('is_exclusive') === '1',
+    });
+    notice = { text: publishMessage(await publishSite()), ok: true };
+  } catch (error) {
+    notice = { text: error instanceof AdminDataError ? error.message : 'Enregistrement impossible.', ok: false };
+    if (error instanceof AdminDataError && error.internal) console.warn('[admin/biens]', error.internal);
+  }
+}
+
+let listings: AdminListing[] = [];
+let loadError: string | null = null;
+if (adminDataReady()) {
+  try {
+    listings = await readListings();
+  } catch (error) {
+    loadError = error instanceof AdminDataError ? error.message : 'Lecture impossible.';
+  }
+} else {
+  loadError = 'La base n’est pas configurée : renseignez SUPABASE_SECRET_KEY_CONTENT pour modifier les annonces.';
+}
+
+const active = listings.filter((l) => l.status === 'published' || l.status === 'under_offer');
+const others = listings.filter((l) => !active.includes(l));
+const feedConfigured = Boolean(env('ORISHA_FEED_URL'));
+---
+
+<AdminContenu
+  title="Biens"
+  section="biens"
+  heading="Biens"
+  intro="Le titre, le prix, la description et le statut de chaque annonce. Les photos se gèrent dans « Photos & visuels ». Les caractéristiques (surface, DPE, pièces) viennent du logiciel métier et alimentent les filtres."
+>
+  {
+    feedConfigured && (
+      <p class="bo-notice warn">
+        <strong>L’import quotidien du logiciel métier réécrit ces champs.</strong> Une correction saisie ici tient
+        jusqu’au prochain import, puis reprend la valeur du flux. Pour une correction durable, modifiez le bien dans
+        le logiciel de l’agence.
+      </p>
+    )
+  }
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+
+  {[...active, ...others].map((l) => (
+    <form class="bo-card" method="post" id={`bien-${l.reference}`}>
+      <input type="hidden" name="reference" value={l.reference} />
+      <div class="bo-card-head">
+        <h2>Réf. {l.reference} <span class:list={['bo-pill', l.status === 'published' || l.status === 'under_offer' ? 'on' : '']}>{STATUSES.find((s) => s.value === l.status)?.label}</span></h2>
+        <span>
+          <a href={`/admin/medias/#bien-${l.reference}`}>Photos</a> · <a href={`/bien/${l.slug}/`} target="_blank" rel="noopener">Voir l’annonce ↗</a>
+        </span>
+      </div>
+      <p class="bo-f"><label for={`t-${l.reference}`}>Titre</label><input id={`t-${l.reference}`} name="title" value={l.title} required maxlength="160" /></p>
+      <div class="bo-grid3">
+        <p class="bo-f"><label for={`s-${l.reference}`}>Statut</label>
+          <select id={`s-${l.reference}`} name="status">{STATUSES.map((s) => <option value={s.value} selected={s.value === l.status}>{s.label}</option>)}</select>
+        </p>
+        {l.transaction_type === 'location' ? (
+          <p class="bo-f"><label for={`r-${l.reference}`}>Loyer mensuel charges comprises (€)</label><input id={`r-${l.reference}`} name="rent_total" inputmode="numeric" value={l.rent_total ?? ''} /></p>
+        ) : (
+          <p class="bo-f"><label for={`p-${l.reference}`}>Prix honoraires inclus (€)</label><input id={`p-${l.reference}`} name="price" inputmode="numeric" value={l.price ?? ''} /></p>
+        )}
+        <p class="bo-f check-cell"><label class="bo-check"><input type="checkbox" name="is_exclusive" value="1" checked={l.is_exclusive} /><span>Mandat exclusif</span></label></p>
+      </div>
+      <p class="bo-f"><label for={`d-${l.reference}`}>Description</label><textarea id={`d-${l.reference}`} name="description" rows="6" maxlength="20000">{l.description ?? ''}</textarea></p>
+      <div class="bo-card-foot">
+        <span class="bo-hint">{l.commune_slug ?? 'commune non renseignée'}</span>
+        <button class="bo-btn" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  ))}
+
+  {!loadError && listings.length === 0 && <p class="bo-notice">Aucune annonce en base.</p>}
+</AdminContenu>
+
+<style>
+  .check-cell {
+    display: flex;
+    align-items: center;
+    padding-top: 22px;
+  }
+</style>

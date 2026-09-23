@@ -120,9 +120,9 @@ export const POST: APIRoute = async ({ request }) => {
       ],
     });
 
-    return jsonOk();
+    return jsonOk(request);
   } catch (error) {
-    return jsonError(error);
+    return jsonError(error, request);
   }
 };
 

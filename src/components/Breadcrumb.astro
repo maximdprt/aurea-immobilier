@@ -3,18 +3,14 @@ import type { Crumb } from '~/lib/schema';
 
 interface Props {
   crumbs: Crumb[];
-  /**
-   * Fil d'Ariane pose sur le bandeau marine d'une page interne : fond
-   * transparent, texte clair, et pas de conteneur propre — le bandeau fournit
-   * deja sa largeur de page.
-   */
+  /** Sur fond marine (fiche bien, par exemple). */
   onDark?: boolean;
 }
 const { crumbs, onDark = false } = Astro.props;
 ---
 
 <nav class:list={['breadcrumb', onDark && 'on-dark']} aria-label="Fil d'Ariane">
-  <ol class:list={[!onDark && 'wrap']}>
+  <ol>
     {
       crumbs.map((c, i) => (
         <li>
@@ -30,12 +26,6 @@ const { crumbs, onDark = false } = Astro.props;
 </nav>
 
 <style>
-  .breadcrumb {
-    padding-block: var(--space-xs);
-    border-bottom: 1px solid var(--line);
-    background: var(--canvas);
-  }
-
   ol {
     display: flex;
     flex-wrap: wrap;
@@ -59,7 +49,7 @@ const { crumbs, onDark = false } = Astro.props;
   }
 
   a:hover {
-    color: var(--color-1);
+    color: var(--navy-900);
     text-decoration: underline;
   }
 
@@ -67,30 +57,17 @@ const { crumbs, onDark = false } = Astro.props;
     color: var(--ink-soft);
   }
 
-  /* --- Sur le bandeau marine ---------------------------------------------- */
-  .on-dark {
-    padding: 0 0 6px;
-    border-bottom: 0;
-    background: transparent;
-  }
-
-  .on-dark ol {
-    color: rgba(255, 255, 255, 0.75);
-  }
-
+  .on-dark ol,
   .on-dark a {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgb(255 255 255 / 0.75);
   }
 
-  .on-dark a:hover {
-    color: #ffffff;
+  .on-dark a:hover,
+  .on-dark [aria-current='page'] {
+    color: #fff;
   }
 
   .on-dark li + li::before {
-    color: rgba(255, 255, 255, 0.45);
-  }
-
-  .on-dark [aria-current='page'] {
-    color: #ffffff;
+    color: rgb(255 255 255 / 0.4);
   }
 </style>

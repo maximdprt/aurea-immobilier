@@ -5,9 +5,12 @@
  */
 import { getCollection } from 'astro:content';
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import Icon from '~/components/Icon.astro';
 import { agentBySlug } from '~/lib/catalog';
 import { frDate } from '~/lib/format';
+import { field } from '~/lib/content';
 
 const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.updated.valueOf() - a.data.updated.valueOf()
@@ -42,40 +45,39 @@ const crumbs = [
   path="/guides/"
   crumbs={crumbs}
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Guides et conseils immobiliers</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader
+    title={field('page.guides', 'titre')}
+    lede={field('page.guides', 'chapo')}
+    kicker="Conseils"
+    crumbs={crumbs}
+  />
 
   <div class="wrap section">
-    <header class="head">
-      <p class="lede">
-        Des réponses précises, sourcées et signées par un membre de l’équipe. Chaque chiffre
-        réglementaire renvoie à sa source officielle, et chaque page porte sa date de dernière
-        révision.
-      </p>
-    </header>
-
     {
       byCluster.map((cluster) => (
         <section class="cluster-block">
-          <h2>{cluster.label}</h2>
-          <ul class="guides">
+          <div class="section-head">
+            <div>
+              <p class="kicker">{cluster.label}</p>
+              <h2>{cluster.label}</h2>
+            </div>
+          </div>
+          <ul class="guides grid-cards">
             {cluster.items.map((g) => {
               const author = agentBySlug(g.data.author);
               return (
-                <li class="card">
+                <li class="guide">
+                  <p class="question">
+                    <Icon name="quote" size={16} /> {g.data.question}
+                  </p>
                   <h3>
                     <a href={`/guides/${g.id}/`}>{g.data.title}</a>
                   </h3>
-                  <p class="question small muted">{g.data.question}</p>
                   <p class="answer">{g.data.answer}</p>
                   <p class="meta small muted">
-                    {author ? `Par ${author.name}` : ''} · Mis à jour le {frDate(g.data.updated)}
+                    {author ? `Par ${author.name} · ` : ''}Mis à jour le {frDate(g.data.updated)}
                   </p>
+                  <span class="link-arrow">Lire le guide</span>
                 </li>
               );
             })}
@@ -84,66 +86,93 @@ const crumbs = [
       ))
     }
   </div>
+
+  <CtaBand
+    title="Une question sur votre situation ?"
+    text="Un guide ne remplace pas un conseil sur votre dossier. Un conseiller vous répond sous 24 h ouvrées."
+  />
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
+  .cluster-block + .cluster-block {
+    margin-top: var(--space-xl);
   }
 
-  .cluster-block {
-    margin-bottom: var(--space-xl);
-  }
-
-  .cluster-block h2 {
-    font-size: var(--step-2);
-    padding-bottom: var(--space-2xs);
-    border-bottom: 2px solid var(--gold-200);
+  .section-head .kicker {
+    display: none;
   }
 
   .guides {
-    display: grid;
-    gap: var(--space-m);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
-  .card {
+  .guide {
     position: relative;
-    padding: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    transition: box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
   }
 
-  .card h3 {
-    margin-bottom: var(--space-3xs);
+  .guide:hover {
+    box-shadow: var(--shadow-l);
+    transform: translateY(-3px);
   }
 
-  .card h3 a {
-    color: var(--ink);
+  .question {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin: 0 0 0.6rem;
+    font-size: var(--step--1);
+    color: var(--gold-700);
+    font-style: italic;
+  }
+
+  .question svg {
+    flex: none;
+    margin-top: 0.2rem;
+  }
+
+  .guide h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .guide h3 a {
+    color: var(--navy-900);
     text-decoration: none;
   }
 
-  .card h3 a::after {
+  .guide h3 a::after {
     content: '';
     position: absolute;
     inset: 0;
   }
 
-  .card h3 a:hover {
-    color: var(--gold-700);
-  }
-
-  .question {
-    margin-bottom: var(--space-2xs);
-    font-style: italic;
-  }
-
   .answer {
-    margin-bottom: var(--space-2xs);
+    margin-bottom: 0.75rem;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
   }
 
   .meta {
-    margin: 0;
+    margin: auto 0 0.6rem;
+  }
+
+  .guide .link-arrow {
+    color: var(--gold-700);
+    font-size: var(--step--1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .guide:hover {
+      transform: none;
+    }
   }
 </style>

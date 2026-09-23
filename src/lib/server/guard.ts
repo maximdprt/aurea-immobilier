@@ -12,6 +12,7 @@
  *  8. réponse générique, journalisation sans donnée personnelle
  */
 import { formsClient, hashIp } from './supabase-admin';
+import { env } from './env';
 
 const MAX_BODY_BYTES = 16 * 1024;
 const RATE_LIMIT = { max: 5, windowSeconds: 60 };
@@ -27,14 +28,26 @@ export class GuardError extends Error {
   }
 }
 
+/**
+ * Sans JavaScript, le formulaire est soumis en navigation classique : le
+ * navigateur n'attend pas du JSON mais une page. On le renvoie alors vers
+ * /merci/ avec l'état, plutôt que de lui afficher un objet brut.
+ */
+const wantsHtml = (request?: Request): boolean =>
+  Boolean(request) && !(request!.headers.get('accept') ?? '').includes('application/json');
+
+const redirectTo = (path: string): Response =>
+  new Response(null, { status: 303, headers: { location: path } });
+
 /** Réponse générique : jamais de détail interne côté client. */
-export const jsonError = (error: unknown): Response => {
+export const jsonError = (error: unknown, request?: Request): Response => {
   const guard = error instanceof GuardError ? error : null;
   if (!guard) {
     console.error('[form] erreur inattendue', error instanceof Error ? error.message : error);
   } else if (guard.internal) {
     console.warn('[form] rejet', guard.internal);
   }
+  if (wantsHtml(request)) return redirectTo('/merci/?etat=erreur');
   return new Response(
     JSON.stringify({ message: guard?.message ?? 'Envoi impossible pour le moment.' }),
     {
@@ -44,11 +57,37 @@ export const jsonError = (error: unknown): Response => {
   );
 };
 
-export const jsonOk = (): Response =>
-  new Response(JSON.stringify({ ok: true }), {
+export const jsonOk = (request?: Request): Response =>
+  wantsHtml(request)
+    ? redirectTo('/merci/?etat=ok')
+    : new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { 'content-type': 'application/json; charset=utf-8' },
   });
+
+/**
+ * Origine locale, quel que soit le port.
+ *
+ * Le serveur de développement choisit son port : 4321 s'il est libre, 4322,
+ * 4331… sinon. Un port codé en dur condamnait donc les formulaires à répondre
+ * 403 dès que le port par défaut était pris, et ce pour les trois formulaires
+ * du site.
+ *
+ * Deux précautions :
+ *  - on compare le NOM D'HÔTE après analyse de l'URL, jamais le préfixe de la
+ *    chaîne — `http://localhost.attaquant.fr` commence par `http://localhost` ;
+ *  - l'appelant ne consulte cette fonction que sous `import.meta.env.DEV`, figé
+ *    à la compilation : la tolérance n'existe pas dans le build de production.
+ */
+export const isLocalOrigin = (value: string): boolean => {
+  try {
+    const { hostname } = new URL(value);
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
+  } catch {
+    // En-tête `Origin` qui n'est pas une URL : rien à autoriser.
+    return false;
+  }
+};
 
 /** 1 et 2 — méthode, taille, origine. */
 export async function readForm(request: Request): Promise<FormData> {
@@ -69,12 +108,15 @@ export async function readForm(request: Request): Promise<FormData> {
   const origin = request.headers.get('origin');
   if (origin) {
     const allowed = [
-      import.meta.env.PUBLIC_SITE_URL,
-      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-      import.meta.env.DEV ? 'http://localhost:4321' : null,
+      env('PUBLIC_SITE_URL'),
+      env('VERCEL_URL') ? `https://${env('VERCEL_URL')}` : null,
     ].filter(Boolean) as string[];
 
-    if (!allowed.some((base) => origin === base.replace(/\/$/, ''))) {
+    const ok =
+      allowed.some((base) => origin === base.replace(/\/$/, '')) ||
+      (import.meta.env.DEV && isLocalOrigin(origin));
+
+    if (!ok) {
       throw new GuardError('Requête refusée.', 403, `origine ${origin}`);
     }
   }
@@ -89,7 +131,7 @@ export async function checkAntiSpam(form: FormData, ip: string): Promise<void> {
     throw new GuardError('Envoi impossible.', 400, 'honeypot rempli');
   }
 
-  const secret = process.env.TURNSTILE_SECRET_KEY;
+  const secret = env('TURNSTILE_SECRET_KEY');
   if (!secret) {
     // Sans clé configurée, on ne bloque pas le formulaire, mais on le signale :
     // partir en production sans Turnstile est un défaut de recette (§18).

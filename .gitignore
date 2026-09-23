@@ -13,8 +13,12 @@ dist/
 
 # images generees (regenerees par `npm run images`)
 public/media/
+# originaux telecharges depuis Supabase Storage
+.cache/
 
 # systeme
 .DS_Store
 Thumbs.db
 *.log
+
+.vercel

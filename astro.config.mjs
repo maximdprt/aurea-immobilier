@@ -37,6 +37,8 @@ const NEVER_INDEXED = [
   // Pages atteintes par un lien porteur de jeton, propres a une inscription.
   '/alerte/confirmation/',
   '/desabonnement/',
+  // Page de remerciement des formulaires : aucun contenu propre.
+  '/merci/',
 ];
 
 /**

@@ -22,6 +22,7 @@
  * fuite de `alert_subscriptions` ne permet ni de confirmer ni de desabonner une
  * adresse.
  */
+import { env } from './env';
 
 const enc = new TextEncoder();
 
@@ -54,7 +55,7 @@ export async function hashToken(token: string): Promise<string> {
 
 /** `true` si le secret necessaire aux liens de desabonnement est configure. */
 export const isAlertSecretConfigured = (): boolean =>
-  Boolean(process.env.ALERT_TOKEN_SECRET);
+  Boolean(env('ALERT_TOKEN_SECRET'));
 
 /**
  * Jeton de desabonnement d'une inscription, identique a chaque appel.
@@ -64,7 +65,7 @@ export const isAlertSecretConfigured = (): boolean =>
  * pourra pas servir a la place de l'autre.
  */
 export async function unsubscribeToken(subscriptionId: string): Promise<string | null> {
-  const secret = process.env.ALERT_TOKEN_SECRET;
+  const secret = env('ALERT_TOKEN_SECRET');
   if (!secret) return null;
 
   const key = await crypto.subtle.importKey(

@@ -1,15 +1,24 @@
 ---
 /**
- * Placeholder visible pour une information que l'agence n'a pas encore fournie.
- * Le brief interdit d'inventer : on affiche le manque plutot qu'une valeur
- * fausse, et la page /plan-du-site/ en dresse la liste (prompt v3 §0 et §19).
+ * Placeholder pour une information que l'agence n'a pas encore fournie.
+ *
+ * Il n'apparait QUE si le build est lance avec `PUBLIC_RECETTE=1` : un
+ * visiteur ne doit jamais voir un « [[à fournir]] » jaune sur le site en
+ * ligne. Le tableau de bord du back-office liste, lui, tout ce qui manque.
+ * Les pages sont ecrites pour rester correctes quand ce composant ne rend
+ * rien : une phrase entiere ne doit pas dependre de sa presence.
  */
 interface Props {
   label: string;
 }
 const { label } = Astro.props;
+const recette = import.meta.env.PUBLIC_RECETTE === '1';
 ---
 
-<span class="todo" data-todo title="Information à fournir par l'agence avant la mise en ligne"
-  >[[{label}]]</span
->
+{
+  recette && (
+    <span class="todo" data-todo title="Information à fournir par l'agence avant la mise en ligne">
+      [[{label}]]
+    </span>
+  )
+}

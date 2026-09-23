@@ -243,36 +243,54 @@ export const HOSTING = {
 
 /* ------------------------------------------------------------- Navigation */
 
-/** Menu principal, libelles et ordre de l'ancien site (bandeau_header). */
+/**
+ * Menu principal. Organise par INTENTION du visiteur — acheter, louer,
+ * vendre, estimer, confier — et non par rubrique interne : c'est ce qu'il
+ * cherche en arrivant, et il doit le trouver en un regard.
+ */
 export const NAV: readonly {
   readonly href: string;
   readonly label: string;
-  readonly children?: readonly { readonly href: string; readonly label: string }[];
-  /** 6e entree : affichee en bouton borde sable sur l'ancien site. */
-  readonly outlined?: boolean;
+  readonly children?: readonly { readonly href: string; readonly label: string; readonly hint?: string }[];
 }[] = [
-  { href: '/agence/', label: 'Notre agence' },
+  { href: '/acheter/', label: 'Acheter' },
+  { href: '/louer/', label: 'Louer' },
+  { href: '/vendre/', label: 'Vendre' },
+  { href: '/estimation/', label: 'Estimer' },
+  { href: '/gestion-locative/', label: 'Gestion locative' },
   {
-    href: '/acheter/',
-    label: 'Nos biens',
+    href: '/agence/',
+    label: 'L’agence',
     children: [
-      { href: '/acheter/', label: 'Acheter' },
-      { href: '/louer/', label: 'Louer' },
+      { href: '/agence/', label: 'Notre agence', hint: 'Qui nous sommes, notre méthode' },
+      { href: '/equipe/', label: 'L’équipe', hint: 'Neuf conseillers, une ligne directe chacun' },
+      { href: '/avis/', label: 'Avis clients', hint: 'Ce que disent nos clients' },
+      { href: '/biens-vendus/', label: 'Nos réussites', hint: 'Les biens vendus et loués' },
+      { href: '/actualites/', label: 'Actualités', hint: 'La vie de l’agence' },
+      { href: '/guides/', label: 'Guides', hint: 'Réponses aux questions fréquentes' },
     ],
   },
-  { href: '/biens-vendus/', label: 'Nos réussites' },
-  { href: '/gestion-locative/', label: 'Gestion locative' },
-  { href: '/estimation/', label: 'Nos services', outlined: true },
-  { href: '/contact/', label: 'Nous contacter' },
 ];
 
-/** Colonne « Nos services » du pied de page de l'ancien site. */
+/** Colonne « Services » du pied de page. */
 export const FOOTER_SERVICES = [
-  { href: '/estimation/', label: 'Estimation' },
-  { href: '/guides/outils/', label: 'Nos outils' },
-  { href: '/biens-vendus/', label: 'Nos biens vendus' },
+  { href: '/estimation/', label: 'Estimation gratuite' },
+  { href: '/vendre/', label: 'Vendre avec AUREA' },
   { href: '/gestion-locative/', label: 'Gestion locative' },
-  { href: '/guides/', label: 'Nos actualités' },
+  { href: '/alerte/', label: 'Alerte nouveautés' },
+  { href: '/prix-immobilier-mantes-la-jolie/', label: 'Prix immobilier à Mantes' },
+  { href: '/guides/outils/', label: 'Nos outils' },
+] as const;
+
+/** Colonne « L’agence » du pied de page. */
+export const FOOTER_AGENCY = [
+  { href: '/agence/', label: 'Notre agence' },
+  { href: '/equipe/', label: 'L’équipe' },
+  { href: '/avis/', label: 'Avis clients' },
+  { href: '/biens-vendus/', label: 'Nos réussites' },
+  { href: '/actualites/', label: 'Actualités' },
+  { href: '/guides/', label: 'Guides' },
+  { href: '/contact/', label: 'Contact' },
 ] as const;
 
 export const FOOTER_LEGAL = [

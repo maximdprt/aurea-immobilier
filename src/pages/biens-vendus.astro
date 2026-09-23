@@ -3,42 +3,28 @@
  * Nos reussites — preuve sociale et maillage interne (§7).
  *
  * Honnetete des chiffres : l'ancien site annonce 128 biens archives, mais le
- * scraping n'a pu en reconstituer qu'une partie (les pages 7 a 10 de la liste
- * n'ont pas ete crawlees). On affiche donc les deux nombres, et on le dit.
+ * scraping n'a pu en reconstituer qu'une partie. On affiche donc le total
+ * annonce et le nombre detaille, et on le dit.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import ListingCard from '~/components/ListingCard.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import Icon from '~/components/Icon.astro';
 import { archivedListings, catalogStats, soldListings } from '~/lib/catalog';
 import { area, propertyTypeLabel } from '~/lib/format';
+import { field } from '~/lib/content';
 
 const withSheet = soldListings();
-const listOnly = archivedListings();
+const listOnly = [...archivedListings()].sort((a, b) => b.reference - a.reference);
 const stats = catalogStats();
+const detailed = withSheet.length + listOnly.length;
 
-const rows = [
-  ...withSheet.map((l) => ({
-    reference: l.reference,
-    title: l.title,
-    commune: l.commune,
-    status: l.status,
-    area: l.livingArea,
-    rooms: l.rooms,
-    propertyType: l.propertyType,
-    href: `/bien/${l.slug}/`,
-  })),
-  ...listOnly.map((a) => ({
-    reference: a.reference,
-    title: a.title,
-    commune: a.commune,
-    status: a.status,
-    area: a.area,
-    rooms: a.rooms,
-    propertyType: a.propertyType,
-    href: null,
-  })),
-].sort((a, b) => b.reference - a.reference);
-
-const communes = [...new Set(rows.map((r) => r.commune).filter(Boolean))].length;
+const communes = [
+  ...new Set([...withSheet.map((l) => l.commune), ...listOnly.map((a) => a.commune)].filter(Boolean)),
+].length;
+const sold = withSheet.filter((l) => l.status === 'sold').length + listOnly.filter((a) => a.status === 'sold').length;
+const rented = detailed - sold;
 
 const crumbs = [
   { label: 'Accueil', href: '/' },
@@ -52,80 +38,175 @@ const crumbs = [
   path="/biens-vendus/"
   crumbs={crumbs}
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Liste des biens vendus ou loués</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader
+    title={field('page.reussites', 'titre')}
+    lede={field('page.reussites', 'chapo')}
+    crumbs={crumbs}
+    kicker="Nos réussites"
+  />
 
-  <div class="wrap section">
-    <header class="head">
-      <p class="lede">
-        Depuis la création de l’agence en août&nbsp;2024, AUREA Immobilier a mené
-        <strong> {stats.archivedTotal} transactions</strong> — ventes et locations — dans le
-        Mantois et ses environs, sur {communes} communes.
-      </p>
-      <p class="small muted">
-        Le détail ci-dessous porte sur {rows.length} de ces {stats.archivedTotal} transactions :
-        les archives du site actuel n’ont pu être relevées qu’en partie lors de la reprise des
-        données. La liste sera complétée à l’import du flux du logiciel métier.
-      </p>
-    </header>
+  <section class="section-tight proof">
+    <dl class="wrap stats">
+      <div>
+        <dd>{stats.archivedTotal}</dd>
+        <dt>transactions depuis août 2024</dt>
+      </div>
+      <div>
+        <dd>{sold}</dd>
+        <dt>ventes détaillées ci-dessous</dt>
+      </div>
+      <div>
+        <dd>{rented}</dd>
+        <dt>locations détaillées ci-dessous</dt>
+      </div>
+      <div>
+        <dd>{communes}</dd>
+        <dt>communes concernées</dt>
+      </div>
+    </dl>
+  </section>
 
-    <div class="table-wrap">
-      <table>
-        <caption class="visually-hidden">Biens vendus ou loués par AUREA Immobilier</caption>
-        <thead>
-          <tr>
-            <th scope="col">Réf.</th>
-            <th scope="col">Bien</th>
-            <th scope="col">Commune</th>
-            <th scope="col">Type</th>
-            <th scope="col">Surface</th>
-            <th scope="col">Statut</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            rows.map((r) => (
-              <tr>
-                <td>{r.reference}</td>
-                <td>{r.href ? <a href={r.href}>{r.title}</a> : r.title}</td>
-                <td>{r.commune ?? '—'}</td>
-                <td>{propertyTypeLabel(r.propertyType)}</td>
-                <td>{r.area ? area(r.area) : '—'}</td>
-                <td>
-                  <span class="badge badge-sold">{r.status === 'sold' ? 'Vendu' : 'Loué'}</span>
-                </td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
+  {
+    withSheet.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Avec leur fiche</p>
+              <h2>Les dernières ventes et locations</h2>
+            </div>
+          </div>
+          <div class="grid-cards">
+            {withSheet.map((l) => (
+              <ListingCard listing={l} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
-    <p class="cta">
-      <a class="btn" href="/estimation/">Faire estimer mon bien</a>
-      <a class="btn btn-secondary" href="/vendre/">Notre méthode de vente</a>
-    </p>
-  </div>
+  {
+    listOnly.length > 0 && (
+      <section class="section section-alt">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Historique</p>
+              <h2>Nos autres transactions</h2>
+            </div>
+            <p class="small muted">
+              {detailed} transactions détaillées sur les {stats.archivedTotal} réalisées : la liste sera
+              complétée à l’import du flux du logiciel métier.
+            </p>
+          </div>
+          <ul class="archive-grid">
+            {listOnly.map((a) => (
+              <li class="archive">
+                <span class:list={['badge', 'badge-sold']}>{a.status === 'sold' ? 'Vendu' : 'Loué'}</span>
+                <h3>{a.title}</h3>
+                <ul class="meta">
+                  {a.commune && (
+                    <li>
+                      <Icon name="pin" size={14} /> {a.commune}
+                    </li>
+                  )}
+                  <li>
+                    <Icon name="home" size={14} /> {propertyTypeLabel(a.propertyType)}
+                  </li>
+                  {a.rooms && (
+                    <li>
+                      <Icon name="door" size={14} /> {a.rooms} pièce{a.rooms > 1 ? 's' : ''}
+                    </li>
+                  )}
+                  {a.area && (
+                    <li>
+                      <Icon name="ruler" size={14} /> {area(a.area)}
+                    </li>
+                  )}
+                </ul>
+                <p class="ref small muted">Réf. {a.reference}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand
+    title="Et si le prochain bien vendu était le vôtre ?"
+    text="Une estimation gratuite et argumentée sous 48 h, puis la même méthode que pour chacune de ces transactions."
+    secondaryHref="/vendre/"
+    secondaryLabel="Notre méthode de vente"
+  />
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
+  .proof {
+    border-bottom: 1px solid var(--line);
   }
 
-  .cta {
+  .proof .stats {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  }
+
+  .proof .stats > div {
+    text-align: center;
+  }
+
+  .archive-grid {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .archive {
+    display: flex;
+    flex-direction: column;
+    padding: 1.1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .archive .badge {
+    align-self: flex-start;
+    margin-bottom: 0.6rem;
+  }
+
+  .archive h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs);
-    margin-top: var(--space-l);
+    gap: 0.3rem 0.8rem;
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
   }
 
-  td .badge {
-    white-space: nowrap;
+  .meta li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .meta svg {
+    color: var(--ink-muted);
+  }
+
+  .ref {
+    margin: auto 0 0;
   }
 </style>

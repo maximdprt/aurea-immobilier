@@ -12,13 +12,33 @@
  */
 import sharp from 'sharp';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync } from 'node:fs';
-import { join, dirname, parse as parsePath } from 'node:path';
+import { join, dirname, isAbsolute, parse as parsePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'scrapper_aurea', 'images');
 const OUT = join(ROOT, 'public', 'media');
 const DATA = join(ROOT, 'src', 'data');
+/** Originaux telecharges depuis Supabase Storage (jamais versionnes). */
+const CACHE = join(ROOT, '.cache', 'media');
+
+/**
+ * Variables d'environnement : sur Vercel elles sont dans process.env ; en
+ * local elles vivent dans .env.local, que Node ne lit pas tout seul.
+ */
+function loadDotEnv() {
+  const file = join(ROOT, '.env.local');
+  if (!existsSync(file)) return;
+  for (const line of readFileSync(file, 'utf8').split(/\r?\n/)) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+    if (!m || process.env[m[1]]) continue;
+    process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
+  }
+}
+loadDotEnv();
+const SUPABASE_URL = (process.env.PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '');
+const SUPABASE_KEY = process.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '';
 
 const listings = JSON.parse(readFileSync(join(DATA, 'listings.json'), 'utf8'));
 const agents = JSON.parse(readFileSync(join(DATA, 'agents.json'), 'utf8'));
@@ -133,7 +153,9 @@ async function bestPortrait(slug) {
         .toBuffer({ resolveWithObject: true })
         .then((r) => r.info);
       const area = info.width * info.height;
-      if (!best || area > best.area) best = { file, area, width: info.width, height: info.height };
+      if (!best || area > best.area) {
+        best = { file, path: join(SRC, file), area, width: info.width, height: info.height };
+      }
     } catch {
       /* fichier illisible (SVG « no-picture ») : ignore */
     }
@@ -141,21 +163,40 @@ async function bestPortrait(slug) {
   return best;
 }
 
+/** Dimensions d'un fichier quelconque, une fois redresse. */
+async function describeFile(path) {
+  try {
+    const info = await sharp(path)
+      .rotate()
+      .toBuffer({ resolveWithObject: true })
+      .then((r) => r.info);
+    return { file: parsePath(path).base, path, width: info.width, height: info.height, area: info.width * info.height };
+  } catch {
+    return null;
+  }
+}
+
 /** Variantes d'un portrait : recadre sur le visage, puis AVIF + WebP. */
-async function portraitVariants(slug, outDir) {
-  const src = await bestPortrait(slug);
+async function portraitVariants(slug, outDir, sourcePath = null, baseName = slug) {
+  const src = sourcePath ? await describeFile(sourcePath) : await bestPortrait(slug);
   if (!src) return null;
-  const face = FACES[slug];
-  if (!face) {
+  // Un portrait televerse depuis le back-office n'a pas de repere de visage :
+  // sharp cadre alors sur la zone la plus « interessante » (position: attention).
+  const face = sourcePath ? null : FACES[slug];
+  if (!face && !sourcePath) {
     console.warn(`  ! pas de repere de visage pour ${slug} : cadrage centre par defaut`);
   }
   ensure(outDir);
-  const rotated = await sharp(join(SRC, src.file)).rotate().toBuffer();
-  const ceiling = PORTRAIT.widths[PORTRAIT.widths.length - 1];
+  const rotated = await sharp(src.path).rotate().toBuffer();
+  // Les photos du scraping plafonnent a 640 px ; un fichier televerse peut
+  // aller jusqu'a 880 px de large, ce qui couvre les ecrans a haute densite.
+  const ceiling = sourcePath ? 880 : PORTRAIT.widths[PORTRAIT.widths.length - 1];
   // `maxUpscale: 1` : le cadre ne descend jamais sous la largeur demandee, donc
   // aucune variante n'a besoin d'etre agrandie.
   const box = face ? faceCrop(src.width, src.height, face, ceiling, 1) : null;
-  const nativeW = box ? box.width : src.width;
+  const nativeW = box
+    ? box.width
+    : Math.min(src.width, Math.floor(src.height * PORTRAIT.aspect), ceiling);
 
   const base = () => {
     const p = sharp(rotated);
@@ -185,14 +226,14 @@ async function portraitVariants(slug, outDir) {
 
   const produced = [];
   for (const w of targets) {
-    const out = join(outDir, `${slug}-${w}.avif`);
+    const out = join(outDir, `${baseName}-${w}.avif`);
     await render(w).avif(AVIF_PORTRAIT).toFile(out);
     bytes += statSync(out).size;
     written++;
     produced.push(w);
   }
   const fbWidth = produced[produced.length - 1];
-  const fbOut = join(outDir, `${slug}-${fbWidth}.webp`);
+  const fbOut = join(outDir, `${baseName}-${fbWidth}.webp`);
   await render(fbWidth).webp(WEBP_PORTRAIT).toFile(fbOut);
   bytes += statSync(fbOut).size;
   written++;
@@ -212,7 +253,7 @@ async function portraitVariants(slug, outDir) {
  * @returns {Promise<{base:string,widths:number[],width:number,height:number,ratio:number}|null>}
  */
 async function variants(sourceFile, outDir, baseName, widths, { square = false } = {}) {
-  const input = join(SRC, sourceFile);
+  const input = isAbsolute(sourceFile) ? sourceFile : join(SRC, sourceFile);
   if (!existsSync(input)) {
     console.warn(`  ! introuvable : ${sourceFile}`);
     return null;
@@ -279,7 +320,7 @@ async function variants(sourceFile, outDir, baseName, widths, { square = false }
 
 /** Image de partage 1200x630 (Open Graph / Twitter Card). */
 async function ogImage(sourceFile, outDir, baseName) {
-  const input = join(SRC, sourceFile);
+  const input = isAbsolute(sourceFile) ? sourceFile : join(SRC, sourceFile);
   if (!existsSync(input)) return null;
   ensure(outDir);
   const out = join(outDir, `${baseName}-og.jpg`);
@@ -337,6 +378,169 @@ async function logoPalette() {
     mid: toHex(byLum[Math.floor(byLum.length / 2)]),
     lightest: toHex(byLum[byLum.length - 1]),
   };
+}
+
+/* ------------------------------------- visuels importes depuis le back-office */
+
+/** Appel REST Supabase avec la cle publique (lecture seule, sous RLS). */
+async function supabaseRows(path) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: { apikey: SUPABASE_KEY, authorization: `Bearer ${SUPABASE_KEY}` },
+  });
+  if (!res.ok) throw new Error(`${path} : HTTP ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Telecharge un original dans le cache local, une seule fois par version
+ * (le nom contient l'empreinte de l'URL, donc un fichier remplace change de nom).
+ */
+async function fetchOriginal(url, ext) {
+  ensure(CACHE);
+  const name = `${createHash('sha1').update(url).digest('hex').slice(0, 16)}.${ext}`;
+  const path = join(CACHE, name);
+  if (existsSync(path)) return path;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`telechargement impossible (${res.status}) : ${url}`);
+  writeFileSync(path, Buffer.from(await res.arrayBuffer()));
+  return path;
+}
+
+const extFromMime = (mime) => (mime === 'image/png' ? 'png' : mime === 'image/webp' ? 'webp' : 'jpg');
+
+/**
+ * Remplace, dans le manifeste, les visuels pour lesquels l'agence a televerse
+ * une photo (table `media_assets`), et ajoute les photos de biens dont la
+ * source est une URL distante (flux du logiciel metier).
+ *
+ * Les fichiers produits portent une empreinte dans leur chemin : les en-tetes
+ * de cache des medias sont immuables (un an), un visuel remplace doit donc
+ * changer d'adresse.
+ */
+async function applyOverrides() {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.log('  visuels televerses : Supabase non configure, etape ignoree');
+    return;
+  }
+
+  let assets = [];
+  let remotePhotos = [];
+  try {
+    assets = await supabaseRows('media_assets?select=key,storage_path,mime,updated_at');
+    remotePhotos = await supabaseRows(
+      'listing_photos?select=listing_reference,position,storage_path,alt&storage_path=like.http*'
+    );
+  } catch (error) {
+    console.warn(`  ! visuels televerses : lecture impossible (${error.message}) — visuels d'origine conserves`);
+    return;
+  }
+
+  let applied = 0;
+
+  for (const asset of assets) {
+    const url = `${SUPABASE_URL}/storage/v1/object/public/media/${asset.storage_path}`;
+    const stamp = createHash('sha1').update(asset.storage_path).digest('hex').slice(0, 10);
+    try {
+      const path = await fetchOriginal(url, extFromMime(asset.mime));
+      const key = asset.key;
+      let m;
+
+      if ((m = key.match(/^editorial:([a-z0-9-]+)$/))) {
+        const name = m[1];
+        const v = await variants(path, join(OUT, 'o', stamp), name, [640, 1024, 1600, 2000]);
+        if (v) manifest[key] = { base: `/media/o/${stamp}/${name}`, ...v };
+        if (name === 'hero-accueil') {
+          const og = await ogImage(path, join(OUT, 'o', stamp), 'default');
+          if (og) manifest['og:default'] = `/media/o/${stamp}/${og}`;
+        }
+      } else if ((m = key.match(/^agent:([a-z0-9-]+)$/))) {
+        const slug = m[1];
+        const v = await portraitVariants(slug, join(OUT, 'o', stamp), path, slug);
+        if (v) manifest[key] = { base: `/media/o/${stamp}/${slug}`, ...v };
+      } else if ((m = key.match(/^bien:(\d+):(\d+)$/))) {
+        const ref = m[1];
+        const index = Number(m[2]);
+        const v = await variants(path, join(OUT, 'o', stamp), `p${index}`, [400, 800, 1200, 1600]);
+        if (v) {
+          const entry = manifest[`bien:${ref}`] ?? { photos: [], og: null };
+          const photo = { index, base: `/media/o/${stamp}/p${index}`, alt: '', ...v };
+          const at = entry.photos.findIndex((p) => p.index === index);
+          if (at === -1) entry.photos.push(photo);
+          else entry.photos[at] = photo;
+          entry.photos.sort((a, b) => a.index - b.index);
+          if (index === 0) {
+            const og = await ogImage(path, join(OUT, 'o', stamp), 'share');
+            if (og) entry.og = `/media/o/${stamp}/${og}`;
+          }
+          manifest[`bien:${ref}`] = entry;
+        }
+      } else if ((m = key.match(/^actu:([a-z0-9-]+)$/))) {
+        const slug = m[1];
+        const v = await variants(path, join(OUT, 'o', stamp), slug, [640, 1024, 1600]);
+        if (v) manifest[key] = { base: `/media/o/${stamp}/${slug}`, ...v };
+        const og = await ogImage(path, join(OUT, 'o', stamp), `${slug}-share`);
+        if (og && manifest[key]) manifest[key].og = `/media/o/${stamp}/${og}`;
+      } else if (key === 'logo') {
+        const dir = join(OUT, 'o', stamp);
+        ensure(dir);
+        const trimmedLogo = await sharp(path).trim({ threshold: 5 }).toBuffer();
+        const meta = await sharp(trimmedLogo).metadata();
+        for (const w of [180, 360, 720]) {
+          for (const [ext, fn, opts] of [
+            ['avif', 'avif', AVIF],
+            ['webp', 'webp', { quality: 88, alphaQuality: 90 }],
+            ['png', 'png', { compressionLevel: 9 }],
+          ]) {
+            const out = join(dir, `logo-${w}.${ext}`);
+            await sharp(trimmedLogo).resize({ width: w, withoutEnlargement: false }).toFormat(fn, opts).toFile(out);
+            bytes += statSync(out).size;
+            written++;
+          }
+        }
+        manifest['logo'] = {
+          base: `/media/o/${stamp}/logo`,
+          widths: [180, 360, 720],
+          fallbackWidth: 360,
+          width: 720,
+          height: Math.round((720 / meta.width) * meta.height),
+          ratio: Number((meta.width / meta.height).toFixed(4)),
+        };
+      } else {
+        console.warn(`  ! cle de visuel inconnue ignoree : ${key}`);
+        continue;
+      }
+      applied++;
+    } catch (error) {
+      console.warn(`  ! visuel ${asset.key} ignore : ${error.message}`);
+    }
+  }
+
+  // Photos de biens dont la source est distante (flux du logiciel metier) et
+  // qui n'ont pas de fichier local ni de televersement.
+  for (const photo of remotePhotos) {
+    const ref = photo.listing_reference;
+    const index = photo.position;
+    const entry = manifest[`bien:${ref}`] ?? { photos: [], og: null };
+    if (entry.photos.some((p) => p.index === index)) continue;
+    try {
+      const stamp = createHash('sha1').update(photo.storage_path).digest('hex').slice(0, 10);
+      const path = await fetchOriginal(photo.storage_path, 'jpg');
+      const v = await variants(path, join(OUT, 'o', stamp), `p${index}`, [400, 800, 1200, 1600]);
+      if (!v) continue;
+      entry.photos.push({ index, base: `/media/o/${stamp}/p${index}`, alt: photo.alt ?? '', ...v });
+      entry.photos.sort((a, b) => a.index - b.index);
+      if (index === 0 && !entry.og) {
+        const og = await ogImage(path, join(OUT, 'o', stamp), 'share');
+        if (og) entry.og = `/media/o/${stamp}/${og}`;
+      }
+      manifest[`bien:${ref}`] = entry;
+      applied++;
+    } catch (error) {
+      console.warn(`  ! photo distante ${ref}/${index} ignoree : ${error.message}`);
+    }
+  }
+
+  console.log(`  visuels televerses ou distants appliques : ${applied}`);
 }
 
 /* ------------------------------------------------------------------ main */
@@ -447,7 +651,10 @@ async function main() {
     written++;
   }
 
-  // 5. Palette ---------------------------------------------------------------
+  // 5. Visuels televerses depuis le back-office ------------------------------
+  await applyOverrides();
+
+  // 6. Palette ---------------------------------------------------------------
   const palette = await logoPalette();
   writeFileSync(join(DATA, 'logo-palette.json'), JSON.stringify(palette, null, 2) + '\n');
   console.log('  palette du logo :', palette.dominant.join(' '));

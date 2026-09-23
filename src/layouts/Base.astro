@@ -28,17 +28,15 @@ interface Props {
   noindex?: boolean;
   /** Nœuds JSON-LD specifiques a la page. */
   schemas?: Record<string, unknown>[];
-  /** Type Open Graph. */
   ogType?: 'website' | 'article';
-  /** Affiche la date de derniere mise a jour en pied de contenu. */
-  updated?: string;
   /**
    * Suffixe « | AUREA Immobilier ». Desactive sur les contenus editoriaux, dont
-   * le titre long-traine porte deja tout le sens et depasserait 65 caracteres
-   * avec la marque.
+   * le titre long-traine porte deja tout le sens.
    */
   brand?: boolean;
   bodyClass?: string;
+  /** Masque la barre d'action mobile (pages de formulaire, back-office). */
+  noActionBar?: boolean;
 }
 
 const {
@@ -52,15 +50,15 @@ const {
   ogType = 'website',
   brand = true,
   bodyClass,
+  noActionBar = false,
 } = Astro.props;
 
 const canonical = `${SITE_URL}${path}`;
 const ogImage = `${SITE_URL}${image ?? defaultOgImage()}`;
-const fullTitle =
-  !brand || title.includes(COMPANY.name) ? title : `${title} | ${COMPANY.name}`;
+const fullTitle = !brand || title.includes(COMPANY.name) ? title : `${title} | ${COMPANY.name}`;
 
 const jsonLd = graph(
-  agencySchema({ full: path === '/' || path === '/agence/' }),
+  agencySchema({ full: path === '/' || path === '/agence/' || path === '/contact/' }),
   websiteSchema(),
   crumbs.length > 1 ? breadcrumbSchema(crumbs) : null,
   ...schemas
@@ -82,10 +80,11 @@ const jsonLd = graph(
     <link rel="apple-touch-icon" href="/icon-180.png" />
     <meta name="theme-color" content="#001F41" />
 
-    {/* Seule la graisse utilisee au-dessus de la ligne de flottaison est preloadee */}
+    {/* Les deux polices visibles au-dessus de la ligne de flottaison */}
+    <link rel="preload" href="/fonts/inter-variable-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link
       rel="preload"
-      href="/fonts/arapey-400-latin.woff2"
+      href="/fonts/cormorant-garamond-600-latin.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -105,55 +104,21 @@ const jsonLd = graph(
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    {/* `set:html` est une directive d'element, pas une balise : le JSON-LD doit
-        etre injecte dans un vrai <script>, sinon il sort echappe et n'est pas lu. */}
+    {/* `set:html` est une directive d'element : le JSON-LD doit etre injecte
+        dans un vrai <script>, sinon il sort echappe et n'est pas lu. */}
     <script type="application/ld+json" set:html={jsonLd} is:inline />
   </head>
 
-  <body class:list={[bodyClass, path === '/' ? 'page_home' : 'page_inner', 'dark-mode']}>
+  <body class:list={[bodyClass, path === '/' ? 'page-home' : 'page-inner']}>
     <a class="skip-link" href="#contenu">Aller au contenu</a>
     <Header path={path} />
 
-    <main id="contenu" class:list={[path !== '/' && 'inner']}>
+    <main id="contenu">
       <slot />
     </main>
 
-    <Footer path={path} />
-    <MobileActionBar />
+    <Footer />
+    {!noActionBar && <MobileActionBar />}
     <CookieNotice />
   </body>
 </html>
-
-<style is:global>
-  /* Le bandeau est fixe : les pages internes commencent sous lui. Sur
-     l'accueil, le hero occupe l'ecran entier et passe dessous. */
-  main.inner {
-    padding-top: var(--height-menu);
-    /* Le pied de page biseaute remonte de 100 px : on lui laisse la place. */
-    padding-bottom: 130px;
-  }
-</style>
-
-<script>
-  /* Module animate_front de l'ancien site : les elements .xyz-appear recoivent
-     .xyz-in quand ils entrent dans l'ecran (seuil 10 %, une seule fois). */
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const targets = document.querySelectorAll('.xyz-appear');
-  if (reduce || !('IntersectionObserver' in window)) {
-    targets.forEach((el) => el.classList.add('xyz-in'));
-  } else {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            e.target.classList.add('xyz-in');
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.1 }
-    );
-    targets.forEach((el) => io.observe(el));
-  }
-</script>
-

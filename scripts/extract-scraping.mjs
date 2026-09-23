@@ -990,6 +990,12 @@ const sqlStr = (v) =>
   v === null || v === undefined || v === '' ? 'null' : `'${String(v).replace(/'/g, "''")}'`;
 const sqlNum = (v) => (v === null || v === undefined || Number.isNaN(v) ? 'null' : String(v));
 const sqlBool = (v) => (v ? 'true' : 'false');
+/** « 21/07/2026 » -> '2026-07-21' ; toute autre forme est ignoree. */
+const sqlDate = (v) => {
+  const m = String(v ?? '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  return m ? `'${m[3]}-${m[2]}-${m[1]}'` : 'null';
+};
+const sqlJson = (v) => `'${JSON.stringify(v).replace(/'/g, "''")}'::jsonb`;
 
 function buildSeedSql(listings, archives, agents, communes) {
   const L = [];
@@ -1058,11 +1064,47 @@ function buildSeedSql(listings, archives, agents, communes) {
       ['is_exclusive', sqlBool(l.isExclusive)],
       ['description', sqlStr(l.description)],
       ['agent_slug', sqlStr(l.agentSlug)],
+      // Colonnes ajoutees par la migration « refonte » : sans elles la fiche
+      // servie depuis Supabase perdait la moitie de ses caracteristiques.
+      ['subtype', sqlStr(l.subtype)],
+      ['bathrooms', sqlNum(l.bathrooms)],
+      ['floors', sqlNum(l.floors)],
+      ['living_room_area', sqlNum(l.livingRoomArea)],
+      ['condition', sqlStr(l.condition)],
+      ['has_garden', sqlBool(l.hasGarden)],
+      ['has_elevator', sqlBool(l.hasElevator)],
+      ['cellars', sqlNum(l.cellars)],
+      ['exposure', sqlStr(l.exposure)],
+      ['windows', sqlStr(l.windows)],
+      ['sanitation', sqlStr(l.sanitation)],
+      ['condo_housing_lots', sqlNum(l.condoHousingLots)],
+      ['rent_controlled', sqlBool(l.rentControlled)],
+      ['dpe_final_class', sqlStr(l.dpeFinalClass)],
+      ['dpe_final_value', sqlNum(l.dpeFinalValue)],
+      ['dpe_date', sqlDate(l.dpeDate)],
+      ['erp', sqlBool(l.erp)],
+      ['erp_date', sqlDate(l.erpDate)],
+      ['inventory_fees', sqlNum(l.inventoryFees)],
+      ['rent_base', sqlNum(l.rentBase)],
+      ['rent_charges', sqlNum(l.rentCharges)],
+      ['rent_total', sqlNum(l.rentTotal)],
+      ['tenant_fees', sqlNum(l.tenantFees)],
+      ['deposit', sqlNum(l.deposit)],
+      ['transit_access', sqlStr(l.transitAccess)],
+      ['advisor_name', sqlStr(l.advisorName)],
+      ['advisor_role', sqlStr(l.advisorRole)],
+      ['characteristics', sqlJson(l.characteristics ?? {})],
+      ['legacy_slug', sqlStr(l.legacySlug)],
+      ['legacy_url', sqlStr(l.legacyUrl)],
     ];
     L.push(
       `insert into public.listings (${cols.map((c) => c[0]).join(', ')}) values (${cols
         .map((c) => c[1])
-        .join(', ')}) on conflict (reference) do update set slug = excluded.slug, title = excluded.title, status = excluded.status, price = excluded.price, description = excluded.description;`
+        .join(', ')}) on conflict (reference) do update set ${cols
+        .map((c) => c[0])
+        .filter((c) => c !== 'reference')
+        .map((c) => `${c} = excluded.${c}`)
+        .join(', ')};`
     );
     l.photos.forEach((p, i) => {
       L.push(

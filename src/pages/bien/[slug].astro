@@ -2,23 +2,25 @@
 /**
  * Fiche bien.
  *
- * Applique le §8 du brief : un seul H1 (type + pieces + surface + commune, en
- * casse normale), resume factuel en haut (c'est ce que les moteurs generatifs
- * extraient), DPE/GES avec depenses energetiques, mention ERP + Georisques,
- * honoraires et leur charge, bloc quartier, conseiller, biens similaires.
+ * Applique le §8 du brief : un seul H1 (type + pieces + surface + commune),
+ * resume factuel en haut (c'est ce que les moteurs generatifs extraient),
+ * DPE/GES avec depenses energetiques, mention ERP + Georisques, honoraires et
+ * leur charge, bloc quartier, conseiller, biens similaires.
  *
  * Cycle de vie : un bien vendu reste en ligne avec le statut « Vendu » — il
  * conserve ses liens entrants et sert de preuve sociale — mais passe en
- * `noindex` au-dela de six mois. Jamais de 404 en masse.
+ * `noindex`. Jamais de 404 en masse.
  */
 import Base from '~/layouts/Base.astro';
 import Breadcrumb from '~/components/Breadcrumb.astro';
 import Gallery from '~/components/Gallery.astro';
 import Picture from '~/components/Picture.astro';
+import Icon from '~/components/Icon.astro';
+import type { IconName } from '~/components/Icon.astro';
 import EnergyLabel from '~/components/EnergyLabel.astro';
 import ListingCard from '~/components/ListingCard.astro';
 import LeadForm from '~/components/LeadForm.astro';
-import Todo from '~/components/Todo.astro';
+import CtaBand from '~/components/CtaBand.astro';
 import {
   allListings,
   listingMedia,
@@ -44,10 +46,10 @@ import {
   propertyTypeLabel,
   statusLabel,
   stripContacts,
+  toE164,
 } from '~/lib/format';
 import { listingSchema } from '~/lib/schema';
-import { CONTACT } from '~/lib/site';
-import { toE164 } from '~/lib/format';
+import { agency } from '~/lib/content';
 import type { Listing } from '~/lib/types';
 
 export function getStaticPaths() {
@@ -62,11 +64,11 @@ interface Props {
 }
 const { listing } = Astro.props;
 
+const contact = agency();
 const media = listingMedia(listing.reference);
 const agent = listing.agentSlug ? agentBySlug(listing.agentSlug) : undefined;
+const agentTel = toE164(agent?.phone);
 const commune = listing.communeSlug ? communeBySlug(listing.communeSlug) : undefined;
-// La page commune n'existe que la ou l'agence a une presence reelle (§8) :
-// on ne lie que si elle a ete generee.
 const communeHasPage = hasCommunePage(listing.communeSlug);
 const similar = similarListings(listing);
 const heading = listingHeading(listing);
@@ -91,34 +93,53 @@ const crumbs = [
   { label: `Réf. ${listing.reference}` },
 ];
 
-/** Faits structures : c'est ce bloc que les IA extraient en priorite (§8). */
-const facts: [string, string][] = [
-  ['Type', propertyTypeLabel(listing.propertyType)],
-  ...(listing.livingArea ? ([['Surface habitable', area(listing.livingArea)]] as [string, string][]) : []),
-  ...(listing.landArea ? ([['Terrain', area(listing.landArea)]] as [string, string][]) : []),
-  ...(listing.rooms ? ([['Pièces', String(listing.rooms)]] as [string, string][]) : []),
-  ...(listing.bedrooms ? ([['Chambres', String(listing.bedrooms)]] as [string, string][]) : []),
-  ...(listing.floor != null
-    ? ([['Étage', listing.floor === 0 ? 'Rez-de-chaussée' : String(listing.floor)]] as [string, string][])
-    : []),
-  ...(listing.yearBuilt ? ([['Année de construction', String(listing.yearBuilt)]] as [string, string][]) : []),
-  ...(listing.heating ? ([['Chauffage', listing.heating]] as [string, string][]) : []),
-  ...(listing.exposure ? ([['Exposition', listing.exposure]] as [string, string][]) : []),
-  ...(listing.propertyTax ? ([['Taxe foncière', `${money(listing.propertyTax)} / an`]] as [string, string][]) : []),
-  ...(listing.isCondo && listing.condoLots
-    ? ([['Copropriété', `${plural(listing.condoLots, 'lot')}`]] as [string, string][])
-    : []),
-  ...(listing.condoAnnualCharges
-    ? ([['Charges de copropriété', `${money(listing.condoAnnualCharges)} / an`]] as [string, string][])
-    : []),
-  ...(sqm ? ([['Prix au m²', `${money(sqm)} / m²`]] as [string, string][]) : []),
-  ...(listing.transitAccess ? ([['Transports', listing.transitAccess]] as [string, string][]) : []),
-];
+/** Faits structures avec icone : c'est ce bloc que les IA extraient en priorite (§8). */
+type Fact = { icon: IconName; label: string; value: string };
+const facts: Fact[] = [];
+const add = (icon: IconName, label: string, value: string | null | undefined) => {
+  if (value) facts.push({ icon, label, value });
+};
+add('home', 'Type', propertyTypeLabel(listing.propertyType));
+add('ruler', 'Surface habitable', listing.livingArea ? area(listing.livingArea) : null);
+add('garden', 'Terrain', listing.landArea ? area(listing.landArea) : null);
+add('door', 'Pièces', listing.rooms ? String(listing.rooms) : null);
+add('bed', 'Chambres', listing.bedrooms ? String(listing.bedrooms) : null);
+add('layers', 'Salles d’eau', listing.bathrooms ? String(listing.bathrooms) : null);
+add(
+  'building',
+  'Étage',
+  listing.floor != null
+    ? listing.floor === 0
+      ? 'Rez-de-chaussée'
+      : `${listing.floor}${listing.floors ? ` sur ${listing.floors}` : ''}`
+    : null
+);
+add('calendar', 'Année de construction', listing.yearBuilt ? String(listing.yearBuilt) : null);
+add('sun', 'Exposition', listing.exposure);
+add('leaf', 'Chauffage', listing.heating);
+add('sparkle', 'État général', listing.condition);
+add('elevator', 'Ascenseur', listing.hasElevator ? 'Oui' : null);
+add('garden', 'Jardin', listing.hasGarden && !listing.landArea ? 'Oui' : null);
+add('key', 'Cave', listing.cellars ? plural(listing.cellars, 'cave') : null);
+add('train', 'Transports', listing.transitAccess);
+add('euro', 'Taxe foncière', listing.propertyTax ? `${money(listing.propertyTax)} / an` : null);
+add(
+  'building',
+  'Copropriété',
+  listing.isCondo && listing.condoLots ? plural(listing.condoLots, 'lot') : listing.isCondo ? 'Oui' : null
+);
+add(
+  'euro',
+  'Charges de copropriété',
+  listing.condoAnnualCharges ? `${money(listing.condoAnnualCharges)} / an` : null
+);
+add('chart', 'Prix au m²', sqm ? `${money(sqm)} / m²` : null);
 
 const title = `${heading}${archived ? ` — ${statusLabel(listing)}` : ''}`;
 const metaDescription = clampDescription(
   `${heading}. ${listing.price ? priceLine(listing) + '. ' : ''}${description.replace(/\n/g, ' ')}`
 );
+const fees = feesPayerLabel(listing.feesPayer);
 ---
 
 <Base
@@ -132,42 +153,56 @@ const metaDescription = clampDescription(
   ogType="article"
   schemas={[listingSchema(listing, media?.og ?? null)]}
 >
-  <Breadcrumb crumbs={crumbs} />
-
   <article class="listing">
     <div class="wrap">
+      <Breadcrumb crumbs={crumbs} />
+
       {
         archived && (
           <p class="archived-note">
-            Ce bien a été {listing.status === 'sold' ? 'vendu' : 'loué'} par AUREA Immobilier. La
-            page reste en ligne à titre de référence.{' '}
-            <a href={listing.transaction === 'location' ? '/louer/' : '/acheter/'}>
-              Voir les biens disponibles
-            </a>
-            .
+            <Icon name="check" size={18} />
+            <span>
+              Ce bien a été {listing.status === 'sold' ? 'vendu' : 'loué'} par AUREA Immobilier. La
+              page reste en ligne à titre de référence.{' '}
+              <a href={listing.transaction === 'location' ? '/louer/' : '/acheter/'}>
+                Voir les biens disponibles
+              </a>
+              .
+            </span>
           </p>
         )
       }
 
       <header class="head">
-        <p class="eyebrow cluster">
-          <span class:list={['badge', archived ? 'badge-sold' : 'badge-gold']}>
-            {statusLabel(listing)}
-          </span>
-          {listing.isExclusive && !archived && <span class="badge badge-gold">Exclusivité</span>}
-          <span class="small muted">Réf. {listing.reference}</span>
-        </p>
-        <h1>{title}</h1>
-        <p class="price">{priceLine(listing)}</p>
-        {
-          feesPayerLabel(listing.feesPayer) && (
-            <p class="small muted fees">
-              {feesPayerLabel(listing.feesPayer)}
-              {listing.transaction === 'vente' && ' — prix affiché honoraires inclus'}.{' '}
-              <a href="/honoraires/">Voir le barème</a>
-            </p>
-          )
-        }
+        <div class="head-text">
+          <p class="cluster badges">
+            <span class:list={['badge', archived ? 'badge-sold' : 'badge-navy']}>{statusLabel(listing)}</span>
+            {listing.isExclusive && !archived && <span class="badge badge-gold">Exclusivité</span>}
+            <span class="small muted">Réf. {listing.reference}</span>
+          </p>
+          <h1>{title}</h1>
+          {
+            commune && (
+              <p class="place">
+                <Icon name="pin" size={17} />
+                {commune.name}
+                {commune.postalCode && ` (${commune.postalCode})`}
+              </p>
+            )
+          }
+        </div>
+        <div class="head-price">
+          <p class="price tnum">{priceLine(listing)}</p>
+          {
+            fees && (
+              <p class="small muted fees">
+                {fees}
+                {listing.transaction === 'vente' && ', prix affiché honoraires inclus'}.{' '}
+                <a href="/honoraires/">Voir le barème</a>
+              </p>
+            )
+          }
+        </div>
       </header>
 
       <Gallery media={media} heading={heading} />
@@ -176,16 +211,17 @@ const metaDescription = clampDescription(
         <div class="main">
           <section class="facts-block" aria-labelledby="caracteristiques">
             <h2 id="caracteristiques">Caractéristiques</h2>
-            <dl class="facts">
+            <ul class="facts-grid">
               {
-                facts.map(([k, v]) => (
-                  <div>
-                    <dt>{k}</dt>
-                    <dd>{v}</dd>
-                  </div>
+                facts.map((f) => (
+                  <li>
+                    <span class="icon-pill icon-pill-navy"><Icon name={f.icon} size={20} /></span>
+                    <span class="f-label">{f.label}</span>
+                    <span class="f-value">{f.value}</span>
+                  </li>
                 ))
               }
-            </dl>
+            </ul>
           </section>
 
           {
@@ -210,7 +246,9 @@ const metaDescription = clampDescription(
                       {listing.rentTotal && (
                         <tr>
                           <th scope="row">Loyer charges comprises</th>
-                          <td><strong>{money(listing.rentTotal)} / mois</strong></td>
+                          <td>
+                            <strong>{money(listing.rentTotal)} / mois</strong>
+                          </td>
                         </tr>
                       )}
                       {listing.tenantFees && (
@@ -219,8 +257,7 @@ const metaDescription = clampDescription(
                           <td>{money(listing.tenantFees)}</td>
                         </tr>
                       )}
-                      {/* La loi ALUR impose d'afficher la part « etat des
-                          lieux » separement du total des honoraires. */}
+                      {/* La loi ALUR impose d'afficher la part « etat des lieux » separement. */}
                       {listing.inventoryFees && (
                         <tr>
                           <th scope="row">dont établissement de l’état des lieux</th>
@@ -244,38 +281,30 @@ const metaDescription = clampDescription(
             )
           }
 
-          <section class="description" aria-labelledby="description">
-            <h2 id="description">Description</h2>
-            <div class="prose">
-              {
-                blocks.map((b) =>
-                  b.type === 'heading' ? (
-                    <h3>{b.text}</h3>
-                  ) : b.type === 'list' ? (
-                    <ul>{b.items?.map((i) => <li>{i}</li>)}</ul>
-                  ) : (
-                    <p>{b.text}</p>
-                  )
-                )
-              }
-            </div>
-          </section>
+          {
+            blocks.length > 0 && (
+              <section class="description" aria-labelledby="description">
+                <h2 id="description">Description</h2>
+                <div class="prose">
+                  {blocks.map((b) =>
+                    b.type === 'heading' ? (
+                      <h3>{b.text}</h3>
+                    ) : b.type === 'list' ? (
+                      <ul>{b.items?.map((i) => <li>{i}</li>)}</ul>
+                    ) : (
+                      <p>{b.text}</p>
+                    )
+                  )}
+                </div>
+              </section>
+            )
+          }
 
           <section class="diagnostics" aria-labelledby="diagnostics">
             <h2 id="diagnostics">Diagnostics énergétiques</h2>
             <div class="energy-grid">
-              <EnergyLabel
-                kind="dpe"
-                value={listing.dpeClass}
-                amount={listing.dpeValue}
-                unit="kWh/m²/an"
-              />
-              <EnergyLabel
-                kind="ges"
-                value={listing.gesClass}
-                amount={listing.gesValue}
-                unit="kg CO₂/m²/an"
-              />
+              <EnergyLabel kind="dpe" value={listing.dpeClass} amount={listing.dpeValue} unit="kWh/m²/an" />
+              <EnergyLabel kind="ges" value={listing.gesClass} amount={listing.gesValue} unit="kg CO₂/m²/an" />
             </div>
 
             {
@@ -283,8 +312,7 @@ const metaDescription = clampDescription(
                 <p class="energy-cost">
                   <strong>Dépenses annuelles d’énergie estimées :</strong> entre{' '}
                   {money(listing.energyCostMin)} et {money(listing.energyCostMax)} par an pour un
-                  usage standard, abonnement compris, prix indexés sur les années 2021, 2022 et
-                  2023.
+                  usage standard, abonnement compris, prix indexés sur les années 2021, 2022 et 2023.
                 </p>
               )
             }
@@ -294,40 +322,29 @@ const metaDescription = clampDescription(
                 <p class="notice">
                   Logement classé {listing.dpeClass}. La loi encadre la mise en location des
                   logements les plus énergivores selon un calendrier progressif :{' '}
-                  <a href="/guides/dpe-location-obligations-proprietaires/">
-                    voir le calendrier applicable
-                  </a>
-                  .
+                  <a href="/guides/dpe-location-obligations-proprietaires/">voir le calendrier applicable</a>.
                 </p>
               )
             }
 
-            {
-              listing.dpeDate && (
-                <p class="small muted">
-                  Diagnostic établi le {frDate(listing.dpeDate)}.
-                </p>
-              )
-            }
-
-            {
-              listing.erp && (
-                <p class="small">
-                  Ce bien est soumis à un diagnostic ERP (État des Risques et Pollutions)
-                  {listing.erpDate && ` établi le ${frDate(listing.erpDate)}`}. Informations sur{' '}
-                  <a href="https://www.georisques.gouv.fr/" rel="noopener">
-                    georisques.gouv.fr
-                  </a>
-                  .
-                </p>
-              )
-            }
+            <p class="small muted diag-meta">
+              {listing.dpeDate && <span>Diagnostic établi le {frDate(listing.dpeDate)}. </span>}
+              {
+                listing.erp && (
+                  <span>
+                    Bien soumis à un état des risques et pollutions (ERP)
+                    {listing.erpDate && ` établi le ${frDate(listing.erpDate)}`}. Informations sur{' '}
+                    <a href="https://www.georisques.gouv.fr/" rel="noopener">georisques.gouv.fr</a>.
+                  </span>
+                )
+              }
+            </p>
           </section>
 
           {
             commune && (
               <section class="quartier" aria-labelledby="quartier">
-                <h2 id="quartier">Le quartier</h2>
+                <h2 id="quartier">Le secteur</h2>
                 <p>
                   Ce bien se situe à {commune.name}
                   {commune.postalCode && ` (${commune.postalCode})`}
@@ -335,83 +352,66 @@ const metaDescription = clampDescription(
                   Immobilier y a déjà accompagné {plural(commune.soldCount, 'transaction')}.
                 </p>
                 {communeHasPage && (
-                  <p class="small muted">
-                    Détail des quartiers, transports, écoles et prix au m² :{' '}
-                    <a href={`/agence-immobiliere/${commune.slug}/`}>
-                      notre page sur {commune.name}
+                  <p>
+                    <a class="link-arrow" href={`/agence-immobiliere/${commune.slug}/`}>
+                      Notre page sur {commune.name}
                     </a>
-                    .
                   </p>
                 )}
               </section>
             )
           }
-
-          <section class="media-tiers">
-            <h2>Visite virtuelle et vidéo</h2>
-            <p class="notice">
-              <Todo label="URL de la visite virtuelle et de la vidéo drone de ce bien" />
-              <br />
-              Aucun média enrichi n’a été trouvé dans le site existant. Dès que l’agence fournit les
-              liens, ils s’affichent ici derrière une façade cliquable : le lecteur tiers n’est
-              chargé qu’après une action de votre part, pour ne déposer aucun traceur à l’ouverture
-              de la page.
-            </p>
-          </section>
         </div>
 
         <aside class="side">
           <div class="side-inner">
-            {
-              (
-                <section class="vcard-agence">
-                  <div class="vcard-agence__title">Agence</div>
-                  <div class="vcard-agence__body">
-                    <span class="street-address">{CONTACT.street}</span>
-                    <br />
-                    <span class="postal-code">{CONTACT.postalCode}</span>{' '}
-                    <span class="locality">{CONTACT.city}</span>
-                  </div>
-                  <div class="vcard-agence__footer">
-                    <a href="#contact" class="btn btn-navy">Nous écrire</a>
-                    <button type="button" class="btn btn-secondary" data-reveal-phone={CONTACT.phoneE164}>
-                      Voir le numéro
-                    </button>
-                  </div>
-                  {agent && (
-                    <div class="conseiller">
-                      <Picture
-                        media={agentMedia(agent.slug)}
-                        alt={`Portrait de ${agent.name}`}
-                        sizes="90px"
-                        class="conseiller-photo"
-                        aspect="2 / 3"
-                      />
-                      <div>
-                        <p class="fonction-nego">
-                          Votre Conseiller :{' '}
-                          <a href={`/equipe/${agent.slug}/`}>{agent.name}</a>, {agent.role}
-                        </p>
-                        <p class="link-contact">
-                          <a href="#contact" class="btn btn-navy">Contacter par mail</a>
-                          {toE164(agent.phone) && (
-                            <button type="button" class="btn btn-secondary" data-reveal-phone={toE164(agent.phone)}>
-                              Voir le numéro
-                            </button>
-                          )}
-                        </p>
-                      </div>
+            <section class="contact-card">
+              {
+                agent && (
+                  <div class="advisor">
+                    <Picture
+                      media={agentMedia(agent.slug)}
+                      alt={`Portrait de ${agent.name}`}
+                      sizes="72px"
+                      aspect="1"
+                      class="advisor-photo"
+                    />
+                    <div>
+                      <p class="advisor-kicker">Votre conseiller</p>
+                      <p class="advisor-name">
+                        <a href={`/equipe/${agent.slug}/`}>{agent.name}</a>
+                      </p>
+                      <p class="small muted">{agent.role}</p>
                     </div>
-                  )}
-                </section>
-              )
-            }
+                  </div>
+                )
+              }
+              <div class="contact-actions">
+                <a href="#contact" class="btn btn-navy">
+                  <Icon name="mail" size={18} /> {archived ? 'Nous écrire' : 'Demander une visite'}
+                </a>
+                <button type="button" class="btn btn-outline" data-reveal-phone={agentTel ?? contact.phoneE164}>
+                  <Icon name="phone" size={18} /> Voir le numéro
+                </button>
+              </div>
+              <p class="agency small muted">
+                <Icon name="pin" size={15} />
+                <span>
+                  AUREA Immobilier · {contact.street}, {contact.postalCode} {contact.city}
+                </span>
+              </p>
+            </section>
 
             <LeadForm
               type="visite"
               reference={listing.reference}
-              title="Demander une visite"
-              intro={`Votre message part directement au conseiller en charge de la référence ${listing.reference}.`}
+              title={archived ? 'Un bien similaire ?' : 'Demander une visite'}
+              intro={
+                archived
+                  ? 'Dites-nous ce que vous cherchez : nous vous proposons les biens comparables du moment.'
+                  : `Votre message part directement au conseiller en charge de la référence ${listing.reference}.`
+              }
+              message={archived ? '' : `Bonjour, je souhaite visiter le bien réf. ${listing.reference}.`}
               compact
             />
           </div>
@@ -420,8 +420,18 @@ const metaDescription = clampDescription(
 
       {
         similar.length > 0 && (
-          <section class="section-tight similar">
-            <h2>Biens similaires</h2>
+          <section class="similar">
+            <div class="section-head">
+              <div>
+                <p class="kicker">À voir aussi</p>
+                <h2>Biens similaires</h2>
+              </div>
+              <p>
+                <a class="link-arrow" href={listing.transaction === 'location' ? '/louer/' : '/acheter/'}>
+                  Tous les biens
+                </a>
+              </p>
+            </div>
             <div class="grid-cards">
               {similar.map((l) => (
                 <ListingCard listing={l} />
@@ -432,31 +442,72 @@ const metaDescription = clampDescription(
       }
     </div>
   </article>
+
+  <CtaBand
+    title="Vous avez un bien à vendre dans ce secteur ?"
+    text="Nos acquéreurs cherchent activement. Une estimation gratuite et argumentée sous 48 h."
+  />
 </Base>
 
 <style>
   .listing {
-    padding-block: var(--space-l) var(--space-xl);
+    padding-block: var(--space-m) var(--space-xl);
   }
 
   .archived-note {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    margin: var(--space-s) 0 0;
     padding: var(--space-s) var(--space-m);
-    background: var(--canvas-alt);
-    border-left: 3px solid var(--ink-muted);
+    background: var(--sand-50);
+    border: 1px solid var(--line);
     border-radius: var(--radius-s);
     font-size: var(--step--1);
   }
 
-  .head {
-    margin-bottom: var(--space-m);
+  .archived-note svg {
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--gold-700);
   }
 
-  .eyebrow {
+  .head {
+    display: grid;
+    gap: var(--space-s) var(--space-l);
+    align-items: end;
+    margin: var(--space-m) 0;
+  }
+
+  @media (min-width: 48rem) {
+    .head {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .head-price {
+      text-align: right;
+    }
+  }
+
+  .badges {
     margin-bottom: var(--space-2xs);
   }
 
   .head h1 {
+    font-size: var(--step-3);
     margin-bottom: var(--space-2xs);
+  }
+
+  .place {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  .place svg {
+    color: var(--gold-600);
   }
 
   .price {
@@ -464,11 +515,19 @@ const metaDescription = clampDescription(
     font-size: var(--step-3);
     font-weight: 600;
     line-height: 1.1;
+    color: var(--navy-900);
     margin: 0 0 var(--space-3xs);
   }
 
   .fees {
     margin: 0;
+    max-width: 24rem;
+  }
+
+  @media (min-width: 48rem) {
+    .fees {
+      margin-left: auto;
+    }
   }
 
   .columns {
@@ -478,13 +537,54 @@ const metaDescription = clampDescription(
   }
 
   .main > section + section {
-    margin-top: var(--space-l);
+    margin-top: var(--space-xl);
   }
 
   .main h2 {
     font-size: var(--step-2);
+    margin-bottom: var(--space-m);
   }
 
+  /* --- Faits cles ---------------------------------------------------------- */
+  .facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5rem), 1fr));
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .facts-grid li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 0.75rem;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    background: var(--sand-50);
+    border: 1px solid var(--sand-100);
+    border-radius: var(--radius-m);
+  }
+
+  .facts-grid .icon-pill {
+    grid-row: 1 / span 2;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .f-label {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+
+  .f-value {
+    font-weight: 600;
+    color: var(--navy-900);
+    font-size: var(--step--1);
+  }
+
+  /* --- Diagnostics ----------------------------------------------------------- */
   .energy-grid {
     display: grid;
     gap: var(--space-m);
@@ -492,125 +592,140 @@ const metaDescription = clampDescription(
   }
 
   .energy-cost {
-    padding: var(--space-s);
-    background: var(--canvas-alt);
+    padding: var(--space-s) var(--space-m);
+    background: var(--sand-50);
     border-radius: var(--radius-s);
     font-size: var(--step--1);
   }
 
+  .diag-meta {
+    margin: var(--space-s) 0 0;
+  }
+
+  .diag-meta:empty {
+    display: none;
+  }
+
+  /* --- Colonne laterale ------------------------------------------------------- */
+  .contact-card {
+    padding: var(--space-m);
+    margin-bottom: var(--space-m);
+    background: var(--navy-900);
+    color: #fff;
+    border-radius: var(--radius-m);
+  }
+
   .advisor {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
     margin-bottom: var(--space-m);
   }
 
-  .advisor h2 {
-    font-size: var(--step-1);
-    font-family: var(--font-body);
-  }
-
-  .advisor-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    margin-bottom: var(--space-s);
-  }
-
   .advisor :global(.advisor-photo img) {
-    width: 4.5rem;
-    height: 4.5rem;
-    border-radius: var(--radius-m);
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-pill);
     object-fit: cover;
+    object-position: center top;
+    border: 2px solid var(--gold-400);
+  }
+
+  .advisor p {
+    margin: 0;
+  }
+
+  .advisor-kicker {
+    font-size: 0.78rem;
+    color: var(--gold-300);
+    font-weight: 600;
   }
 
   .advisor-name {
-    margin: 0;
-    font-weight: 650;
+    font-weight: 600;
+    font-size: var(--step-1);
   }
 
   .advisor-name a {
-    color: var(--ink);
+    color: #fff;
     text-decoration: none;
+  }
+
+  .advisor-name a:hover {
+    text-decoration: underline;
+  }
+
+  .advisor .muted {
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .contact-actions {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .contact-actions .btn-outline {
+    --btn-fg: #fff;
+    --btn-border: rgb(255 255 255 / 0.45);
+  }
+
+  .contact-actions .btn-outline:hover,
+  .contact-actions .btn-outline:focus-visible {
+    --btn-bg: rgb(255 255 255 / 0.1);
+    --btn-border: #fff;
+  }
+
+  .contact-actions .btn-navy {
+    --btn-bg: var(--gold-400);
+    --btn-fg: var(--navy-900);
+    --btn-border: var(--gold-400);
+  }
+
+  .contact-actions .btn-navy:hover,
+  .contact-actions .btn-navy:focus-visible {
+    --btn-bg: var(--gold-500);
+    --btn-border: var(--gold-500);
+  }
+
+  .agency {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+    margin: var(--space-s) 0 0;
+    color: rgb(255 255 255 / 0.7) !important;
+  }
+
+  .agency svg {
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--gold-300);
   }
 
   .similar {
     margin-top: var(--space-2xl);
-    border-top: 1px solid var(--line);
     padding-top: var(--space-l);
+    border-top: 1px solid var(--line);
   }
 
   @media (min-width: 64rem) {
     .columns {
-      grid-template-columns: minmax(0, 1fr) 22rem;
+      grid-template-columns: minmax(0, 1fr) 24rem;
     }
+
     .side-inner {
       position: sticky;
-      top: 5.5rem;
+      top: calc(var(--header-height) + 1rem);
     }
+
     .energy-grid {
       grid-template-columns: 1fr 1fr;
     }
   }
-
-  /* Carte agence + conseiller de la fiche d'origine (.vcard-agence). */
-  .vcard-agence {
-    background-color: #ffffff;
-    color: var(--color-1);
-    padding: 15px 30px;
-    font-size: 14px;
-    min-height: 160px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: var(--space-m);
-  }
-
-  .vcard-agence__title,
-  .fonction-nego {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-1);
-  }
-
-  .vcard-agence__body {
-    margin: 6px 0 14px;
-    font-size: 15px;
-    color: #000000;
-  }
-
-  .vcard-agence__footer,
-  .link-contact {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 0;
-  }
-
-  .conseiller {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    margin-top: 18px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
-  }
-
-  .conseiller :global(.conseiller-photo) {
-    flex: 0 0 90px;
-    width: 90px;
-  }
-
-  .conseiller :global(.conseiller-photo img) {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    display: block;
-  }
-
-  .fonction-nego {
-    margin-bottom: 10px;
-  }
 </style>
 
 <script>
-  /* « Voir le numero » : le numero n'apparait qu'au clic, comme sur la fiche
-     d'origine, puis le bouton devient un lien d'appel. */
+  /* « Voir le numero » : le numero n'apparait qu'au clic, puis le bouton
+     devient un lien d'appel. */
   document.querySelectorAll<HTMLButtonElement>('[data-reveal-phone]').forEach((btn) => {
     btn.addEventListener(
       'click',

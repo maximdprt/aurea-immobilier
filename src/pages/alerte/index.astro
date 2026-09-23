@@ -1,29 +1,37 @@
 ---
 /**
- * « Alerte des nouveautés » — le bloc de l'accueil pointe ici.
+ * « Alerte nouveautés ».
  *
  * Inscription en double opt-in (§20.5, §21.2) : le formulaire n'active rien,
  * il déclenche l'envoi d'un email de confirmation. Tant que le lien n'est pas
  * cliqué, l'inscription reste muette et la purge des sept jours l'efface.
  *
- * Le formulaire fonctionne sans JavaScript : la soumission part alors vers
- * /api/alerte/ et la réponse JSON s'affiche telle quelle. Avec JavaScript,
- * l'envoi se fait en arrière-plan et le message s'affiche en place — même
- * mécanique que LeadForm.
+ * Sans JavaScript, la soumission part vers /api/alerte/ ; avec, l'envoi se
+ * fait en arrière-plan et le message s'affiche en place.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Icon from '~/components/Icon.astro';
 import Faq, { type FaqItem } from '~/components/Faq.astro';
+import CtaBand from '~/components/CtaBand.astro';
 import { faqSchema } from '~/lib/schema';
 import { allCommunes } from '~/lib/catalog';
 import { PROPERTY_TYPE_LABELS } from '~/lib/alerts';
-import { CONTACT } from '~/lib/site';
+import { field, agency } from '~/lib/content';
 
 /* Communes triées par nom : la liste sert à choisir, pas à classer par volume. */
 const communes = [...allCommunes()].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+const contact = agency();
 
 const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 const consentVersion = '2026-09-21';
+
+const promises = [
+  ['bell', 'Un email par nouveauté correspondante', 'Pas de lettre d’information, pas de relance, pas d’envoi programmé.'],
+  ['user', 'Aucun compte à créer', 'Une adresse email et vos critères, c’est tout ce que nous conservons.'],
+  ['shield', 'Une confirmation avant tout envoi', 'Sans votre clic dans l’email de confirmation, votre adresse est effacée sous sept jours.'],
+  ['check', 'Une sortie en un clic', 'Le lien de désinscription figure en bas de chaque email et efface vos données.'],
+] as const;
 
 const faq: FaqItem[] = [
   {
@@ -65,193 +73,150 @@ const crumbs = [
   path="/alerte/"
   crumbs={crumbs}
   schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+  noActionBar
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Alerte des nouveautés</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader
+    title={field('page.alerte', 'titre')}
+    lede={field('page.alerte', 'chapo')}
+    crumbs={crumbs}
+    kicker="Alerte nouveautés"
+  />
 
-  <div class="wrap section">
-    <div class="layout">
-      <div>
-        <header class="head">
-          <p class="lede">
-            Les biens qui se vendent vite partent souvent avant d’avoir été vus. Dites-nous ce que
-            vous cherchez : nous vous écrivons dès qu’un bien y correspond, et à ce moment-là
-            seulement.
-          </p>
-        </header>
-
-        <section class="section-tight">
-          <h2>Ce que vous recevrez, et rien d’autre</h2>
-          <ul class="promises">
-            <li>
-              <strong>Un email par nouveauté correspondante.</strong> Pas de lettre d’information,
-              pas de relance, pas d’envoi programmé.
-            </li>
-            <li>
-              <strong>Aucun compte à créer.</strong> Une adresse email et vos critères, c’est tout
-              ce que nous conservons.
-            </li>
-            <li>
-              <strong>Une confirmation avant tout envoi.</strong> Sans votre clic dans l’email de
-              confirmation, votre adresse est effacée sous sept jours.
-            </li>
-            <li>
-              <strong>Une sortie en un clic.</strong> Le lien de désinscription figure en bas de
-              chaque email et efface vos données.
-            </li>
-          </ul>
-        </section>
-
-        <section class="section-tight">
-          <Faq items={faq} title="Vos questions avant de vous inscrire" />
-        </section>
-      </div>
-
-      <div class="form-col">
-        <section class="alert-form" id="alerte">
-          <h2>Créer mon alerte</h2>
-          <p class="muted">Gratuit, sans engagement, et sans compte à créer.</p>
-
-          <form method="post" action="/api/alerte/" data-alert-form novalidate>
-            <input type="hidden" name="consent_version" value={consentVersion} />
-
-            {/* Piege a robots : un humain ne le voit ni ne le remplit (§20.5) */}
-            <div class="hp-field" aria-hidden="true">
-              <label for="alerte-website">Ne pas remplir</label>
-              <input id="alerte-website" type="text" name="website" tabindex="-1" autocomplete="off" />
-            </div>
-
-            <fieldset>
-              <legend>Je cherche à</legend>
-              <div class="choices">
-                <label class="choice">
-                  <input type="radio" name="transaction" value="vente" checked />
-                  <span>Acheter</span>
-                </label>
-                <label class="choice">
-                  <input type="radio" name="transaction" value="location" />
-                  <span>Louer</span>
-                </label>
-              </div>
-            </fieldset>
-
-            <p class="field">
-              <label for="alerte-type">Type de bien</label>
-              <select id="alerte-type" name="property_type">
-                <option value="">Tous les types</option>
-                {
-                  Object.entries(PROPERTY_TYPE_LABELS).map(([value, label]) => (
-                    <option value={value}>{label}</option>
-                  ))
-                }
-              </select>
-            </p>
-
-            <p class="field">
-              <label for="alerte-commune">Commune</label>
-              <select id="alerte-commune" name="commune">
-                <option value="">Tout le Mantois</option>
-                {communes.map((c) => <option value={c.slug}>{c.name}</option>)}
-              </select>
-            </p>
-
-            <div class="two">
-              <p class="field">
-                <label for="alerte-budget">Budget maximum</label>
-                <input
-                  id="alerte-budget"
-                  name="budget_max"
-                  type="number"
-                  min="1"
-                  step="1000"
-                  inputmode="numeric"
-                  placeholder="€"
-                />
-              </p>
-              <p class="field">
-                <label for="alerte-surface">Surface minimum</label>
-                <input
-                  id="alerte-surface"
-                  name="area_min"
-                  type="number"
-                  min="1"
-                  max="10000"
-                  inputmode="numeric"
-                  placeholder="m²"
-                />
-              </p>
-            </div>
-
-            <p class="field">
-              <label for="alerte-pieces">Nombre de pièces minimum</label>
-              <input
-                id="alerte-pieces"
-                name="rooms_min"
-                type="number"
-                min="1"
-                max="20"
-                inputmode="numeric"
-                placeholder="Indifférent"
-              />
-            </p>
-
-            <p class="field">
-              <label for="alerte-email">Votre email <span aria-hidden="true">*</span></label>
-              <input
-                id="alerte-email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-                maxlength="254"
-              />
-              <span class="hint">Un email de confirmation vous y attend juste après.</span>
-            </p>
-
-            <p class="field consent">
-              <label>
-                <input type="checkbox" name="consent" value="1" required />
-                <span>
-                  J’accepte de recevoir par email les biens correspondant à ces critères. Je peux
-                  me désinscrire à tout moment depuis le lien présent dans chaque envoi.
-                  <a href="/confidentialite/">Politique de confidentialité</a>.
+  <div class="wrap section layout">
+    <div>
+      <section class="section-tight">
+        <p class="kicker">Notre engagement</p>
+        <h2>Ce que vous recevrez, et rien d’autre</h2>
+        <ul class="promises">
+          {
+            promises.map(([icon, title, text]) => (
+              <li>
+                <span class="icon-pill">
+                  <Icon name={icon} />
                 </span>
-              </label>
-            </p>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
 
-            {
-              turnstileKey ? (
-                <div
-                  class="cf-turnstile"
-                  data-sitekey={turnstileKey}
-                  data-theme="light"
-                  data-language="fr"
-                />
-              ) : (
-                <p class="small muted">
-                  Protection anti-spam à activer : clé Cloudflare Turnstile non configurée.
-                </p>
-              )
-            }
-
-            <p class="actions">
-              <button class="btn" type="submit">Créer mon alerte</button>
-              <span class="small muted">
-                ou appelez-nous au <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
-              </span>
-            </p>
-
-            <p class="form-status" role="status" hidden data-status></p>
-          </form>
-        </section>
-      </div>
+      <section class="section-tight">
+        <Faq items={faq} title="Vos questions avant de vous inscrire" />
+      </section>
     </div>
+
+    <aside class="form-col">
+      <section class="alert-form" id="alerte">
+        <p class="kicker">Gratuit, sans compte</p>
+        <h2>Créer mon alerte</h2>
+
+        <form method="post" action="/api/alerte/" data-alert-form novalidate>
+          <input type="hidden" name="consent_version" value={consentVersion} />
+
+          {/* Piege a robots : un humain ne le voit ni ne le remplit (§20.5) */}
+          <div class="hp-field" aria-hidden="true">
+            <label for="alerte-website">Ne pas remplir</label>
+            <input id="alerte-website" type="text" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <fieldset class="transac">
+            <legend>Je cherche à</legend>
+            <div class="choices">
+              <label class="choice">
+                <input type="radio" name="transaction" value="vente" checked />
+                <span>Acheter</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="transaction" value="location" />
+                <span>Louer</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <p class="field">
+            <label for="alerte-type">Type de bien</label>
+            <select id="alerte-type" name="property_type">
+              <option value="">Tous les types</option>
+              {
+                Object.entries(PROPERTY_TYPE_LABELS).map(([value, label]) => (
+                  <option value={value}>{label}</option>
+                ))
+              }
+            </select>
+          </p>
+
+          <p class="field">
+            <label for="alerte-commune">Commune</label>
+            <select id="alerte-commune" name="commune">
+              <option value="">Tout le Mantois</option>
+              {communes.map((c) => <option value={c.slug}>{c.name}</option>)}
+            </select>
+          </p>
+
+          <div class="two">
+            <p class="field">
+              <label for="alerte-budget">Budget maximum</label>
+              <input id="alerte-budget" name="budget_max" type="number" min="1" step="1000" inputmode="numeric" placeholder="€" />
+            </p>
+            <p class="field">
+              <label for="alerte-surface">Surface minimum</label>
+              <input id="alerte-surface" name="area_min" type="number" min="1" max="10000" inputmode="numeric" placeholder="m²" />
+            </p>
+          </div>
+
+          <p class="field">
+            <label for="alerte-pieces">Nombre de pièces minimum</label>
+            <input id="alerte-pieces" name="rooms_min" type="number" min="1" max="20" inputmode="numeric" placeholder="Indifférent" />
+          </p>
+
+          <p class="field">
+            <label for="alerte-email">Votre email <span aria-hidden="true">*</span></label>
+            <input id="alerte-email" name="email" type="email" autocomplete="email" required maxlength="254" />
+            <span class="hint">Un email de confirmation vous y attend juste après.</span>
+          </p>
+
+          <p class="field consent">
+            <label>
+              <input type="checkbox" name="consent" value="1" required />
+              <span>
+                J’accepte de recevoir par email les biens correspondant à ces critères. Je peux me
+                désinscrire à tout moment depuis le lien présent dans chaque envoi.
+                <a href="/confidentialite/">Politique de confidentialité</a>.
+              </span>
+            </label>
+          </p>
+
+          {
+            turnstileKey && (
+              <div class="cf-turnstile" data-sitekey={turnstileKey} data-theme="light" data-language="fr" />
+            )
+          }
+
+          <p class="actions">
+            <button class="btn" type="submit"><Icon name="bell" size={18} /> Créer mon alerte</button>
+            <span class="small muted">
+              ou appelez-nous au <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>
+            </span>
+          </p>
+
+          <p class="form-status" role="status" hidden data-status></p>
+        </form>
+      </section>
+    </aside>
   </div>
+
+  <CtaBand
+    title="Vous n’attendez pas ? Regardez ce qui est disponible."
+    text="Nos biens à vendre et à louer sont en ligne, avec le prix honoraires inclus et le DPE. Un conseiller vous accompagne à chaque visite."
+    primaryHref="/acheter/"
+    primaryLabel="Voir les biens à vendre"
+    secondaryHref="/louer/"
+    secondaryLabel="Voir les locations"
+  />
 </Base>
 
 {
@@ -266,24 +231,32 @@ const crumbs = [
     gap: var(--space-xl);
   }
 
-  .head {
-    margin-bottom: var(--space-l);
-  }
-
   .promises {
+    display: grid;
+    gap: var(--space-s);
+    list-style: none;
     margin: 0;
     padding: 0;
-    list-style: none;
   }
 
   .promises li {
-    padding-block: var(--space-s);
-    border-bottom: 1px solid var(--line);
-    color: var(--ink-soft);
+    display: flex;
+    gap: 1rem;
+    padding: 1.1rem 1.2rem;
+    background: var(--sand-50);
+    border: 1px solid var(--sand-100);
+    border-radius: var(--radius-m);
   }
 
-  .promises strong {
-    color: var(--ink);
+  .promises h3 {
+    margin: 0.2rem 0 0.25rem;
+    font-size: 1.05rem;
+  }
+
+  .promises p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
   }
 
   .alert-form {
@@ -291,36 +264,64 @@ const crumbs = [
     border: 1px solid var(--line);
     border-radius: var(--radius-m);
     padding: var(--space-m);
+    box-shadow: var(--shadow-m);
   }
 
   .alert-form h2 {
     font-size: var(--step-2);
-    margin-bottom: var(--space-3xs);
+    margin-bottom: var(--space-s);
   }
 
-  fieldset {
+  .transac {
     margin: 0 0 var(--space-s);
     padding: 0;
     border: 0;
   }
 
-  legend {
+  .transac legend {
     padding: 0;
-    font-weight: 650;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
     font-size: var(--step--1);
+    color: var(--ink-soft);
   }
 
   .choices {
-    display: flex;
-    gap: var(--space-s);
-    margin-top: var(--space-2xs);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
   }
 
   .choice {
-    display: inline-flex;
+    position: relative;
+    display: flex;
     align-items: center;
-    gap: var(--space-3xs);
-    font-weight: 400;
+    justify-content: center;
+    padding: 0.7rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-s);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  }
+
+  .choice input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .choice:has(input:checked) {
+    border-color: var(--navy-900);
+    background: var(--navy-900);
+    color: #fff;
+  }
+
+  .choice:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
   }
 
   .two {
@@ -341,6 +342,9 @@ const crumbs = [
 
   .consent input {
     margin-top: 0.25rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--navy-900);
   }
 
   .actions {
@@ -364,7 +368,7 @@ const crumbs = [
 
     .form-col {
       position: sticky;
-      top: 5.5rem;
+      top: calc(var(--header-height) + 1rem);
     }
   }
 </style>
@@ -376,11 +380,8 @@ const crumbs = [
     const submit = form.querySelector<HTMLButtonElement>('button[type=submit]');
 
     form.addEventListener('submit', async (event) => {
-      if (!form.reportValidity()) {
-        event.preventDefault();
-        return;
-      }
       event.preventDefault();
+      if (!form.reportValidity()) return;
       submit?.setAttribute('disabled', '');
       if (status) {
         status.hidden = false;
@@ -406,9 +407,7 @@ const crumbs = [
         if (status) {
           status.dataset.state = 'error';
           status.textContent =
-            error instanceof Error && error.message
-              ? error.message
-              : 'Envoi impossible pour le moment.';
+            error instanceof Error && error.message ? error.message : 'Envoi impossible pour le moment.';
         }
       } finally {
         submit?.removeAttribute('disabled');

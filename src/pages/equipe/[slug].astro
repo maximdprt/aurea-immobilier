@@ -5,20 +5,22 @@
  * E-E-A-T : une personne reelle, son role, son secteur, ses biens en cours et
  * ses ventes, balisee `Person` avec `worksFor` vers l'agence (§8, §12).
  *
- * Les elements que le scraping ne fournit pas — parcours, langues, avis citant
- * la personne — restent des placeholders visibles plutot que des biographies
- * inventees.
+ * Ce que le scraping ne fournit pas — presentation, avis nominatifs — n'est
+ * pas invente : la section est simplement absente.
  */
 import Base from '~/layouts/Base.astro';
 import Breadcrumb from '~/components/Breadcrumb.astro';
 import Picture from '~/components/Picture.astro';
+import Icon from '~/components/Icon.astro';
 import ListingCard from '~/components/ListingCard.astro';
 import LeadForm from '~/components/LeadForm.astro';
-import Todo from '~/components/Todo.astro';
+import Reviews from '~/components/Reviews.astro';
+import CtaBand from '~/components/CtaBand.astro';
 import { allAgents, agentMedia, listingsByAgent } from '~/lib/catalog';
-import { composeDescription, plural, toE164 } from '~/lib/format';
+import { composeDescription, plural, toE164, statusLabel } from '~/lib/format';
 import { personSchema } from '~/lib/schema';
-import { CONTACT } from '~/lib/site';
+import { agency } from '~/lib/content';
+import { reviewsByAgent } from '~/lib/reviews';
 import type { Agent } from '~/lib/types';
 
 export function getStaticPaths() {
@@ -31,11 +33,16 @@ interface Props {
 const { agent } = Astro.props;
 
 const media = agentMedia(agent.slug);
+const contact = agency();
 const listings = listingsByAgent(agent.slug);
 const active = listings.filter((l) => l.status === 'published' || l.status === 'under_offer');
 const sold = listings.filter((l) => l.status === 'sold' || l.status === 'rented');
+const reviews = reviewsByAgent(agent.slug);
 
 const communes = [...new Set(listings.map((l) => l.commune).filter(Boolean))] as string[];
+const agentTel = toE164(agent.phone);
+const email = agent.email && !agent.email.endsWith('gmail.com') ? agent.email : null;
+const bio = agent.bio ? agent.bio.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean) : [];
 
 const description = composeDescription([
   `${agent.name}, ${agent.role.toLowerCase()} chez AUREA Immobilier à Mantes-la-Jolie.`,
@@ -43,7 +50,7 @@ const description = composeDescription([
     ? `${sold.length} transaction${sold.length > 1 ? 's' : ''} réalisée${sold.length > 1 ? 's' : ''}${communes.length ? ` à ${communes.slice(0, 2).join(' et ')}` : ''}.`
     : null,
   active.length > 0 ? `${active.length} bien${active.length > 1 ? 's' : ''} en portefeuille.` : null,
-  'Contact direct au 01 30 63 50 50.',
+  `Ligne directe et contact au ${contact.phone}.`,
   'Estimation gratuite sur rendez-vous.',
 ]);
 
@@ -52,7 +59,7 @@ const crumbs = [
   { label: 'L’équipe', href: '/equipe/' },
   { label: agent.name },
 ];
-const agentTel = toE164(agent.phone);
+const photoUrl = media ? `${media.base}-${media.fallbackWidth ?? media.width}.webp` : null;
 ---
 
 <Base
@@ -60,173 +67,235 @@ const agentTel = toE164(agent.phone);
   description={description}
   path={`/equipe/${agent.slug}/`}
   crumbs={crumbs}
-  image={media ? `${media.base}-480.webp` : null}
-  schemas={[personSchema(agent, media ? `${media.base}-480.webp` : null)]}
+  image={photoUrl}
+  schemas={[personSchema(agent, photoUrl)]}
 >
-  <Breadcrumb crumbs={crumbs} />
-
-  <div class="wrap section">
-    <header class="profile">
-      <Picture
-        media={media}
-        alt={`Portrait de ${agent.name}`}
-        sizes="(min-width: 48rem) 18rem, 60vw"
-        aspect="4 / 5"
-        class="portrait"
-        priority
-      />
-      <div>
+  <header class="profile-head">
+    <div class="wrap profile">
+      <div class="portrait">
+        <Picture
+          media={media}
+          alt={`Portrait de ${agent.name}`}
+          sizes="(min-width: 48rem) 18rem, 70vw"
+          aspect="4 / 5"
+          priority
+        />
+      </div>
+      <div class="identity">
+        <Breadcrumb crumbs={crumbs} />
+        <p class="kicker">{agent.role}</p>
         <h1>{agent.name}</h1>
-        <p class="role">{agent.role}</p>
         <dl class="meta">
-          <div>
-            <dt>Agence</dt>
-            <dd>{CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}</dd>
-          </div>
           {
             agentTel && (
               <div>
-                <dt>Ligne directe</dt>
-                <dd><a href={`tel:${agentTel}`}>{agent.phone}</a></dd>
+                <dt><Icon name="phone" size={16} /> Ligne directe</dt>
+                <dd><a href={`tel:${agentTel}`} class="tnum">{agent.phone}</a></dd>
               </div>
             )
           }
           <div>
-            <dt>Agence</dt>
-            <dd><a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a></dd>
+            <dt><Icon name="building" size={16} /> Agence</dt>
+            <dd><a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a></dd>
           </div>
-          <div>
-            <dt>Email</dt>
-            <dd>
-              {
-                agent.email && !agent.email.endsWith('gmail.com') ? (
-                  <a href={`mailto:${agent.email}`}>{agent.email}</a>
-                ) : (
-                  <Todo label={`adresse professionnelle de ${agent.name}`} />
-                )
-              }
-            </dd>
-          </div>
+          {
+            email && (
+              <div>
+                <dt><Icon name="mail" size={16} /> Email</dt>
+                <dd><a href={`mailto:${email}`}>{email}</a></dd>
+              </div>
+            )
+          }
           {
             communes.length > 0 && (
               <div>
-                <dt>Secteur</dt>
+                <dt><Icon name="pin" size={16} /> Secteur</dt>
                 <dd>{communes.slice(0, 5).join(', ')}</dd>
               </div>
             )
           }
         </dl>
+        <p class="cluster">
+          {
+            agentTel && (
+              <a class="btn btn-navy" href={`tel:${agentTel}`}>
+                <Icon name="phone" size={18} /> Appeler {agent.name.split(' ')[0]}
+              </a>
+            )
+          }
+          <a class="btn btn-outline" href="#contact">Écrire un message</a>
+        </p>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <section class="section-tight prose">
-      <h2>Présentation</h2>
-      {
-        agent.bio ? (
+  {
+    bio.length > 0 && (
+      <section class="section">
+        <div class="wrap-narrow">
+          <p class="kicker">Présentation</p>
+          <h2>En quelques mots</h2>
           <blockquote class="bio">
-            {agent.bio.split(/(?<=[.!?])\s+(?=[A-ZÀÂÉÈÊÎÔÛÇ])/).map((para) => (
-              <p>{para}</p>
-            ))}
-            <footer class="small muted">
-              {agent.name} — présentation publiée par l’agence.
-            </footer>
+            {bio.map((par) => <p>{par}</p>)}
+            <footer class="small muted">{agent.name}</footer>
           </blockquote>
-        ) : (
-          <p class="notice">
-            <Todo label={`présentation rédigée par ${agent.name}`} />
-            <br />
-            Seuls Hélène Vermeire Benz et Vincent Maume ont publié la leur sur le site de
-            l’agence. Cette section est le principal signal d’expertise pour les moteurs de
-            recherche comme pour les moteurs génératifs : elle sera rédigée à partir des éléments
-            fournis par la personne concernée, et signée.
-          </p>
-        )
-      }
-    </section>
+        </div>
+      </section>
+    )
+  }
 
-    {
-      active.length > 0 && (
-        <section class="section-tight">
-          <h2>Biens actuellement suivis</h2>
+  {
+    active.length > 0 && (
+      <section class="section section-alt">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="kicker">En ce moment</p>
+              <h2>{plural(active.length, 'bien suivi', 'biens suivis')} par {agent.name.split(' ')[0]}</h2>
+            </div>
+            <p><a class="link-arrow" href="/acheter/">Tous les biens</a></p>
+          </div>
           <div class="grid-cards">
             {active.map((l) => (
               <ListingCard listing={l} />
             ))}
           </div>
-        </section>
-      )
-    }
+        </div>
+      </section>
+    )
+  }
 
-    {
-      sold.length > 0 && (
-        <section class="section-tight">
+  {
+    sold.length > 0 && (
+      <section class="section">
+        <div class="wrap-narrow">
+          <p class="kicker">Réussites</p>
           <h2>Transactions réalisées</h2>
-          <p class="small muted">
-            {plural(sold.length, 'bien vendu ou loué', 'biens vendus ou loués')} par {agent.name}
+          <p class="muted">
+            {plural(sold.length, 'bien vendu ou loué', 'biens vendus ou loués')}
             {communes.length > 0 && <> à {communes.slice(0, 4).join(', ')}</>}.
           </p>
           <ul class="sold">
             {sold.map((l) => (
               <li>
-                <span class="badge badge-sold">{l.status === 'sold' ? 'Vendu' : 'Loué'}</span>
+                <span class="badge badge-sold">{statusLabel(l)}</span>
                 <a href={`/bien/${l.slug}/`}>{l.title}</a>
               </li>
             ))}
           </ul>
-        </section>
-      )
-    }
+        </div>
+      </section>
+    )
+  }
 
-    <section class="section-tight">
-      <h2>Avis clients citant {agent.name}</h2>
-      <p class="notice">
-        <Todo label={`avis Google citant nommément ${agent.name}, à copier mot pour mot`} />
-      </p>
-    </section>
+  {
+    reviews.length > 0 && (
+      <div class="wrap section-tight">
+        <Reviews reviews={reviews} title={`Ce que disent les clients de ${agent.name.split(' ')[0]}`} compact />
+      </div>
+    )
+  }
 
-    <section class="section-tight">
+  <section class="section section-alt">
+    <div class="wrap-narrow">
       <LeadForm
         type="contact"
         title={`Écrire à ${agent.name}`}
-        intro="Votre message est transmis directement au conseiller."
+        intro="Votre message est transmis directement au conseiller, qui vous répond sous 24 h ouvrées."
       />
-    </section>
-  </div>
+    </div>
+  </section>
+
+  <CtaBand />
 </Base>
 
 <style>
+  .profile-head {
+    background: var(--sand-50);
+    border-bottom: 1px solid var(--line);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+
   .profile {
     display: grid;
     gap: var(--space-l);
-    margin-bottom: var(--space-l);
+    align-items: center;
   }
 
-  .profile :global(.portrait img) {
+  @media (min-width: 48rem) {
+    .profile {
+      grid-template-columns: 16rem minmax(0, 1fr);
+      gap: var(--space-xl);
+    }
+  }
+
+  .portrait {
+    max-width: 18rem;
+  }
+
+  .portrait :global(img) {
     border-radius: var(--radius-l);
-    max-width: 15rem;
+    box-shadow: var(--shadow-l);
+    object-position: center top;
   }
 
-  .role {
-    font-size: var(--step-1);
-    color: var(--gold-700);
+  .identity :global(.breadcrumb) {
     margin-bottom: var(--space-s);
+  }
+
+  .identity h1 {
+    margin-bottom: var(--space-m);
   }
 
   .meta {
     display: grid;
-    gap: var(--space-s);
+    gap: var(--space-s) var(--space-m);
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-    margin: 0;
+    margin: 0 0 var(--space-m);
   }
 
   .meta dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     font-size: var(--step--1);
     color: var(--ink-muted);
   }
 
+  .meta dt svg {
+    color: var(--gold-600);
+  }
+
   .meta dd {
+    margin: 0.15rem 0 0;
+    font-weight: 600;
+  }
+
+  .meta dd a {
+    text-decoration: none;
+  }
+
+  .identity .cluster {
     margin: 0;
-    font-weight: 550;
+  }
+
+  .bio {
+    margin: 0;
+    padding: var(--space-m) var(--space-l);
+    background: var(--sand-50);
+    border-left: 3px solid var(--gold-400);
+    border-radius: 0 var(--radius-m) var(--radius-m) 0;
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+    color: var(--ink-soft);
+  }
+
+  .bio p {
+    margin-bottom: var(--space-s);
+  }
+
+  .bio footer {
+    font-size: var(--step--1);
   }
 
   .sold {
@@ -239,35 +308,17 @@ const agentTel = toE164(agent.phone);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
-    padding-block: 0.55rem;
+    gap: var(--space-2xs) var(--space-s);
+    padding-block: 0.65rem;
     border-bottom: 1px solid var(--line);
   }
 
-  @media (min-width: 48rem) {
-    .profile {
-      grid-template-columns: 15rem 1fr;
-      align-items: start;
-    }
+  .sold a {
+    text-decoration: none;
+    color: var(--navy-900);
   }
 
-  /* Presentation reprise du site de l'agence, citee comme telle. */
-  .bio {
-    margin: 0;
-    padding: var(--space-m) var(--space-l);
-    background: var(--canvas-alt);
-    border-left: 3px solid var(--color-2);
-  }
-
-  .bio p {
-    margin-bottom: var(--space-s);
-  }
-
-  .bio p:last-of-type {
-    margin-bottom: var(--space-2xs);
-  }
-
-  .bio footer {
-    font-style: normal;
+  .sold a:hover {
+    text-decoration: underline;
   }
 </style>

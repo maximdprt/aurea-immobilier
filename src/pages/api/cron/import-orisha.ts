@@ -17,6 +17,7 @@
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { importClient } from '~/lib/server/supabase-admin';
+import { env } from '~/lib/server/env';
 
 export const prerender = false;
 
@@ -65,7 +66,7 @@ function isDuplicate(a: z.infer<typeof feedItem>, b: z.infer<typeof feedItem>): 
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  const expected = process.env.CRON_SECRET;
+  const expected = env('CRON_SECRET');
   const provided = request.headers.get('authorization');
 
   if (!expected || provided !== `Bearer ${expected}`) {
@@ -73,7 +74,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const db = importClient();
-  const feedUrl = process.env.ORISHA_FEED_URL;
+  const feedUrl = env('ORISHA_FEED_URL');
 
   if (!db || !feedUrl) {
     return new Response(
@@ -90,9 +91,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     const response = await fetch(feedUrl, {
-      headers: process.env.ORISHA_FEED_TOKEN
-        ? { authorization: `Bearer ${process.env.ORISHA_FEED_TOKEN}` }
-        : {},
+      headers: env('ORISHA_FEED_TOKEN') ? { authorization: `Bearer ${env('ORISHA_FEED_TOKEN')}` } : {},
     });
     if (!response.ok) throw new Error(`flux HTTP ${response.status}`);
 
@@ -178,6 +177,22 @@ export const POST: APIRoute = async ({ request }) => {
       }
       if (data && data.created_at === data.updated_at) created++;
       else updated++;
+
+      // Photos du flux : l'URL distante est conservée dans `storage_path` ; le
+      // pipeline images la télécharge au build et produit les variantes.
+      if (item.photos.length) {
+        const { error: photoError } = await db.from('listing_photos').upsert(
+          item.photos.slice(0, 30).map((p, position) => ({
+            listing_reference: item.reference,
+            position,
+            file_name: p.url.split('/').pop()?.split('?')[0] || `photo-${position}`,
+            storage_path: p.url,
+            alt: p.alt ?? null,
+          })),
+          { onConflict: 'listing_reference,position' }
+        );
+        if (photoError) errors.push({ reference: item.reference, reason: `photos : ${photoError.message}` });
+      }
     }
 
     // Les biens absents du flux passent en archive — sauf si le flux est suspect.

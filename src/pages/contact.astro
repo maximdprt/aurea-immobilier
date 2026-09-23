@@ -1,13 +1,22 @@
 ---
-/** Nous contacter — NAP complet, carte en façade cliquable (§6, §21.4). */
+/**
+ * Nous contacter — coordonnees completes (NAP), horaires, carte en facade
+ * cliquable (§6, §21.4), formulaire et acces direct aux conseillers.
+ */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
 import LeadForm from '~/components/LeadForm.astro';
-import Todo from '~/components/Todo.astro';
-import { CONTACT, OPENING_HOURS, GEO, formatRanges, isMissing } from '~/lib/site';
-import { allAgents } from '~/lib/catalog';
+import Icon from '~/components/Icon.astro';
+import Picture from '~/components/Picture.astro';
+import AgentCard from '~/components/AgentCard.astro';
+import { allAgents, editorialMedia } from '~/lib/catalog';
+import { COMPANY, MAP_EMBED_URL } from '~/lib/site';
+import { agency, field } from '~/lib/content';
 
 const agents = allAgents();
+const contact = agency();
+const photo = editorialMedia('contact') ?? editorialMedia('agence');
+
 const crumbs = [
   { label: 'Accueil', href: '/' },
   { label: 'Contact' },
@@ -16,181 +25,254 @@ const crumbs = [
 
 <Base
   title="Contacter AUREA Immobilier à Mantes-la-Jolie"
-  description="44 rue Nationale, 78200 Mantes-la-Jolie. Téléphone, email et formulaire : un conseiller vous répond sous 24 h ouvrées."
+  description={`${contact.street}, ${contact.postalCode} ${contact.city}. Téléphone, email, horaires et formulaire : un conseiller vous répond sous 24 h ouvrées.`}
   path="/contact/"
   crumbs={crumbs}
+  noActionBar
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Nous contacter</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader
+    title={field('page.contact', 'titre')}
+    crumbs={crumbs}
+    kicker="Contact"
+    lede={field('page.contact', 'chapo')}
+  >
+    <p class="cluster">
+      <a class="btn btn-navy" href={`tel:${contact.phoneE164}`}>
+        <Icon name="phone" size={18} /> <span class="tnum">{contact.phone}</span>
+      </a>
+      <a class="btn btn-outline" href="#contact">Écrire un message</a>
+    </p>
+  </PageHeader>
 
-  <div class="wrap section">
-    <header class="head">
-      <p class="lede">
-        L’agence est ouverte au public 44 rue Nationale, en centre-ville de Mantes-la-Jolie. Vous
-        pouvez passer, appeler, ou écrire — nous répondons sous 24 heures ouvrées.
-      </p>
-    </header>
-
-    <div class="columns">
-      <div>
-        <section class="panel">
+  <section class="section">
+    <div class="wrap columns">
+      <div class="left">
+        <section class="panel coords">
           <h2>Coordonnées</h2>
           <address>
-            <strong>AUREA Immobilier</strong><br />
-            {CONTACT.street}<br />
-            {CONTACT.postalCode} {CONTACT.city}
-          </address>
-          <p>
-            <a class="big-link" href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a><br />
-            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-          </p>
-          <h3>Horaires</h3>
-          <dl class="hours">
-            {
-              OPENING_HOURS.map((d) => (
-                <>
-                  <dt>{d.label}</dt>
-                  <dd>{formatRanges(d)}</dd>
-                </>
-              ))
-            }
-          </dl>
-          <p class="small muted">
-            Les horaires publiés ici doivent être strictement identiques à ceux de la fiche Google
-            et des annuaires : c’est un facteur direct de visibilité dans le pack local.
-          </p>
-        </section>
-
-        <section class="panel">
-          <h2>Nous trouver</h2>
-          <div class="facade">
             <p>
-              <strong>Carte interactive</strong><br />
-              <span class="small muted">
-                La carte n’est chargée qu’après un clic de votre part : aucun traceur tiers n’est
-                déposé à l’ouverture de la page.
+              <Icon name="pin" size={20} />
+              <span>
+                <strong>{COMPANY.name}</strong><br />
+                {contact.street}<br />
+                {contact.postalCode} {contact.city}
               </span>
             </p>
-            {
-              isMissing(GEO) ? (
-                <p>
-                  <Todo label="coordonnées GPS de la fiche Google, nécessaires à la carte" />
-                </p>
-              ) : (
-                <button class="btn btn-secondary" type="button" data-load-map>
-                  Afficher la carte
-                </button>
-              )
-            }
+            <p>
+              <Icon name="phone" size={20} />
+              <a href={`tel:${contact.phoneE164}`} class="big tnum">{contact.phone}</a>
+            </p>
+            <p>
+              <Icon name="mail" size={20} />
+              <a href={`mailto:${contact.email}`}>{contact.email}</a>
+            </p>
+          </address>
+
+          <h3><Icon name="clock" size={18} /> Horaires d’ouverture</h3>
+          <ul class="hours">
+            {contact.hours.map((h) => <li>{h}</li>)}
+          </ul>
+        </section>
+
+        <section class="panel map-panel">
+          <h2>Nous trouver</h2>
+          <div class="map-facade" data-map-facade>
+            {photo && <Picture media={photo} alt="" aspect="16 / 10" sizes="(min-width: 64rem) 30rem, 92vw" class="map-photo" />}
+            <div class="map-overlay">
+              <p class="small">
+                La carte n’est chargée qu’après un clic de votre part : aucun traceur tiers n’est
+                déposé à l’ouverture de la page.
+              </p>
+              <button class="btn btn-light" type="button" data-load-map={MAP_EMBED_URL}>
+                <Icon name="pin" size={18} /> Afficher la carte
+              </button>
+            </div>
           </div>
+          <p class="small muted">
+            En centre-ville de Mantes-la-Jolie, à quelques minutes à pied de la gare.
+          </p>
         </section>
       </div>
 
-      <div>
+      <div class="right">
         <LeadForm
           type="contact"
           title="Écrire à l’agence"
-          intro="Une question, un projet, une demande de rappel : votre message arrive directement à l’équipe."
+          intro="Une question, un projet, une demande de rappel : votre message arrive directement à l’équipe, qui vous répond sous 24 h ouvrées."
         />
-
-        <section class="panel team-direct">
-          <h2>Écrire directement à un conseiller</h2>
-          <ul>
-            {
-              agents.map((a) => (
-                <li>
-                  <a href={`/equipe/${a.slug}/`}>{a.name}</a>
-                  <span class="small muted">{a.role}</span>
-                </li>
-              ))
-            }
-          </ul>
-        </section>
       </div>
     </div>
-  </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">En direct</p>
+          <h2>Joindre un conseiller</h2>
+          <p class="lede">
+            Vous suivez déjà un dossier avec l’un de nous ? Appelez sa ligne directe : il connaît
+            votre projet.
+          </p>
+        </div>
+        <p><a class="link-arrow" href="/equipe/">Toute l’équipe</a></p>
+      </div>
+      <ul class="team">
+        {agents.map((a) => <li><AgentCard agent={a} variant="row" sizes="7rem" /></li>)}
+      </ul>
+    </div>
+  </section>
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
-  }
-
   .columns {
     display: grid;
     gap: var(--space-l);
+    align-items: start;
   }
 
-  .panel + .panel {
-    margin-top: var(--space-m);
+  @media (min-width: 64rem) {
+    .columns {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    }
+  }
+
+  .left {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .panel h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-s);
   }
 
   address {
     font-style: normal;
-    margin-bottom: var(--space-s);
+    margin-bottom: var(--space-m);
   }
 
-  .big-link {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
+  address p {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin: 0 0 0.75rem;
+  }
+
+  address svg {
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--gold-600);
+  }
+
+  address a {
+    text-decoration: none;
     font-weight: 600;
   }
 
-  .facade {
-    display: grid;
-    gap: var(--space-s);
-    place-items: center;
-    text-align: center;
-    padding: var(--space-l) var(--space-m);
-    background: var(--canvas-alt);
-    border: 1px dashed var(--line-strong);
-    border-radius: var(--radius-m);
+  .big {
+    font-size: var(--step-1);
   }
 
-  .facade p {
+  .coords h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--step-0);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .hours {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: var(--ink-soft);
+  }
+
+  .hours li {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hours li:last-child {
+    border-bottom: 0;
+  }
+
+  .map-facade {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    background: var(--navy-900);
+    margin-bottom: var(--space-s);
+  }
+
+  .map-facade :global(.map-photo),
+  .map-facade :global(.map-photo img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .map-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    text-align: center;
+    background: rgb(0 19 42 / 0.6);
+    color: #fff;
+  }
+
+  .map-overlay p {
+    margin: 0;
+    max-width: 32ch;
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  .map-overlay .btn {
+    justify-self: center;
+  }
+
+  .map-facade :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .map-panel > p {
     margin: 0;
   }
 
-  .team-direct ul {
+  .team {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
     list-style: none;
     margin: 0;
     padding: 0;
   }
-
-  .team-direct li {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--space-2xs);
-    padding-block: 0.5rem;
-    border-bottom: 1px solid var(--line);
-  }
-
-  @media (min-width: 56rem) {
-    .columns {
-      grid-template-columns: 1fr 1fr;
-      align-items: start;
-    }
-  }
-
-  .hours {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-3xs) var(--space-s);
-    margin: 0 0 var(--space-s);
-  }
-
-  .hours dt {
-    color: var(--ink-muted);
-  }
-
-  .hours dd {
-    margin: 0;
-    font-variant-numeric: tabular-nums;
-  }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-load-map]').forEach((btn) => {
+    btn.addEventListener(
+      'click',
+      () => {
+        const box = btn.closest<HTMLElement>('[data-map-facade]');
+        const url = btn.dataset.loadMap;
+        if (!box || !url) return;
+        const f = document.createElement('iframe');
+        f.src = url;
+        f.title = 'Plan d’accès à l’agence AUREA Immobilier, Mantes-la-Jolie';
+        f.loading = 'lazy';
+        f.referrerPolicy = 'no-referrer-when-downgrade';
+        f.allowFullscreen = true;
+        box.replaceChildren(f);
+      },
+      { once: true }
+    );
+  });
+</script>

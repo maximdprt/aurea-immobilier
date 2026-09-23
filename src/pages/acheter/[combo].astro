@@ -3,13 +3,12 @@
  * Page « type x commune » — ex. /acheter/maison-mantes-la-jolie/.
  *
  * Le brief n'autorise ces pages que la ou il y a un volume reel ET une presence
- * reelle (§5, §7). On applique un seuil strict : au moins deux biens actifs du
- * type dans la commune, ou un bien actif plus au moins deux ventes realisees.
- * Sans quoi, la page commune generique suffit et cette URL n'existe pas.
+ * reelle (§5, §7). Le seuil est applique par `typeCommunePages()`.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
 import ListingResults from '~/components/ListingResults.astro';
+import CtaBand from '~/components/CtaBand.astro';
 import { typeCommunePages } from '~/lib/catalog';
 import { plural, propertyTypeLabel } from '~/lib/format';
 import type { Commune, Listing, PropertyType } from '~/lib/types';
@@ -36,6 +35,12 @@ const crumbs = [
   { label: 'Acheter', href: '/acheter/' },
   { label: `${plural1} à ${commune.name}` },
 ];
+
+const lede =
+  `${plural(listings.length, `${typeLabel.toLowerCase()} disponible`, `${typeLabel.toLowerCase()}s disponibles`)} à ${commune.name}` +
+  (soldCount > 0
+    ? `, après ${plural(soldCount, 'vente réalisée', 'ventes réalisées')} sur ce type de bien dans la commune.`
+    : '.');
 ---
 
 <Base
@@ -44,37 +49,32 @@ const crumbs = [
   path={`/acheter/${type}-${commune.slug}/`}
   crumbs={crumbs}
 >
-  <Breadcrumb crumbs={crumbs} />
+  <PageHeader title={`${plural1} à vendre à ${commune.name}`} lede={lede} crumbs={crumbs} kicker="Acheter" />
 
-  <div class="wrap section">
-    <header class="head">
-      <h1>{plural1} à vendre à {commune.name}</h1>
-      <p class="lede">
-        {plural(listings.length, `${typeLabel.toLowerCase()} disponible`, `${typeLabel.toLowerCase()}s disponibles`)} à
-        {' '}{commune.name}
-        {soldCount > 0 && <>, après {plural(soldCount, 'vente réalisée', 'ventes réalisées')} sur ce type de bien dans la commune</>}.
+  <section class="section">
+    <div class="wrap">
+      <ListingResults listings={listings} showFilters={false} />
+
+      <p class="more">
+        <a class="btn btn-outline" href={`/agence-immobiliere/${commune.slug}/`}>
+          Tout l’immobilier à {commune.name}
+        </a>
+        <a class="btn btn-outline" href="/acheter/">Tous nos biens à vendre</a>
       </p>
-    </header>
+    </div>
+  </section>
 
-    <ListingResults listings={listings} showFilters={false} />
-
-    <p class="more">
-      <a href={`/agence-immobiliere/${commune.slug}/`}>
-        Tout l’immobilier à {commune.name}
-      </a>
-      {' · '}
-      <a href="/acheter/">Tous nos biens à vendre</a>
-    </p>
-  </div>
+  <CtaBand
+    title={`Vous vendez une ${typeLabel.toLowerCase()} à ${commune.name} ?`}
+    text="Nous connaissons les acquéreurs qui cherchent dans ce secteur. Une estimation gratuite et argumentée sous 48 h."
+  />
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
-  }
-
   .more {
-    margin-top: var(--space-l);
-    font-size: var(--step--1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: var(--space-l) 0 0;
   }
 </style>

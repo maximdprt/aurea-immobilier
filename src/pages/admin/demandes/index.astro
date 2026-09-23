@@ -1,0 +1,196 @@
+---
+/**
+ * Back-office — liste des demandes entrantes.
+ *
+ * Point capital : cette page ne filtre rien elle-même. Elle interroge Supabase
+ * avec le jeton de l'utilisateur, donc sous SES politiques RLS (§20.3). Un
+ * conseiller ne voit que ses demandes et celles non assignées ; la gestionnaire
+ * locative ne voit que les demandes de gestion ; sans second facteur validé,
+ * personne ne voit rien.
+ *
+ * Autrement dit : même si cette page contenait un bug, elle ne pourrait pas
+ * afficher de données qu'un utilisateur n'a pas le droit de voir.
+ */
+import Admin from '~/layouts/Admin.astro';
+import { requireAdminSession, sessionClient } from '~/lib/server/supabase-session';
+
+export const prerender = false;
+
+const session = await requireAdminSession(Astro.request, Astro.cookies);
+
+if (!session) {
+  return Astro.redirect('/admin/connexion/', 302);
+}
+
+const supabase = sessionClient(Astro.request, Astro.cookies);
+
+/**
+ * Aucune clause de filtrage par rôle ici : c'est la RLS qui décide. Ajouter un
+ * filtre applicatif donnerait la fausse impression que la sécurité vient d'ici.
+ */
+const { data: leads, error } = supabase
+  ? await supabase
+      .from('leads')
+      .select(
+        'id, type, status, firstname, lastname, email, phone, message, listing_reference, created_at'
+      )
+      .order('created_at', { ascending: false })
+      .limit(100)
+  : { data: null, error: null };
+
+const typeLabels: Record<string, string> = {
+  contact: 'Contact',
+  visite: 'Visite',
+  estimation: 'Estimation',
+  gestion: 'Gestion locative',
+};
+
+const statusLabels: Record<string, string> = {
+  new: 'Nouvelle',
+  assigned: 'Assignée',
+  in_progress: 'En cours',
+  won: 'Gagnée',
+  lost: 'Perdue',
+  spam: 'Spam',
+};
+
+const dateFmt = new Intl.DateTimeFormat('fr-FR', {
+  dateStyle: 'short',
+  timeStyle: 'short',
+});
+---
+
+<Admin title="Demandes" session={session}>
+  <h1>Demandes entrantes</h1>
+
+  {
+    session.assuranceLevel !== 'aal2' && (
+      <p class="notice">
+        <strong>Second facteur non validé.</strong> Les demandes ne sont pas accessibles tant que
+        l’authentification à deux facteurs n’a pas été confirmée. Ce n’est pas un réglage
+        d’interface : la règle est appliquée par la base de données elle-même.
+      </p>
+    )
+  }
+
+  {
+    error && (
+      <p class="form-status" data-state="error">
+        Lecture impossible. Si vous venez de vous connecter, validez votre second facteur.
+      </p>
+    )
+  }
+
+  {
+    leads && leads.length > 0 ? (
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Demandes reçues, les plus récentes d’abord</caption>
+          <thead>
+            <tr>
+              <th scope="col">Reçue le</th>
+              <th scope="col">Type</th>
+              <th scope="col">Contact</th>
+              <th scope="col">Bien</th>
+              <th scope="col">Message</th>
+              <th scope="col">Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            {leads.map((lead) => (
+              <tr>
+                <td>{dateFmt.format(new Date(lead.created_at))}</td>
+                <td>{typeLabels[lead.type] ?? lead.type}</td>
+                <td>
+                  {lead.firstname} {lead.lastname}
+                  <br />
+                  <a href={`mailto:${lead.email}`} class="small">
+                    {lead.email}
+                  </a>
+                  {lead.phone && (
+                    <>
+                      <br />
+                      <a href={`tel:${lead.phone}`} class="small">
+                        {lead.phone}
+                      </a>
+                    </>
+                  )}
+                </td>
+                <td>{lead.listing_reference ? `Réf. ${lead.listing_reference}` : '—'}</td>
+                <td class="message">{lead.message ?? '—'}</td>
+                <td>
+                  <span class="badge">{statusLabels[lead.status] ?? lead.status}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      !error && <p class="empty">Aucune demande visible pour votre rôle.</p>
+    )
+  }
+
+  <section class="hint">
+    <h2>Ce que vous voyez, et pourquoi</h2>
+    <ul>
+      <li>
+        <strong>Administrateur</strong> — toutes les demandes, et seul rôle autorisé à en
+        supprimer une.
+      </li>
+      <li>
+        <strong>Conseiller</strong> — les demandes qui vous sont assignées et celles qui ne le
+        sont encore à personne. Jamais celles d’un collègue.
+      </li>
+      <li>
+        <strong>Gestionnaire locative</strong> — uniquement les demandes de gestion locative.
+      </li>
+    </ul>
+    <p class="small muted">
+      Ces règles sont appliquées par la base de données, pas par cette page. Elles sont couvertes
+      par des tests automatisés exécutés à chaque modification du code.
+    </p>
+  </section>
+</Admin>
+
+<style>
+  h1 {
+    margin-bottom: var(--space-m);
+  }
+
+  .table-wrap {
+    background: var(--surface);
+  }
+
+  .message {
+    max-width: 24rem;
+    font-size: var(--step--1);
+  }
+
+  .empty {
+    padding: var(--space-l);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    text-align: center;
+    color: var(--ink-muted);
+  }
+
+  .hint {
+    margin-top: var(--space-xl);
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .hint h2 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+
+  .hint ul {
+    padding-left: 1.1rem;
+  }
+</style>

@@ -6,8 +6,7 @@
  * pré-rendues, elles n'interrogent pas la base à chaque visite.
  *
  * Règle de repli, volontairement stricte : on ne remplace le seed que si la
- * base répond ET renvoie des données. Une base joignable mais vide — cas exact
- * du projet tant que les migrations ne sont pas appliquées — ne doit pas
+ * base répond ET renvoie des données. Une base joignable mais vide ne doit pas
  * produire un site sans aucun bien.
  */
 import type { Agent, ArchivedListing, Commune, Listing } from '~/lib/types';
@@ -32,77 +31,92 @@ const EMPTY: CatalogSnapshot = {
   note: '',
 };
 
+const numOrNull = (v: unknown): number | null =>
+  v === null || v === undefined || v === '' ? null : Number.isFinite(Number(v)) ? Number(v) : null;
+
+/** « 2026-07-21 » -> « 21/07/2026 », la forme que les formateurs du site attendent. */
+const frDate = (v: unknown): string | null => {
+  if (typeof v !== 'string') return null;
+  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : v;
+};
+
 /** Convertit une ligne SQL (snake_case) en objet du modèle (camelCase). */
-function toListing(row: Record<string, any>, photos: Record<string, any>[]): Listing {
+function toListing(
+  row: Record<string, any>,
+  photos: Record<string, any>[],
+  communeName: Map<string, string>
+): Listing {
   return {
     reference: row.reference,
     legacyProductsId: row.legacy_products_id ?? '',
     legacyCPath: null,
-    legacySlug: '',
-    legacyUrl: '',
+    legacySlug: row.legacy_slug ?? '',
+    legacyUrl: row.legacy_url ?? '',
     slug: row.slug,
     title: row.title,
     rawTitle: row.title,
     status: row.status,
     transaction: row.transaction_type,
     propertyType: row.property_type,
-    subtype: null,
-    commune: row.communes?.name ?? null,
+    subtype: row.subtype ?? null,
+    commune: row.commune_slug ? (communeName.get(row.commune_slug) ?? null) : null,
     communeSlug: row.commune_slug ?? null,
     postalCode: row.postal_code ?? null,
-    price: row.price,
+    price: numOrNull(row.price),
     feesPayer: row.fees_payer ?? null,
-    rentBase: row.rent_base ?? null,
-    rentCharges: row.rent_charges ?? null,
-    rentTotal: row.rent_total ?? null,
-    tenantFees: row.tenant_fees ?? null,
-    inventoryFees: null,
-    deposit: row.deposit ?? null,
-    livingArea: row.living_area,
-    landArea: row.land_area,
-    livingRoomArea: null,
-    rooms: row.rooms,
-    bedrooms: row.bedrooms,
-    bathrooms: null,
-    floor: row.floor_number,
-    floors: null,
-    yearBuilt: row.year_built,
-    heating: row.heating,
-    condition: null,
-    hasGarden: false,
-    hasElevator: false,
-    cellars: null,
-    exposure: null,
-    windows: null,
-    sanitation: null,
+    rentBase: numOrNull(row.rent_base),
+    rentCharges: numOrNull(row.rent_charges),
+    rentTotal: numOrNull(row.rent_total),
+    tenantFees: numOrNull(row.tenant_fees),
+    inventoryFees: numOrNull(row.inventory_fees),
+    deposit: numOrNull(row.deposit),
+    livingArea: numOrNull(row.living_area),
+    landArea: numOrNull(row.land_area),
+    livingRoomArea: numOrNull(row.living_room_area),
+    rooms: numOrNull(row.rooms),
+    bedrooms: numOrNull(row.bedrooms),
+    bathrooms: numOrNull(row.bathrooms),
+    floor: numOrNull(row.floor_number),
+    floors: numOrNull(row.floors),
+    yearBuilt: numOrNull(row.year_built),
+    heating: row.heating ?? null,
+    condition: row.condition ?? null,
+    hasGarden: row.has_garden ?? false,
+    hasElevator: row.has_elevator ?? false,
+    cellars: numOrNull(row.cellars),
+    exposure: row.exposure ?? null,
+    windows: row.windows ?? null,
+    sanitation: row.sanitation ?? null,
     isCondo: row.is_condo ?? false,
-    condoLots: row.condo_lots,
-    condoHousingLots: null,
-    condoAnnualCharges: row.condo_annual_charges,
-    propertyTax: row.property_tax,
-    rentControlled: false,
-    dpeClass: row.dpe_class,
-    dpeFinalClass: null,
-    dpeValue: row.dpe_value,
-    dpeFinalValue: null,
-    gesClass: row.ges_class,
-    gesValue: row.ges_value,
-    energyCostMin: row.energy_cost_min,
-    energyCostMax: row.energy_cost_max,
-    dpeDate: row.dpe_date,
+    condoLots: numOrNull(row.condo_lots),
+    condoHousingLots: numOrNull(row.condo_housing_lots),
+    condoAnnualCharges: numOrNull(row.condo_annual_charges),
+    propertyTax: numOrNull(row.property_tax),
+    rentControlled: row.rent_controlled ?? false,
+    dpeClass: row.dpe_class ?? null,
+    dpeFinalClass: row.dpe_final_class ?? null,
+    dpeValue: numOrNull(row.dpe_value),
+    dpeFinalValue: numOrNull(row.dpe_final_value),
+    gesClass: row.ges_class ?? null,
+    gesValue: numOrNull(row.ges_value),
+    energyCostMin: numOrNull(row.energy_cost_min),
+    energyCostMax: numOrNull(row.energy_cost_max),
+    dpeDate: frDate(row.dpe_date),
     erp: row.erp ?? false,
-    erpDate: null,
-    transitAccess: null,
+    erpDate: frDate(row.erp_date),
+    transitAccess: row.transit_access ?? null,
     isExclusive: row.is_exclusive ?? false,
-    advisorName: null,
-    advisorRole: null,
+    advisorName: row.advisor_name ?? null,
+    advisorRole: row.advisor_role ?? null,
     agentSlug: row.agent_slug ?? null,
     description: row.description ?? '',
     photos: photos
       .filter((p) => p.listing_reference === row.reference)
       .sort((a, b) => a.position - b.position)
       .map((p) => ({ file: p.file_name, alt: p.alt ?? '' })),
-    characteristics: {},
+    characteristics:
+      row.characteristics && typeof row.characteristics === 'object' ? row.characteristics : {},
   };
 }
 
@@ -118,15 +132,15 @@ export async function loadFromSupabase(): Promise<CatalogSnapshot> {
 
   try {
     const [listingsRes, photosRes, agentsRes, communesRes, archivesRes] = await Promise.all([
-      db.from('listings').select('*, communes(name)').order('reference', { ascending: false }),
-      db.from('listing_photos').select('listing_reference, position, file_name, alt'),
-      db.from('agents').select('*').order('position'),
+      db.from('listings').select('*').order('reference', { ascending: false }),
+      db.from('listing_photos').select('listing_reference, position, file_name, storage_path, alt'),
+      db.from('agents').select('*').order('position').order('created_at'),
       db.from('communes').select('*'),
       db.from('archived_listings').select('*'),
     ]);
 
     const firstError =
-      listingsRes.error ?? agentsRes.error ?? communesRes.error ?? archivesRes.error;
+      listingsRes.error ?? photosRes.error ?? agentsRes.error ?? communesRes.error ?? archivesRes.error;
 
     if (firstError) {
       // PGRST205 = table absente du cache de schéma : les migrations n'ont pas
@@ -148,10 +162,12 @@ export async function loadFromSupabase(): Promise<CatalogSnapshot> {
       };
     }
 
+    const communes = communesRes.data ?? [];
+    const communeName = new Map<string, string>(communes.map((c) => [c.slug, c.name]));
     const photos = photosRes.data ?? [];
 
     return {
-      listings: listings.map((row) => toListing(row, photos)),
+      listings: listings.map((row) => toListing(row, photos, communeName)),
       agents: (agentsRes.data ?? []).map((a) => ({
         legacyId: a.legacy_id ?? null,
         slug: a.slug,
@@ -163,7 +179,7 @@ export async function loadFromSupabase(): Promise<CatalogSnapshot> {
         photo: a.photo_file ?? null,
         legacyUrl: null,
       })),
-      communes: (communesRes.data ?? []).map((c) => ({
+      communes: communes.map((c) => ({
         name: c.name,
         slug: c.slug,
         postalCode: c.postal_code ?? null,
@@ -174,10 +190,10 @@ export async function loadFromSupabase(): Promise<CatalogSnapshot> {
       archives: (archivesRes.data ?? []).map((a) => ({
         reference: a.reference,
         title: a.title,
-        commune: null,
+        commune: a.commune_slug ? (communeName.get(a.commune_slug) ?? null) : null,
         status: a.status,
         rooms: a.rooms ?? null,
-        area: a.area ?? null,
+        area: numOrNull(a.area),
         isExclusive: false,
         propertyType: a.property_type,
       })),

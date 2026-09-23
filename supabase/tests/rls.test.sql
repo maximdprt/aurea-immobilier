@@ -6,7 +6,7 @@
 -- =============================================================================
 
 begin;
-select plan(24);
+select plan(29);
 
 create extension if not exists pgtap with schema extensions;
 
@@ -21,6 +21,16 @@ insert into public.agents (id, slug, name, role)
 values
   ('11111111-1111-1111-1111-111111111111', 'agent-un', 'Agent Un', 'Négociateur'),
   ('22222222-2222-2222-2222-222222222222', 'agent-deux', 'Agent Deux', 'Négociatrice');
+
+insert into public.news (slug, title, body, is_published, published_at)
+values
+  ('publiee', 'Actualité publiée', 'Texte.', true, now() - interval '1 day'),
+  ('brouillon', 'Actualité en brouillon', 'Texte.', false, null);
+
+insert into public.media_assets (key, storage_path, mime, width, height, bytes)
+values ('editorial:agence', 'overrides/editorial/agence/test.jpg', 'image/jpeg', 1600, 1200, 1000);
+
+insert into public.site_content (key, value) values ('page.agence', '{"titre":"Test"}'::jsonb);
 
 insert into public.listings
   (reference, slug, title, status, transaction_type, property_type, commune_slug,
@@ -126,6 +136,36 @@ select isnt_empty(
 select isnt_empty(
   $$select * from public.agents$$,
   'anon lit les conseillers'
+);
+
+-- Refonte : actualites et visuels importes
+select is(
+  (select count(*) from public.news)::int, 1,
+  'anon ne lit que les actualites publiees'
+);
+
+select throws_ok(
+  $$insert into public.news (slug, title) values ('pirate', 'Injection')$$,
+  null, null,
+  'anon ne peut creer aucune actualite'
+);
+
+select isnt_empty(
+  $$select * from public.media_assets$$,
+  'anon lit les visuels importes (le build en a besoin)'
+);
+
+select throws_ok(
+  $$insert into public.media_assets (key, storage_path, mime, width, height, bytes)
+    values ('logo', 'x', 'image/png', 10, 10, 10)$$,
+  null, null,
+  'anon ne peut enregistrer aucun visuel'
+);
+
+select throws_ok(
+  $$update public.site_content set value = '{}'::jsonb$$,
+  null, null,
+  'anon ne peut modifier aucun texte du site'
 );
 
 reset role;

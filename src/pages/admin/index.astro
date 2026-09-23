@@ -1,196 +1,190 @@
 ---
 /**
- * Back-office — liste des demandes entrantes.
- *
- * Point capital : cette page ne filtre rien elle-même. Elle interroge Supabase
- * avec le jeton de l'utilisateur, donc sous SES politiques RLS (§20.3). Un
- * conseiller ne voit que ses demandes et celles non assignées ; la gestionnaire
- * locative ne voit que les demandes de gestion ; sans second facteur validé,
- * personne ne voit rien.
- *
- * Autrement dit : même si cette page contenait un bug, elle ne pourrait pas
- * afficher de données qu'un utilisateur n'a pas le droit de voir.
+ * Vue d'ensemble du back-office : les rubriques, l'état de la mise en ligne,
+ * et ce qui manque encore — côté contenu (à faire ici) et côté configuration
+ * (à transmettre à la personne qui déploie).
  */
-import Admin from '~/layouts/Admin.astro';
-import { requireAdminSession, sessionClient } from '~/lib/server/supabase-session';
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { AdminDataError, adminDataReady, countDocs, readAgents, readListings } from '~/lib/server/admin-data';
+import { readNews } from '~/lib/server/admin-news';
+import { readReviews } from '~/lib/server/admin-reviews';
+import { readAssets } from '~/lib/server/admin-media';
+import { configChecklist, contentChecklist } from '~/lib/server/admin-checklist';
+import { deployConfigured, publishMessage, type PublishResult } from '~/lib/server/publish';
+import { MISSING_INFO } from '~/lib/site';
 
 export const prerender = false;
 
-const session = await requireAdminSession(Astro.request, Astro.cookies);
-
-if (!session) {
-  return Astro.redirect('/admin/connexion/', 302);
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
 }
 
-const supabase = sessionClient(Astro.request, Astro.cookies);
+const publication = Astro.url.searchParams.get('publication') as PublishResult | null;
 
-/**
- * Aucune clause de filtrage par rôle ici : c'est la RLS qui décide. Ajouter un
- * filtre applicatif donnerait la fausse impression que la sécurité vient d'ici.
- */
-const { data: leads, error } = supabase
-  ? await supabase
-      .from('leads')
-      .select(
-        'id, type, status, firstname, lastname, email, phone, message, listing_reference, created_at'
-      )
-      .order('created_at', { ascending: false })
-      .limit(100)
-  : { data: null, error: null };
+let counts = { agents: 0, listings: 0, blocs: 0, news: 0, reviews: 0, medias: 0 };
+let dataError: string | null = null;
+let checklist: Awaited<ReturnType<typeof contentChecklist>> = [];
 
-const typeLabels: Record<string, string> = {
-  contact: 'Contact',
-  visite: 'Visite',
-  estimation: 'Estimation',
-  gestion: 'Gestion locative',
-};
+if (adminDataReady()) {
+  try {
+    const [a, l, n, news, reviews, assets, check] = await Promise.all([
+      readAgents(),
+      readListings(),
+      countDocs(),
+      readNews(),
+      readReviews(),
+      readAssets(),
+      contentChecklist(),
+    ]);
+    counts = { agents: a.length, listings: l.length, blocs: n, news: news.length, reviews: reviews.length, medias: assets.size };
+    checklist = check;
+  } catch (error) {
+    dataError = error instanceof AdminDataError ? error.message : 'Lecture impossible.';
+    if (error instanceof AdminDataError && error.internal) console.warn('[admin]', error.internal);
+  }
+} else {
+  dataError =
+    'La base n’est pas configurée : renseignez SUPABASE_SECRET_KEY_CONTENT pour lire et modifier le contenu.';
+}
 
-const statusLabels: Record<string, string> = {
-  new: 'Nouvelle',
-  assigned: 'Assignée',
-  in_progress: 'En cours',
-  won: 'Gagnée',
-  lost: 'Perdue',
-  spam: 'Spam',
-};
+const config = configChecklist();
 
-const dateFmt = new Intl.DateTimeFormat('fr-FR', {
-  dateStyle: 'short',
-  timeStyle: 'short',
-});
+const TILES = [
+  { href: '/admin/accueil/', name: 'Page d’accueil', body: 'Titre du bandeau, trois entrées, arguments, étapes, bandeau final.', count: 'Textes' },
+  { href: '/admin/textes/', name: 'Textes des pages', body: 'Agence, vendre, estimation, gestion, contact, alerte, réussites…', count: `${counts.blocs} bloc${counts.blocs > 1 ? 's' : ''} personnalisé${counts.blocs > 1 ? 's' : ''}` },
+  { href: '/admin/medias/', name: 'Photos & visuels', body: 'Grande photo d’accueil, photos de l’agence, portraits, photos des biens.', count: `${counts.medias} visuel${counts.medias > 1 ? 's' : ''} importé${counts.medias > 1 ? 's' : ''}` },
+  { href: '/admin/actualites/', name: 'Actualités', body: 'Rédigez et publiez les nouvelles de l’agence.', count: `${counts.news} article${counts.news > 1 ? 's' : ''}` },
+  { href: '/admin/equipe/', name: 'Équipe', body: 'Rôle, ligne directe, email, présentation et ordre d’affichage.', count: `${counts.agents} fiche${counts.agents > 1 ? 's' : ''}` },
+  { href: '/admin/biens/', name: 'Biens', body: 'Titre, prix, description et statut des annonces.', count: `${counts.listings} annonce${counts.listings > 1 ? 's' : ''}` },
+  { href: '/admin/avis/', name: 'Avis clients', body: 'Note Google et avis copiés depuis votre fiche.', count: `${counts.reviews} avis` },
+  { href: '/admin/coordonnees/', name: 'Coordonnées & horaires', body: 'Téléphone, adresse, email et horaires d’ouverture.', count: 'NAP' },
+  { href: '/admin/honoraires/', name: 'Honoraires', body: 'Le barème affiché : vente, location et gestion.', count: 'Barème' },
+];
 ---
 
-<Admin title="Demandes" session={session}>
-  <h1>Demandes entrantes</h1>
+<AdminContenu
+  title="Vue d’ensemble"
+  section="tableau"
+  heading="Le contenu du site"
+  intro="Chaque rubrique correspond à une partie du site public. Une modification enregistrée part en ligne en une à deux minutes, le temps que le site se reconstruise — sans toucher au code."
+>
+  {publication && <p class:list={['bo-notice', publication === 'lance' ? 'ok' : 'warn']} role="status">{publishMessage(publication).replace('Enregistré. ', '')}</p>}
+  <p class:list={['bo-notice', deployConfigured() ? 'ok' : 'warn']}>
+    {
+      deployConfigured()
+        ? 'Mise en ligne automatique active : chaque enregistrement relance la publication du site.'
+        : 'Mise en ligne automatique inactive (VERCEL_DEPLOY_HOOK_URL absente). Vos modifications sont enregistrées, mais n’apparaîtront en ligne qu’au prochain déploiement.'
+    }
+  </p>
+  {dataError && <p class="bo-notice ko">{dataError}</p>}
 
-  {
-    session.assuranceLevel !== 'aal2' && (
-      <p class="notice">
-        <strong>Second facteur non validé.</strong> Les demandes ne sont pas accessibles tant que
-        l’authentification à deux facteurs n’a pas été confirmée. Ce n’est pas un réglage
-        d’interface : la règle est appliquée par la base de données elle-même.
-      </p>
-    )
-  }
+  <ul class="bo-cards">
+    {
+      TILES.map((t) => (
+        <li class="bo-tile">
+          <h3><a href={t.href}>{t.name}</a></h3>
+          <p>{t.body}</p>
+          <p class="foot"><span>{t.count}</span><span class="go">Modifier →</span></p>
+        </li>
+      ))
+    }
+  </ul>
 
-  {
-    error && (
-      <p class="form-status" data-state="error">
-        Lecture impossible. Si vous venez de vous connecter, validez votre second facteur.
-      </p>
-    )
-  }
-
-  {
-    leads && leads.length > 0 ? (
-      <div class="table-wrap">
-        <table>
-          <caption class="visually-hidden">Demandes reçues, les plus récentes d’abord</caption>
-          <thead>
-            <tr>
-              <th scope="col">Reçue le</th>
-              <th scope="col">Type</th>
-              <th scope="col">Contact</th>
-              <th scope="col">Bien</th>
-              <th scope="col">Message</th>
-              <th scope="col">Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leads.map((lead) => (
-              <tr>
-                <td>{dateFmt.format(new Date(lead.created_at))}</td>
-                <td>{typeLabels[lead.type] ?? lead.type}</td>
-                <td>
-                  {lead.firstname} {lead.lastname}
-                  <br />
-                  <a href={`mailto:${lead.email}`} class="small">
-                    {lead.email}
-                  </a>
-                  {lead.phone && (
-                    <>
-                      <br />
-                      <a href={`tel:${lead.phone}`} class="small">
-                        {lead.phone}
-                      </a>
-                    </>
-                  )}
-                </td>
-                <td>{lead.listing_reference ? `Réf. ${lead.listing_reference}` : '—'}</td>
-                <td class="message">{lead.message ?? '—'}</td>
-                <td>
-                  <span class="badge">{statusLabels[lead.status] ?? lead.status}</span>
-                </td>
-              </tr>
+  <div class="two">
+    <section class="bo-card">
+      <div class="bo-card-head"><h2>À compléter dans ce back-office</h2></div>
+      {
+        checklist.length ? (
+          <ul class="bo-check-list">
+            {checklist.map((c) => (
+              <li>
+                <span class:list={['mark', c.done && 'done']}>{c.done ? '✓' : '!'}</span>
+                <div>
+                  <strong>{c.href && !c.done ? <a href={c.href}>{c.label}</a> : c.label}</strong>
+                  <span>{c.detail}</span>
+                </div>
+              </li>
             ))}
-          </tbody>
-        </table>
-      </div>
-    ) : (
-      !error && <p class="empty">Aucune demande visible pour votre rôle.</p>
-    )
-  }
+          </ul>
+        ) : (
+          <p class="bo-hint">Liste indisponible tant que la base n’est pas configurée.</p>
+        )
+      }
+    </section>
 
-  <section class="hint">
-    <h2>Ce que vous voyez, et pourquoi</h2>
-    <ul>
-      <li>
-        <strong>Administrateur</strong> — toutes les demandes, et seul rôle autorisé à en
-        supprimer une.
-      </li>
-      <li>
-        <strong>Conseiller</strong> — les demandes qui vous sont assignées et celles qui ne le
-        sont encore à personne. Jamais celles d’un collègue.
-      </li>
-      <li>
-        <strong>Gestionnaire locative</strong> — uniquement les demandes de gestion locative.
-      </li>
-    </ul>
-    <p class="small muted">
-      Ces règles sont appliquées par la base de données, pas par cette page. Elles sont couvertes
-      par des tests automatisés exécutés à chaque modification du code.
+    <section class="bo-card">
+      <div class="bo-card-head"><h2>Configuration technique</h2></div>
+      <p class="bo-card-intro">
+        À transmettre à la personne qui gère l’hébergement (Vercel). Chaque variable manquante
+        désactive la fonction indiquée, sans casser le reste du site.
+      </p>
+      <ul class="bo-check-list">
+        {
+          config.map((c) => (
+            <li>
+              <span class:list={['mark', c.done && 'done']}>{c.done ? '✓' : '!'}</span>
+              <div>
+                <strong>{c.label}</strong>
+                <span>{c.detail}</span>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+
+  <section class="bo-card">
+    <div class="bo-card-head"><h2>Informations à fournir avant la mise en ligne définitive</h2></div>
+    <p class="bo-card-intro">
+      Ces éléments ne figuraient pas sur l’ancien site et ne peuvent pas être inventés. Le site
+      public n’affiche rien à leur place ; ils apparaîtront dès qu’ils seront communiqués.
     </p>
+    <div class="missing">
+      {
+        Object.entries(MISSING_INFO).map(([section, items]) => (
+          <div>
+            <h3>{section}</h3>
+            <ul>
+              {items.map((i) => <li>{i}</li>)}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
   </section>
-</Admin>
+</AdminContenu>
 
 <style>
-  h1 {
-    margin-bottom: var(--space-m);
+  .two {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+    align-items: start;
   }
 
-  .table-wrap {
-    background: var(--surface);
+  .missing {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
   }
 
-  .message {
-    max-width: 24rem;
-    font-size: var(--step--1);
+  .missing h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
   }
 
-  .empty {
-    padding: var(--space-l);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-m);
-    text-align: center;
-    color: var(--ink-muted);
-  }
-
-  .hint {
-    margin-top: var(--space-xl);
-    padding: var(--space-m);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-m);
-  }
-
-  .hint h2 {
-    font-family: var(--font-body);
-    font-size: var(--step-0);
-    font-weight: 650;
-  }
-
-  .hint ul {
+  .missing ul {
+    margin: 0;
     padding-left: 1.1rem;
+    font-size: 13.5px;
+    color: #334155;
+  }
+
+  .missing li {
+    margin-bottom: 4px;
   }
 </style>

@@ -1,0 +1,204 @@
+---
+/**
+ * Édition d'une actualité : texte, auteur, publication, image de couverture.
+ *
+ * Le corps est au « format simple » (voir ~/lib/markdown.ts) : des paragraphes
+ * séparés par une ligne vide, des titres « ## », des listes « - », du gras
+ * « **texte** » et des liens « [texte](https://…) ». Rien d'autre n'est
+ * interprété : ce qui est saisi est une donnée, jamais du code.
+ */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import MediaUploader from '~/components/admin/MediaUploader.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { AdminDataError, adminDataReady, readAgents, type AdminAgent } from '~/lib/server/admin-data';
+import { deleteNews, readNewsById, updateNews, type AdminNews } from '~/lib/server/admin-news';
+import { publicUrl, readAssets } from '~/lib/server/admin-media';
+import { publishMessage, publishSite } from '~/lib/server/publish';
+import { newsCoverSpec } from '~/lib/media-schema';
+import { renderSimpleMarkdown } from '~/lib/markdown';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const id = String(Astro.params.id ?? '');
+if (!adminDataReady()) return Astro.redirect('/admin/actualites/', 302);
+
+let notice: { text: string; ok: boolean } | null = null;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const form = await Astro.request.formData();
+    const action = String(form.get('action') ?? 'save');
+    if (action === 'delete') {
+      await deleteNews(id);
+      await publishSite();
+      return Astro.redirect('/admin/actualites/', 303);
+    }
+    const title = String(form.get('title') ?? '').trim();
+    if (title.length < 3 || title.length > 160) throw new AdminDataError('Le titre doit faire entre 3 et 160 caractères.');
+    const excerpt = String(form.get('excerpt') ?? '').trim().slice(0, 400) || null;
+    const body = String(form.get('body') ?? '').replace(/\r\n/g, '\n').trim();
+    if (body.length > 30000) throw new AdminDataError('Le texte dépasse 30 000 caractères.');
+    const author = String(form.get('author_slug') ?? '').trim();
+    const publish = form.get('is_published') === '1';
+    const dateRaw = String(form.get('published_at') ?? '').trim();
+    const current = await readNewsById(id);
+    if (!current) throw new AdminDataError('Actualité inconnue.');
+    const publishedAt = dateRaw
+      ? new Date(`${dateRaw}T09:00:00`).toISOString()
+      : current.published_at ?? (publish ? new Date().toISOString() : null);
+
+    await updateNews(id, {
+      title,
+      excerpt,
+      body,
+      author_slug: /^[a-z0-9-]{2,80}$/.test(author) ? author : null,
+      is_published: publish,
+      published_at: publishedAt,
+      cover_key: `actu:${current.slug}`,
+    });
+    notice = { text: publishMessage(await publishSite()), ok: true };
+  } catch (error) {
+    notice = { text: error instanceof AdminDataError ? error.message : 'Enregistrement impossible.', ok: false };
+    if (error instanceof AdminDataError && error.internal) console.warn('[admin/actualites]', error.internal);
+  }
+}
+
+let item: AdminNews | null = null;
+let agents: AdminAgent[] = [];
+let cover: { preview: string | null; overridden: boolean; dims: string | null } = { preview: null, overridden: false, dims: null };
+try {
+  const [n, a, assets] = await Promise.all([readNewsById(id), readAgents(), readAssets()]);
+  item = n;
+  agents = a;
+  if (n) {
+    const asset = assets.get(`actu:${n.slug}`);
+    cover = {
+      preview: asset ? publicUrl(asset.storage_path) : null,
+      overridden: Boolean(asset),
+      dims: asset ? `${asset.width} × ${asset.height} px` : null,
+    };
+  }
+} catch (error) {
+  notice = notice ?? { text: error instanceof AdminDataError ? error.message : 'Lecture impossible.', ok: false };
+}
+
+if (!item) return Astro.redirect('/admin/actualites/', 302);
+
+const dateValue = item.published_at ? item.published_at.slice(0, 10) : '';
+const preview = renderSimpleMarkdown(item.body);
+---
+
+<AdminContenu title={item.title} section="actualites" heading={item.title} surtitle="Actualité">
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  <p class="bo-actions">
+    <a class="bo-btn bo-btn-ghost bo-btn-sm" href="/admin/actualites/">← Toutes les actualités</a>
+    {item.is_published && <a class="bo-btn bo-btn-ghost bo-btn-sm" href={`/actualites/${item.slug}/`} target="_blank" rel="noopener">Voir en ligne ↗</a>}
+    <span class:list={['bo-pill', item.is_published ? 'on' : 'off']}>{item.is_published ? 'Publié' : 'Brouillon'}</span>
+    <code class="slug">/actualites/{item.slug}/</code>
+  </p>
+
+  <div class="cols">
+    <form method="post" class="bo-card">
+      <input type="hidden" name="action" value="save" />
+      <p class="bo-f"><label for="title">Titre</label><input id="title" name="title" value={item.title} required minlength="3" maxlength="160" /></p>
+      <p class="bo-f">
+        <label for="excerpt">Résumé (liste et partage)</label>
+        <textarea id="excerpt" name="excerpt" rows="2" maxlength="400">{item.excerpt ?? ''}</textarea>
+        <span class="bo-hint">Une ou deux phrases. Affiché sur la liste des actualités et dans les aperçus des réseaux sociaux.</span>
+      </p>
+      <p class="bo-f">
+        <label for="body">Texte de l’article</label>
+        <textarea id="body" name="body" rows="18" maxlength="30000">{item.body}</textarea>
+        <span class="bo-hint">
+          Une ligne vide sépare deux paragraphes. « ## Titre » pour un sous-titre, « - » en début de ligne pour une liste,
+          « **mot** » pour du gras, « [texte](https://…) » pour un lien.
+        </span>
+      </p>
+      <div class="bo-grid3">
+        <p class="bo-f"><label for="author">Signé par</label>
+          <select id="author" name="author_slug"><option value="">L’agence</option>{agents.map((a) => <option value={a.slug} selected={a.slug === item!.author_slug}>{a.name}</option>)}</select>
+        </p>
+        <p class="bo-f"><label for="date">Date de publication</label><input id="date" name="published_at" type="date" value={dateValue} /><span class="bo-hint">Vide : la date du jour à la publication.</span></p>
+        <p class="bo-f check-cell"><label class="bo-check"><input type="checkbox" name="is_published" value="1" checked={item.is_published} /> <span>Publié sur le site</span></label></p>
+      </div>
+      <div class="bo-card-foot">
+        <span class="bo-hint">L’enregistrement relance la mise en ligne.</span>
+        <button class="bo-btn" type="submit">Enregistrer</button>
+      </div>
+    </form>
+
+    <div>
+      <section class="bo-card">
+        <div class="bo-card-head"><h2>Image de couverture</h2></div>
+        <MediaUploader spec={newsCoverSpec(item.slug)} preview={cover.preview} overridden={cover.overridden} dims={cover.dims} />
+      </section>
+      <section class="bo-card">
+        <div class="bo-card-head"><h2>Aperçu du texte</h2></div>
+        <div class="preview" set:html={preview || '<p class="bo-hint">Le texte apparaîtra ici après enregistrement.</p>'} />
+      </section>
+      <section class="bo-card danger">
+        <div class="bo-card-head"><h2>Supprimer</h2></div>
+        <p class="bo-hint">Définitif. L’adresse /actualites/{item.slug}/ renverra une page introuvable.</p>
+        <form method="post" data-confirm="Supprimer définitivement cette actualité ?">
+          <input type="hidden" name="action" value="delete" />
+          <button class="bo-btn bo-btn-danger bo-btn-sm" type="submit">Supprimer l’actualité</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</AdminContenu>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form[data-confirm]').forEach((f) => {
+    f.addEventListener('submit', (e) => {
+      if (!confirm(f.dataset.confirm ?? 'Confirmer ?')) e.preventDefault();
+    });
+  });
+</script>
+
+<style>
+  .slug {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .cols {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  @media (max-width: 1100px) {
+    .cols {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .check-cell {
+    display: flex;
+    align-items: center;
+    padding-top: 22px;
+  }
+
+  .preview {
+    font-size: 14.5px;
+    color: #334155;
+  }
+
+  .preview :global(h2),
+  .preview :global(h3) {
+    font-size: 16px;
+    margin: 14px 0 6px;
+    color: #0a1729;
+  }
+
+  .preview :global(p),
+  .preview :global(ul) {
+    margin: 0 0 10px;
+  }
+</style>

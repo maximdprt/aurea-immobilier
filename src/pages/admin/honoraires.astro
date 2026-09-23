@@ -1,0 +1,26 @@
+---
+/** Rubrique « Honoraires » : formulaire engendré depuis le registre `honoraires`. */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import BlocForm from '~/components/admin/BlocForm.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { groupPage } from '~/lib/server/admin-blocs';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const { blocks, notice, saved, loadError } = await groupPage(Astro.request, 'honoraires');
+---
+
+<AdminContenu
+  title="Honoraires"
+  section="honoraires"
+  heading="Barème des honoraires"
+  intro="Le barème affiché sur le site doit être identique à celui de la vitrine : c’est une obligation légale. Une ligne par prestation, colonnes séparées par « | ». Une section laissée vide affiche « communiqué sur simple demande »."
+>
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+  {blocks.map((b) => <BlocForm block={b} saved={saved[b.key] ?? null} />)}
+</AdminContenu>

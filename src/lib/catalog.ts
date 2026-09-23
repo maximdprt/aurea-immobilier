@@ -153,6 +153,10 @@ export const editorialMedia = (name: string): MediaVariant | null =>
 
 export const logoMedia = (): MediaVariant | null => (media['logo'] as MediaVariant) ?? null;
 
+/** Image de couverture d'une actualite, televersee depuis le back-office. */
+export const newsMedia = (slug: string): (MediaVariant & { og?: string }) | null =>
+  (media[`actu:${slug}`] as MediaVariant & { og?: string }) ?? null;
+
 export const defaultOgImage = (): string =>
   (media['og:default'] as string) ?? '/media/editorial/default-og.jpg';
 
@@ -224,48 +228,3 @@ export const catalogStats = () => ({
   archivedKnown: soldListings().length + archives.length,
   communes: communesWithPage().length,
 });
-
-/**
- * Phrase de presentation d'un conseiller pour les grilles d'equipe.
- *
- * Deux membres seulement ont redige la leur sur le site de l'agence ; elle est
- * alors reprise telle quelle. Pour les autres, on decrit la FONCTION — ce que
- * la personne fait dans l'agence — et le secteur reellement couvert d'apres le
- * catalogue. On n'ecrit jamais de parcours, de diplome ni d'annees
- * d'experience : ce sont des faits sur une personne reelle, ils ne
- * s'inventent pas.
- */
-export function agentIntro(agent: Agent): { text: string; sourced: boolean } {
-  if (agent.bio) return { text: agent.bio, sourced: true };
-
-  const byRole = /gestionnaire/i.test(agent.role)
-    ? 'Suit les locations de bout en bout : recherche du locataire, bail, états des lieux, encaissement des loyers et suivi des travaux.'
-    : /direct/i.test(agent.role)
-      ? 'Dirige l’agence et accompagne les projets de vente et d’acquisition sur le Mantois.'
-      : 'Accompagne vendeurs et acquéreurs sur le Mantois, de la première estimation à la signature chez le notaire.';
-
-  /*
-   * Le secteur se deduit des biens suivis, mais un seul bien ne fait pas un
-   * secteur : il donne la commune de ce bien, pas le territoire de la
-   * personne. Sous deux biens on se tait donc — la carte affiche deja
-   * « 1 bien suivi » juste en dessous. Plusieurs biens dans une meme commune
-   * restent un signal valable : c'est le nombre de biens qu'on exige, pas le
-   * nombre de communes.
-   */
-  const suivis = listingsByAgent(agent.slug);
-  const communes =
-    suivis.length < 2
-      ? []
-      : [...new Set(suivis.map((l) => l.commune).filter((c): c is string => Boolean(c)))];
-
-  // Les points de suspension tiennent lieu de ponctuation finale : « Andresy…. »
-  // avec les deux serait une faute.
-  const secteur =
-    communes.length === 0
-      ? ''
-      : communes.length > 3
-        ? ` Secteur : ${communes.slice(0, 3).join(', ')}…`
-        : ` Secteur : ${communes.join(', ')}.`;
-
-  return { text: byRole + secteur, sourced: false };
-}

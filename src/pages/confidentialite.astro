@@ -3,16 +3,19 @@
  * Politique de confidentialité — contenu du §21.2.
  *
  * Le tableau des traitements est le cœur du document : une ligne par finalité,
- * avec sa base légale et sa durée de conservation. Les durées proposées sont
- * celles du brief et doivent être validées par l'agence.
+ * avec sa base légale et sa durée de conservation. Les notes de recette
+ * (durées à confirmer, juriste) ne s'affichent qu'avec PUBLIC_RECETTE=1.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
-import Todo from '~/components/Todo.astro';
-import { COMPANY, CONTACT, REGULATED, isMissing } from '~/lib/site';
+import PageHeader from '~/components/PageHeader.astro';
+import { COMPANY, REGULATED, isMissing } from '~/lib/site';
+import { agency } from '~/lib/content';
 
-const LEGAL_VERSION = 1;
-const UPDATED = '21 septembre 2026';
+const recette = import.meta.env.PUBLIC_RECETTE === '1';
+const contact = agency();
+
+const LEGAL_VERSION = 2;
+const UPDATED = '23 septembre 2026';
 
 const treatments = [
   {
@@ -67,9 +70,10 @@ const treatments = [
 
 const processors = [
   ['Vercel Inc.', 'Hébergement du site', 'États-Unis', 'Data Privacy Framework UE–États-Unis et clauses contractuelles types'],
-  ['Supabase Inc.', 'Base de données et authentification', 'Union européenne (Paris)', 'Contrat de sous-traitance (DPA)'],
+  ['Supabase Inc.', 'Base de données, fichiers et authentification', 'Union européenne', 'Contrat de sous-traitance (DPA)'],
   ['Cloudflare', 'Protection anti-spam des formulaires (Turnstile)', 'Union européenne / États-Unis', 'Clauses contractuelles types'],
   ['Orisha Real Estate', 'Logiciel métier et diffusion des annonces', 'France', 'Contrat de sous-traitance'],
+  ['Service d’envoi d’emails transactionnels', 'Emails de confirmation et de notification', 'Union européenne / États-Unis', 'Clauses contractuelles types ; prestataire indiqué sur demande'],
 ];
 
 const crumbs = [
@@ -84,34 +88,40 @@ const crumbs = [
   path="/confidentialite/"
   crumbs={crumbs}
 >
-  <Breadcrumb crumbs={crumbs} />
+  <PageHeader
+    title="Politique de confidentialité"
+    lede="Quelles données nous collectons, pourquoi, combien de temps, et comment exercer vos droits."
+    crumbs={crumbs}
+    width="narrow"
+  >
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+  </PageHeader>
 
   <div class="wrap-narrow section prose">
-    <h1>Politique de confidentialité</h1>
-    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
-
-    <p class="notice">
-      <strong>À faire valider par un juriste avant publication.</strong> Les durées de conservation
-      proposées ci-dessous doivent en outre être confirmées par l’agence.
-    </p>
+    {
+      recette && (
+        <p class="notice">
+          <strong>À faire valider par un juriste avant publication.</strong> Les durées de
+          conservation proposées ci-dessous doivent en outre être confirmées par l’agence, et le
+          contact RGPD doit être une adresse professionnelle.
+        </p>
+      )
+    }
 
     <h2>1. Responsable de traitement</h2>
     <p>
-      {COMPANY.legalName}, {CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}.
+      {COMPANY.legalName}, {contact.street}, {contact.postalCode} {contact.city}.
     </p>
     <p>
-      Pour toute question relative à vos données personnelles ou pour exercer vos droits :{' '}
+      Pour toute question relative à vos données personnelles ou pour exercer vos droits, écrivez à{' '}
       {
         isMissing(REGULATED.dpoEmail) ? (
-          <Todo label="adresse email professionnelle dédiée, de type rgpd@aurea-immobilier.fr" />
+          <a href={`mailto:${contact.email}`}>{contact.email}</a>
         ) : (
-          REGULATED.dpoEmail
+          <a href={`mailto:${REGULATED.dpoEmail}`}>{REGULATED.dpoEmail}</a>
         )
-      }
-    </p>
-    <p class="small muted">
-      Le site actuel indique une adresse personnelle chez un fournisseur grand public comme contact
-      RGPD. Elle doit être remplacée par une adresse professionnelle avant la mise en ligne.
+      }{' '}
+      ou par courrier à l’adresse ci-dessus.
     </p>
 
     <h2>2. Traitements réalisés</h2>
@@ -140,9 +150,6 @@ const crumbs = [
         </tbody>
       </table>
     </div>
-    <p class="small muted">
-      Durées à valider par l’agence : <Todo label="validation des durées de conservation" />
-    </p>
 
     <h2>3. Destinataires</h2>
     <p>
@@ -177,22 +184,16 @@ const crumbs = [
               </tr>
             ))
           }
-          <tr>
-            <th scope="row"><Todo label="service d’emailing transactionnel" /></th>
-            <td>Envoi des emails de confirmation et de notification</td>
-            <td><Todo label="localisation" /></td>
-            <td><Todo label="garanties" /></td>
-          </tr>
         </tbody>
       </table>
     </div>
 
     <h2>5. Transferts hors Union européenne</h2>
     <p>
-      La base de données et les fichiers sont hébergés dans l’Union européenne, en France. Le site
-      lui-même est distribué par un hébergeur dont le siège est aux États-Unis ; les transferts
-      éventuels sont encadrés par le Data Privacy Framework UE–États-Unis ou par des clauses
-      contractuelles types de la Commission européenne.
+      La base de données et les fichiers sont hébergés dans l’Union européenne. Le site lui-même
+      est distribué par un hébergeur dont le siège est aux États-Unis ; les transferts éventuels
+      sont encadrés par le Data Privacy Framework UE–États-Unis ou par des clauses contractuelles
+      types de la Commission européenne.
     </p>
 
     <h2>6. Sécurité</h2>
@@ -245,3 +246,17 @@ const crumbs = [
     </p>
   </div>
 </Base>
+
+<style>
+  .updated {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+  }
+
+  .table-wrap {
+    margin-block: var(--space-m);
+  }
+</style>

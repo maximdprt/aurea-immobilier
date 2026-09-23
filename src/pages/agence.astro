@@ -1,45 +1,50 @@
 ---
 /**
- * L'agence. Reprend et reecrit le contenu de /content/5/notre-agence.html.
- * Les fautes de l'original (« Fière de notre métier », « tout à chacun »,
- * « aux services de tous ») sont corrigees, le texte n'est pas recopie (§4).
+ * Notre agence : qui nous sommes, ce que nous nous engageons a faire, qui
+ * vous recevra, et ou nous trouver. Tous les textes viennent du registre
+ * `page.agence.*`, modifiables dans le back-office.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
 import Picture from '~/components/Picture.astro';
-import Todo from '~/components/Todo.astro';
+import Icon from '~/components/Icon.astro';
+import AgentCard from '~/components/AgentCard.astro';
 import PhoneReel from '~/components/PhoneReel.astro';
-import {
-  agentBySlug,
-  agentIntro,
-  agentMedia,
-  allAgents,
-  catalogStats,
-  editorialMedia,
-  logoMedia,
-} from '~/lib/catalog';
-import { toE164 } from '~/lib/format';
-import { COMPANY, CONTACT, MAP_EMBED_URL, SOCIAL } from '~/lib/site';
+import CtaBand from '~/components/CtaBand.astro';
+import { agentBySlug, agentMedia, allAgents, catalogStats, editorialMedia, logoMedia } from '~/lib/catalog';
+import { COMPANY, MAP_EMBED_URL, REGULATED, SOCIAL } from '~/lib/site';
+import { agency, field, fieldPairs, paragraphs } from '~/lib/content';
 
 const stats = catalogStats();
 const facade = editorialMedia('agence');
+const vitrine = editorialMedia('vitrine') ?? facade;
 const logo = logoMedia();
+const contact = agency();
+
 /**
- * Metiers partenaires annonces par l'agence sur l'ancienne page « Notre agence » :
- * « nos courtiers, nos architectes, nos diagnostiqueurs, nos geometres, nos
- * paysagistes sont la, a vos cotes ». Les METIERS sont donc sources ; les NOMS
- * ne le sont pas et restent a fournir.
+ * Metiers partenaires annonces par l'agence sur son ancienne page « Notre
+ * agence ». Les METIERS sont sources ; les noms des partenaires ne le sont
+ * pas et ne sont donc pas affiches.
  */
 const PARTNER_TRADES = [
-  'Courtiers en financement',
-  'Architectes',
-  'Diagnostiqueurs',
-  'Géomètres',
-  'Paysagistes',
-];
+  ['Courtiers en financement', 'euro'],
+  ['Notaires', 'file'],
+  ['Diagnostiqueurs', 'leaf'],
+  ['Architectes', 'building'],
+  ['Géomètres', 'compass'],
+  ['Paysagistes', 'garden'],
+] as const;
+
+const ENGAGEMENT_ICONS = ['chart', 'camera', 'handshake', 'shield', 'star'] as const;
+const engagements = fieldPairs('page.agence', 'engagements');
+const histoire = paragraphs(field('page.agence', 'histoire'));
+
+const direction = [agentBySlug('helene-vermeire-benz'), agentBySlug('vincent-maume')].filter(
+  (a): a is NonNullable<typeof a> => Boolean(a)
+);
+const team = allAgents();
 const instagram = SOCIAL.find((s) => s.label === 'Instagram');
-const helene = agentBySlug('helene-vermeire-benz');
-const vincent = agentBySlug('vincent-maume');
+const recette = import.meta.env.PUBLIC_RECETTE === '1';
 
 const crumbs = [
   { label: 'Accueil', href: '/' },
@@ -49,284 +54,632 @@ const crumbs = [
 
 <Base
   title="AUREA Immobilier, agence indépendante à Mantes-la-Jolie"
-  description="Une agence immobilière indépendante créée en 2024 à Mantes-la-Jolie : même exigence pour un studio que pour une grande maison, et un réseau de partenaires locaux."
+  description="Agence immobilière indépendante créée en 2024 à Mantes-la-Jolie : la même exigence pour un studio que pour une maison, neuf conseillers joignables en direct."
   path="/agence/"
   crumbs={crumbs}
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Notre agence</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader
+    title={field('page.agence', 'titre')}
+    crumbs={crumbs}
+    kicker="Notre agence"
+    lede={field('page.agence', 'chapo')}
+    image={facade}
+    imageAlt="L’intérieur de l’agence AUREA Immobilier, 44 rue Nationale à Mantes-la-Jolie"
+  >
+    <p class="cluster">
+      <a class="btn btn-navy" href="/equipe/">Rencontrer l’équipe</a>
+      <a class="btn btn-outline" href="/contact/">Nous contacter</a>
+    </p>
+  </PageHeader>
 
-  <div class="wrap section">
-    <header class="head">
-      <p class="lede">
-        « {COMPANY.tagline} ». Une agence indépendante installée au cœur de Mantes-la-Jolie, qui
-        applique le même niveau de service à un studio de 15 m² qu’à une propriété de 1 000 m².
-      </p>
-    </header>
-
-    <Picture
-      media={facade}
-      alt="Les bureaux d'AUREA Immobilier, 44 rue Nationale à Mantes-la-Jolie"
-      sizes="(min-width: 64rem) 72rem, 100vw"
-      class="facade"
-      priority
-    />
-
-    <div class="columns">
+  <!-- Histoire -->
+  <section class="section">
+    <div class="wrap histoire">
       <div class="prose">
-        <h2>Notre histoire</h2>
-        <p>
-          AUREA Immobilier a ouvert ses portes en août&nbsp;2024, 44 rue Nationale à
-          Mantes-la-Jolie. Depuis, {stats.archivedTotal} biens ont été vendus ou loués par
-          l’équipe, dans le Mantois et jusqu’aux communes voisines du Val-d’Oise et de l’Eure.
-        </p>
-        <p>
-          Le nom vient du latin <i lang="la">aurea</i>, « dorée ». Il dit ce que nous cherchons à
-          apporter : une qualité d’exécution constante, quel que soit le montant de la transaction.
-          Une maison, un appartement, c’est un foyer et des projets de vie — pas une ligne dans un
-          fichier.
-        </p>
+        <p class="kicker">Notre histoire</p>
+        <h2>Une agence créée en 2024, pour faire les choses autrement</h2>
+        {histoire.map((par) => <p>{par}</p>)}
+        <p class="signature">« {field('site.identite', 'slogan')} »</p>
+      </div>
+      <dl class="stats side-stats">
+        <div>
+          <dd>2024</dd>
+          <dt>création de l’agence, 44 rue Nationale</dt>
+        </div>
+        <div>
+          <dd>{stats.archivedTotal}</dd>
+          <dt>biens vendus ou loués depuis l’ouverture</dt>
+        </div>
+        <div>
+          <dd>{stats.communes}</dd>
+          <dt>communes où nous avons déjà accompagné une transaction</dt>
+        </div>
+        <div>
+          <dd>{team.length}</dd>
+          <dt>conseillers, chacun avec sa ligne directe</dt>
+        </div>
+      </dl>
+    </div>
+  </section>
 
-        <h2>Ce qui nous distingue</h2>
-        <ul>
-          <li>
-            <strong>Une estimation argumentée</strong> — quatre méthodes croisées, et l’explication
-            de ce qui fait le prix.
-          </li>
-          <li>
-            <strong>Une présentation soignée</strong> — reportage photo professionnel, visite
-            virtuelle, vidéo par drone selon le bien.
-          </li>
-          <li>
-            <strong>Un réseau intégré</strong> — courtiers, notaires, diagnostiqueurs, architectes,
-            géomètres et paysagistes, tous du secteur.
-          </li>
-          <li>
-            <strong>Une assistance juridique</strong> — sur les points de droit qui retardent ou
-            font échouer une vente.
-          </li>
-          <li>
-            <strong>Une forte part de mandats exclusifs</strong> — la confiance de nos vendeurs nous
-            permet d’engager tous nos moyens sur chaque bien.
-          </li>
-        </ul>
+  <!-- Engagements -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Nos engagements</p>
+          <h2>Ce que vous pouvez attendre de nous</h2>
+        </div>
+        <p><a class="link-arrow" href="/vendre/">Notre méthode de vente</a></p>
+      </div>
+      <ul class="engagements">
+        {
+          engagements.map(([title, text], i) => (
+            <li>
+              <span class="icon-pill">
+                <Icon name={ENGAGEMENT_ICONS[i % ENGAGEMENT_ICONS.length]} />
+              </span>
+              <h3>{title}</h3>
+              {text && <p>{text}</p>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 
-        <h2 class="main-title">Notre équipe</h2>
-        <p class="equipe-intro">
-          Une dizaine de personnes, un seul interlocuteur par projet. Chacun a sa ligne directe :
-          vous n’aurez pas à réexpliquer votre dossier.
-        </p>
-        <ul class="membres_equipe">
-          {
-            allAgents().map((a) => {
-              const intro = agentIntro(a);
-              return (
-                <li class="membre_equipe">
-                  <a class="portrait" href={`/equipe/${a.slug}/`} tabindex="-1" aria-hidden="true">
-                    <Picture
-                      media={agentMedia(a.slug)}
-                      alt=""
-                      sizes="(min-width: 600px) 190px, 40vw"
-                    />
-                  </a>
-                  <div class="membre_equipe_details">
-                    <h3><a href={`/equipe/${a.slug}/`}>{a.name}</a></h3>
-                    <p class="role">{a.role}</p>
-                    <p class="intro">{intro.text}</p>
-                    {toE164(a.phone) && (
-                      <p class="tel">
-                        <a href={`tel:${toE164(a.phone)}`}>{a.phone}</a>
-                      </p>
-                    )}
-                  </div>
-                </li>
-              );
-            })
-          }
-        </ul>
-        <p class="small muted">
-          <Todo label="présentation rédigée par chaque conseiller — seuls Hélène Vermeire Benz et Vincent Maume en ont publié une" />
-        </p>
+  <!-- Direction -->
+  {
+    direction.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="kicker">La direction</p>
+              <h2>Deux fondateurs, une même exigence</h2>
+            </div>
+          </div>
+          <ul class="direction">
+            {direction.map((a) => (
+              <li class="founder">
+                <a class="founder-photo" href={`/equipe/${a.slug}/`} tabindex="-1" aria-hidden="true">
+                  <Picture media={agentMedia(a.slug)} alt="" sizes="(min-width: 48rem) 16rem, 40vw" aspect="4 / 5" />
+                </a>
+                <div class="founder-text">
+                  <h3>
+                    <a href={`/equipe/${a.slug}/`}>{a.name}</a>
+                  </h3>
+                  <p class="role">{a.role}</p>
+                  {a.bio && (
+                    <blockquote>
+                      {a.bio.split(/\n{2,}/).map((par) => (
+                        <p>{par}</p>
+                      ))}
+                    </blockquote>
+                  )}
+                  <p>
+                    <a class="link-arrow" href={`/equipe/${a.slug}/`}>
+                      Sa page et ses biens
+                    </a>
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
-        <h2 class="main-title">Nous trouver</h2>
-        <div class="plan_agence facade" data-map-facade>
+  <!-- Equipe -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">L’équipe</p>
+          <h2>Les personnes que vous allez rencontrer</h2>
+          <p class="lede">{field('page.agence', 'equipe_intro')}</p>
+        </div>
+        <p><a class="link-arrow" href="/equipe/">Toute l’équipe en détail</a></p>
+      </div>
+      <ul class="team-grid">
+        {team.map((a) => <li><AgentCard agent={a} sizes="(min-width: 64rem) 14rem, 45vw" /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Nous trouver -->
+  <section class="section">
+    <div class="wrap trouver">
+      <div>
+        <p class="kicker">Nous trouver</p>
+        <h2>Au cœur de Mantes-la-Jolie</h2>
+        <address class="coords">
           <p>
-            <strong>Plan d’accès</strong>
-            <br />
-            <span class="small muted">
-              La carte Google n’est chargée qu’après votre clic : aucun traceur tiers n’est
-              déposé à l’ouverture de la page.
+            <Icon name="pin" size={20} />
+            <span>
+              <strong>{COMPANY.name}</strong><br />
+              {contact.street}<br />
+              {contact.postalCode} {contact.city}
             </span>
           </p>
-          <button type="button" class="btn btn-navy" data-load-map={MAP_EMBED_URL}>
-            Afficher la carte
-          </button>
-        </div>
-
-        <h2>Nous suivre</h2>
-        <div class="reel-block">
-          <PhoneReel
-            poster={facade}
-            alt="L’équipe d’AUREA Immobilier dans les bureaux de l’agence"
-            href={instagram?.url}
-            place={`${CONTACT.street}, ${CONTACT.city.toUpperCase()}`}
-            watermark={logo}
-            caption="L’équipe au complet, 44 rue Nationale. La vidéo s’ouvre sur notre compte : rien n’est chargé avant votre clic."
-          />
-          <div class="reel-text">
-            <p>
-              Nous publions les nouveautés, les coulisses des visites et les ventes conclues sur
-              nos deux comptes. C’est le moyen le plus rapide de voir un bien avant sa mise en
-              ligne.
-            </p>
-            <ul class="social-list">
-              {
-                SOCIAL.map((s) => (
-                  <li>
-                    <a href={s.url} rel="me noopener" target="_blank">
-                      {s.label} <span class="muted">{s.handle}</span>
-                      <span class="visually-hidden"> (nouvel onglet)</span>
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-            <p class="small muted">
-              <Todo label="fichier MP4 vertical de la vidéo d’équipe, pour la lire sur le site sans passer par Instagram" />
-            </p>
-          </div>
-        </div>
-
-        <h2>Nos partenaires</h2>
-        <p>
-          L’immobilier rassemble une multitude de métiers. Plutôt que de vous renvoyer vers des
-          interlocuteurs que nous ne connaissons pas, nous les réunissons autour de l’agence :
-        </p>
-        <ul class="partners">
-          {PARTNER_TRADES.map((t) => <li>{t}</li>)}
+          <p>
+            <Icon name="phone" size={20} />
+            <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>
+          </p>
+          <p>
+            <Icon name="mail" size={20} />
+            <a href={`mailto:${contact.email}`}>{contact.email}</a>
+          </p>
+        </address>
+        <h3 class="hours-title"><Icon name="clock" size={18} /> Horaires d’ouverture</h3>
+        <ul class="hours">
+          {contact.hours.map((h) => <li>{h}</li>)}
         </ul>
-        <p class="notice">
-          <Todo label="noms des partenaires de chaque métier et leur accord écrit pour figurer sur le site" />
-          <br />
-          Les métiers ci-dessus sont ceux que l’agence annonce déjà. Les nommer individuellement
-          est un levier de référencement local réel, mais suppose leur accord.
+        <p class="cluster">
+          <a class="btn btn-navy" href="/contact/">Prendre rendez-vous</a>
         </p>
       </div>
 
-      <aside class="side">
-        <div class="panel">
-          <h2>La direction</h2>
+      <div class="map-col">
+        <div class="map-facade" data-map-facade>
+          {vitrine && <Picture media={vitrine} alt="" aspect="4 / 3" sizes="(min-width: 64rem) 34rem, 92vw" class="map-photo" />}
+          <div class="map-overlay">
+            <p class="small">
+              La carte Google n’est chargée qu’après votre clic : aucun traceur tiers n’est déposé
+              à l’ouverture de la page.
+            </p>
+            <button type="button" class="btn btn-light" data-load-map={MAP_EMBED_URL}>
+              <Icon name="pin" size={18} /> Afficher le plan d’accès
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partenaires -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Nos partenaires</p>
+          <h2>Les métiers réunis autour de votre projet</h2>
+          <p class="lede">{field('page.agence', 'partenaires_intro')}</p>
+        </div>
+      </div>
+      <ul class="partners">
+        {
+          PARTNER_TRADES.map(([trade, icon]) => (
+            <li>
+              <span class="icon-pill icon-pill-navy"><Icon name={icon} size={20} /></span>
+              <span>{trade}</span>
+            </li>
+          ))
+        }
+      </ul>
+      {
+        recette && (
+          <p class="notice">
+            Recette : les noms des partenaires et leur accord écrit restent à fournir avant de les
+            citer nommément.
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Reseaux -->
+  <section class="section">
+    <div class="wrap reseaux">
+      <PhoneReel
+        poster={facade}
+        alt="L’équipe d’AUREA Immobilier dans les bureaux de l’agence"
+        href={instagram?.url}
+        place={`${contact.street}, ${contact.city.toUpperCase()}`}
+        watermark={logo}
+        caption="La vidéo s’ouvre sur notre compte : rien n’est chargé avant votre clic."
+      />
+      <div class="reseaux-text">
+        <p class="kicker">Nous suivre</p>
+        <h2>Les nouveautés avant leur mise en ligne</h2>
+        <p>
+          Nous publions les nouveaux biens, les coulisses des visites et les ventes conclues sur
+          nos deux comptes. C’est le moyen le plus rapide de voir un bien avant qu’il n’apparaisse
+          sur les portails.
+        </p>
+        <ul class="social-list">
           {
-            [helene, vincent].filter(Boolean).map((a) => (
-              <div class="founder">
-                <Picture
-                  media={agentMedia(a!.slug)}
-                  alt={`Portrait de ${a!.name}`}
-                  sizes="64px"
-                  class="founder-photo"
-                />
-                <div>
-                  <p class="name"><a href={`/equipe/${a!.slug}/`}>{a!.name}</a></p>
-                  <p class="small muted">{a!.role}</p>
-                </div>
-              </div>
+            SOCIAL.map((s) => (
+              <li>
+                <a href={s.url} rel="me noopener" target="_blank" class="btn btn-outline">
+                  <Icon name={s.label === 'Instagram' ? 'instagram' : 'tiktok'} size={18} />
+                  {s.label} <span class="muted">{s.handle}</span>
+                  <span class="visually-hidden"> (nouvel onglet)</span>
+                </a>
+              </li>
             ))
           }
-          <p class="small"><a href="/equipe/">Voir toute l’équipe</a></p>
-        </div>
-
-        <div class="panel">
-          <h2>Informations</h2>
-          <dl class="legal">
-            <div><dt>Raison sociale</dt><dd>{COMPANY.legalName}</dd></div>
-            <div><dt>Forme</dt><dd>{COMPANY.legalForm} au capital de {COMPANY.capital}</dd></div>
-            <div><dt>SIRET</dt><dd>{COMPANY.siret}</dd></div>
-            <div><dt>RCS</dt><dd>{COMPANY.rcs} — {COMPANY.rcsCity}</dd></div>
-            <div><dt>TVA</dt><dd>{COMPANY.vatId}</dd></div>
-            <div><dt>Adresse</dt><dd>{CONTACT.street}, {CONTACT.postalCode} {CONTACT.city}</dd></div>
-            <div>
-              <dt>Carte professionnelle</dt>
-              <dd><Todo label="numéro CPI et CCI émettrice" /></dd>
-            </div>
-          </dl>
-          <p class="small"><a href="/mentions-legales/">Mentions légales complètes</a></p>
-        </div>
-      </aside>
+        </ul>
+        <p>
+          <a class="link-arrow" href="/alerte/">Ou recevez les nouveautés par email</a>
+        </p>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Informations legales -->
+  <section class="section-tight section-alt">
+    <div class="wrap">
+      <details class="legal-box">
+        <summary>
+          <span><Icon name="shield" size={18} /> Informations légales et professionnelles</span>
+          <Icon name="chevron" size={18} class="chev" />
+        </summary>
+        <dl class="legal">
+          <div><dt>Raison sociale</dt><dd>{COMPANY.legalName}, {COMPANY.legalForm} au capital de {COMPANY.capital}</dd></div>
+          <div><dt>SIRET</dt><dd>{COMPANY.siret}</dd></div>
+          <div><dt>RCS</dt><dd>{COMPANY.rcs} — {COMPANY.rcsCity}</dd></div>
+          <div><dt>TVA intracommunautaire</dt><dd>{COMPANY.vatId}</dd></div>
+          <div><dt>Carte professionnelle</dt><dd>{REGULATED.cpiNumber}, délivrée par la {REGULATED.cpiIssuer}</dd></div>
+          <div><dt>Assurance RCP</dt><dd>{REGULATED.insurer}, police n° {REGULATED.insurancePolicy}</dd></div>
+          <div><dt>Siège</dt><dd>{contact.street}, {contact.postalCode} {contact.city}</dd></div>
+        </dl>
+        <p class="small">
+          <a href="/mentions-legales/">Mentions légales complètes</a> · <a href="/honoraires/">Barème des honoraires</a>
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <CtaBand />
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-m);
-  }
-
-  .facade :global(img) {
-    border-radius: var(--radius-l);
-    aspect-ratio: 16 / 7;
-    object-fit: cover;
-    width: 100%;
-    margin-bottom: var(--space-l);
-  }
-
-  .columns {
+  /* --- Histoire ------------------------------------------------------------ */
+  .histoire {
     display: grid;
     gap: var(--space-xl);
+    align-items: start;
   }
 
-  .side .panel + .panel {
+  @media (min-width: 64rem) {
+    .histoire {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+  }
+
+  .signature {
     margin-top: var(--space-m);
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--gold-700);
   }
 
-  .side h2 {
-    font-family: var(--font-body);
-    font-size: var(--step-1);
+  .side-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s);
+  }
+
+  .side-stats div {
+    padding: var(--space-m);
+    background: var(--sand-50);
+    border: 1px solid var(--sand-100);
+    border-radius: var(--radius-m);
+  }
+
+  /* --- Engagements --------------------------------------------------------- */
+  .engagements {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .engagements li {
+    padding: 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .engagements h3 {
+    margin: 1rem 0 0.4rem;
+    font-size: 1.05rem;
+  }
+
+  .engagements p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  /* --- Direction ------------------------------------------------------------ */
+  .direction {
+    display: grid;
+    gap: var(--space-l);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .direction {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .founder {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2xs);
-    padding-block: var(--space-2xs);
+    display: grid;
+    gap: var(--space-m);
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
   }
 
-  .founder :global(.founder-photo img) {
-    width: 3.25rem;
-    height: 3.25rem;
+  @media (min-width: 40rem) {
+    .founder {
+      grid-template-columns: 11rem minmax(0, 1fr);
+    }
+  }
+
+  .founder-photo :global(img) {
     border-radius: var(--radius-s);
-    object-fit: cover;
+    object-position: center top;
   }
 
-  .founder .name {
-    margin: 0;
-    font-weight: 650;
+  .founder h3 {
+    margin: 0 0 0.15rem;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
   }
 
-  .founder .name a {
-    color: var(--ink);
+  .founder h3 a {
+    color: var(--navy-900);
     text-decoration: none;
   }
 
-  .founder p {
+  .founder .role {
+    margin: 0 0 var(--space-s);
+    color: var(--gold-700);
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+
+  .founder blockquote {
+    margin: 0 0 var(--space-s);
+    padding-left: var(--space-s);
+    border-left: 3px solid var(--gold-300);
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  .founder blockquote p {
+    margin: 0 0 0.6rem;
+  }
+
+  .founder-text > p:last-child {
     margin: 0;
+  }
+
+  /* --- Equipe --------------------------------------------------------------- */
+  .team-grid {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* --- Nous trouver --------------------------------------------------------- */
+  .trouver {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    .trouver {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    }
+  }
+
+  .coords {
+    font-style: normal;
+    margin-bottom: var(--space-m);
+  }
+
+  .coords p {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin: 0 0 0.75rem;
+  }
+
+  .coords svg {
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--gold-600);
+  }
+
+  .coords a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .hours-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--step-0);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .hours {
+    list-style: none;
+    margin: 0 0 var(--space-m);
+    padding: 0;
+    color: var(--ink-soft);
+  }
+
+  .hours li {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .map-facade {
+    position: relative;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    background: var(--navy-900);
+    aspect-ratio: 4 / 3;
+  }
+
+  .map-facade :global(.map-photo),
+  .map-facade :global(.map-photo img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .map-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    text-align: center;
+    background: rgb(0 19 42 / 0.6);
+    color: #fff;
+  }
+
+  .map-overlay p {
+    margin: 0;
+    max-width: 34ch;
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  .map-overlay .btn {
+    justify-self: center;
+  }
+
+  .map-facade :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* --- Partenaires ---------------------------------------------------------- */
+  .partners {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .partners li {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    font-weight: 600;
+    color: var(--navy-900);
+  }
+
+  .partners .icon-pill {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .notice {
+    margin-top: var(--space-m);
+  }
+
+  /* --- Reseaux -------------------------------------------------------------- */
+  .reseaux {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .reseaux {
+      grid-template-columns: auto 1fr;
+    }
+  }
+
+  .reseaux-text p {
+    color: var(--ink-soft);
+  }
+
+  .social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    list-style: none;
+    margin: var(--space-s) 0 var(--space-m);
+    padding: 0;
+  }
+
+  /* --- Legal ---------------------------------------------------------------- */
+  .legal-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .legal-box summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    font-weight: 600;
+    color: var(--navy-900);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .legal-box summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .legal-box summary span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .legal-box summary :global(.chev) {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .legal-box[open] summary :global(.chev) {
+    transform: rotate(180deg);
   }
 
   .legal {
     margin: 0;
+    padding: 0 1.2rem;
     font-size: var(--step--1);
   }
 
   .legal > div {
     display: grid;
-    grid-template-columns: 9rem 1fr;
+    grid-template-columns: minmax(9rem, 14rem) 1fr;
     gap: var(--space-2xs);
-    padding-block: 0.3rem;
-    border-bottom: 1px solid var(--line);
+    padding-block: 0.5rem;
+    border-top: 1px solid var(--line);
   }
 
   .legal dt {
@@ -337,215 +690,9 @@ const crumbs = [
     margin: 0;
   }
 
-  @media (min-width: 64rem) {
-    .columns {
-      grid-template-columns: minmax(0, 1fr) 22rem;
-      align-items: start;
-    }
-  }
-
-  .reel-block {
-    display: grid;
-    gap: var(--space-l);
-    align-items: center;
-    margin-block: var(--space-m) var(--space-l);
-  }
-
-  @media (min-width: 720px) {
-    .reel-block {
-      grid-template-columns: auto 1fr;
-    }
-  }
-
-  .reel-text > * + * {
-    margin-top: var(--space-s);
-  }
-
-  .social-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs) var(--space-m);
-    list-style: none;
+  .legal-box > p {
     margin: 0;
-    padding: 0;
-  }
-
-  .social-list a {
-    display: inline-block;
-    padding-block: var(--space-3xs);
-    font-weight: 600;
-  }
-
-  .partners {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs);
-    list-style: none;
-    margin: 0 0 var(--space-s);
-    padding: 0;
-  }
-
-  .partners li {
-    padding: var(--space-3xs) var(--space-xs);
-    border: 1px solid var(--gold-200);
-    border-radius: var(--radius-pill);
-    background: var(--gold-50);
-    font-size: var(--step--1);
-  }
-
-  /* --- Grille de l'equipe ------------------------------------------------
-     Cartes horizontales : le portrait a gauche, le texte a droite. La carte
-     s'etale donc dans la largeur, ce qui laisse la place a la presentation
-     sans etirer la colonne vers le bas. Deux cartes par rangee sur grand
-     ecran, une seule en dessous de 1100 px. */
-  .equipe-intro {
-    max-width: 62ch;
-    margin-bottom: var(--space-l);
-  }
-
-  .membres_equipe {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-    list-style: none;
-    margin: 0 0 var(--space-s);
-    padding: 0;
-  }
-
-  @media (min-width: 1100px) {
-    .membres_equipe {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .membre_equipe {
-    display: grid;
-    grid-template-columns: 190px 1fr;
-    /* 190 / 0,8 : la carte ne descend jamais sous le rapport 4:5 du
-       portrait, qui ne peut donc pas s'ecraser. */
-    min-height: 238px;
-    background-color: #ffffff;
-    box-shadow: 0 3px 15px rgb(0 0 0 / 16%);
-    transition: all 0.3s ease;
-  }
-
-  .membre_equipe:hover {
-    box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
-  }
-
-  .portrait {
-    display: block;
-    overflow: hidden;
-    align-self: stretch;
-  }
-
-  .portrait :global(picture),
-  .portrait :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Si la carte s'allonge, on rogne par le bas : le visage est cadre dans
-       le haut de l'image, il doit rester entier. */
-    object-position: center top;
-    transition: transform 0.3s ease;
-  }
-
-  .membre_equipe:hover .portrait :global(img) {
-    transform: scale(1.03);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .membre_equipe:hover .portrait :global(img) {
-      transform: none;
-    }
-  }
-
-  .membre_equipe_details {
-    display: flex;
-    flex-direction: column;
-    padding: 20px 22px;
-    min-width: 0;
-  }
-
-  .membre_equipe_details h3 {
-    color: var(--color-1);
-    font-weight: 700;
-    font-size: 21px;
-    margin: 0 0 2px;
-  }
-
-  .membre_equipe_details h3 a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .membre_equipe_details h3 a:hover {
-    text-decoration: underline;
-  }
-
-  .membre_equipe_details .role {
-    color: var(--color-2-darken);
-    font-weight: 700;
-    font-size: 16px;
-    margin: 0 0 10px;
-  }
-
-  .membre_equipe_details .intro {
-    flex: 1;
-    margin: 0 0 12px;
-    font-size: 14.5px;
-    line-height: 1.55;
-    color: var(--ink-soft);
-  }
-
-  .membre_equipe_details .tel {
-    margin: 0;
-    padding-top: 10px;
-    border-top: 1px solid var(--line);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .membre_equipe_details .tel a {
-    color: var(--color-1);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .membre_equipe_details .tel a:hover {
-    text-decoration: underline;
-  }
-
-  @media (max-width: 480px) {
-    .membre_equipe {
-      grid-template-columns: 130px 1fr;
-      min-height: 163px;
-    }
-
-    .membre_equipe_details {
-      padding: 16px;
-    }
-  }
-
-  .plan_agence {
-    display: grid;
-    gap: var(--space-s);
-    place-items: center;
-    text-align: center;
-    padding: var(--space-l) var(--space-m);
-    background: var(--canvas-alt);
-    border: 1px dashed var(--line-strong);
-    margin-bottom: var(--space-xl);
-  }
-
-  .plan_agence p {
-    margin: 0;
-  }
-
-  .plan_agence iframe {
-    width: 100%;
-    height: 400px;
-    border: 0;
+    padding: 0.75rem 1.2rem 1rem;
   }
 </style>
 

@@ -1,31 +1,31 @@
 ---
 /**
- * Plan du site.
+ * Plan du site : toutes les pages publiées, par rubrique.
  *
- * Sert aussi de tableau de bord de recette : il expose l'inventaire réel du
- * catalogue, l'état de la reprise du scraping, et la liste des informations
- * qui manquent encore (§19). Rien n'est caché à l'agence.
+ * L'inventaire de recette (état de la reprise, informations manquantes) qui
+ * vivait ici a migré dans le tableau de bord du back-office : un visiteur n'a
+ * pas à le voir.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
 import { getCollection } from 'astro:content';
-import {
-  activeListings,
-  allAgents,
-  allCommunes,
-  catalogStats,
-  communesWithPage,
-  findDuplicates,
-} from '~/lib/catalog';
-import { MISSING_INFO, NAV, FOOTER_LEGAL } from '~/lib/site';
-import report from '~/data/scraping-report.json';
-import redirects from '~/data/redirects.json';
+import { activeListings, allAgents, communesWithPage } from '~/lib/catalog';
+import { NAV, FOOTER_LEGAL, FOOTER_SERVICES } from '~/lib/site';
+import { allNews } from '~/lib/news';
+import { listingHeading } from '~/lib/format';
 
-const stats = catalogStats();
 const communes = communesWithPage();
 const agents = allAgents();
 const guides = await getCollection('guides', ({ data }) => !data.draft);
-const duplicates = findDuplicates();
+const news = allNews();
+
+const main = NAV.flatMap((n) => (n.children ? n.children.map((c) => ({ href: c.href, label: c.label })) : [n]));
+const seen = new Set<string>();
+const mainLinks = [...main, ...FOOTER_SERVICES, { href: '/contact/', label: 'Contact' }].filter((l) => {
+  if (seen.has(l.href)) return false;
+  seen.add(l.href);
+  return true;
+});
 
 const crumbs = [
   { label: 'Accueil', href: '/' },
@@ -39,24 +39,20 @@ const crumbs = [
   path="/plan-du-site/"
   crumbs={crumbs}
 >
-  <Breadcrumb crumbs={crumbs} />
+  <PageHeader
+    title="Plan du site"
+    lede="L’ensemble des pages publiées, rubrique par rubrique."
+    crumbs={crumbs}
+  />
 
   <div class="wrap section">
-    <header class="head">
-      <h1>Plan du site</h1>
-      <p class="lede">L’ensemble des pages publiées, et l’état de la reprise des données.</p>
-    </header>
-
     <div class="cols">
       <section>
-        <h2>Nos services</h2>
+        <h2>Le site</h2>
         <ul>
-          {NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
-          <li><a href="/biens-vendus/">Nos réussites</a></li>
-          <li><a href="/avis/">Avis clients</a></li>
-          <li><a href="/prix-immobilier-mantes-la-jolie/">Prix immobilier à Mantes-la-Jolie</a></li>
-          <li><a href="/equipe/">L’équipe</a></li>
-          <li><a href="/guides/">Guides</a></li>
+          <li><a href="/">Accueil</a></li>
+          {mainLinks.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href="/selection/">Ma sélection</a></li>
         </ul>
       </section>
 
@@ -81,19 +77,12 @@ const crumbs = [
       </section>
 
       <section>
-        <h2>Guides</h2>
-        <ul>
-          {guides.map((g) => <li><a href={`/guides/${g.id}/`}>{g.data.title}</a></li>)}
-        </ul>
-      </section>
-
-      <section>
         <h2>Biens à vendre</h2>
         <ul>
           {
             activeListings('vente').map((l) => (
               <li>
-                <a href={`/bien/${l.slug}/`}>{l.title}</a>
+                <a href={`/bien/${l.slug}/`}>{listingHeading(l)}</a>
               </li>
             ))
           }
@@ -102,90 +91,54 @@ const crumbs = [
 
       <section>
         <h2>Biens à louer</h2>
+        {
+          activeListings('location').length > 0 ? (
+            <ul>
+              {activeListings('location').map((l) => (
+                <li>
+                  <a href={`/bien/${l.slug}/`}>{listingHeading(l)}</a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="small muted">Aucun bien à louer pour le moment.</p>
+          )
+        }
+      </section>
+
+      <section>
+        <h2>Guides</h2>
         <ul>
-          {
-            activeListings('location').map((l) => (
-              <li>
-                <a href={`/bien/${l.slug}/`}>{l.title}</a>
-              </li>
-            ))
-          }
+          {guides.map((g) => <li><a href={`/guides/${g.id}/`}>{g.data.title}</a></li>)}
         </ul>
       </section>
+
+      {
+        news.length > 0 && (
+          <section>
+            <h2>Actualités</h2>
+            <ul>
+              {news.map((n) => (
+                <li>
+                  <a href={`/actualites/${n.slug}/`}>{n.title}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
 
       <section>
         <h2>Informations légales</h2>
         <ul>
-          {FOOTER_LEGAL.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          {FOOTER_LEGAL.filter((l) => l.href !== '/plan-du-site/').map((l) => <li><a href={l.href}>{l.label}</a></li>)}
         </ul>
       </section>
     </div>
-
-    <hr />
-
-    <section class="recette">
-      <h2>État de la reprise des données</h2>
-      <p class="small muted">
-        Section destinée à l’agence pendant la recette. Elle sera retirée à la mise en ligne
-        définitive.
-      </p>
-
-      <dl class="facts">
-        <div><dt>Biens actifs</dt><dd>{stats.active}</dd></div>
-        <div><dt>Dont à vendre</dt><dd>{stats.forSale}</dd></div>
-        <div><dt>Dont à louer</dt><dd>{stats.forRent}</dd></div>
-        <div><dt>Fiches complètes reprises</dt><dd>{report.listings}</dd></div>
-        <div><dt>Biens archivés reconstitués</dt><dd>{stats.archivedKnown}</dd></div>
-        <div><dt>Portefeuille archivé annoncé</dt><dd>{stats.archivedTotal}</dd></div>
-        <div><dt>Communes avec page dédiée</dt><dd>{communes.length} sur {allCommunes().length}</dd></div>
-        <div><dt>Photos rattachées</dt><dd>{report.photos}</dd></div>
-        <div><dt>Redirections 301 en place</dt><dd>{redirects.length}</dd></div>
-        <div><dt>Doublons détectés</dt><dd>{duplicates.length}</dd></div>
-      </dl>
-
-      <h3>Limites connues du corpus repris</h3>
-      <ul>
-        {report.gaps.map((gap) => <li>{gap}</li>)}
-      </ul>
-
-      {
-        duplicates.length > 0 && (
-          <>
-            <h3>Doublons probables à arbitrer</h3>
-            <ul>
-              {duplicates.map((group) => (
-                <li>
-                  {group.map((l) => `réf. ${l.reference}`).join(' et ')} — même commune, même type,
-                  surface et prix quasi identiques
-                </li>
-              ))}
-            </ul>
-          </>
-        )
-      }
-
-      <h3>Informations à fournir avant la mise en ligne</h3>
-      {
-        Object.entries(MISSING_INFO).map(([section, items]) => (
-          <>
-            <h4>{section}</h4>
-            <ul>
-              {items.map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-          </>
-        ))
-      }
-    </section>
   </div>
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
-  }
-
   .cols {
     display: grid;
     gap: var(--space-l);
@@ -195,9 +148,9 @@ const crumbs = [
   .cols h2 {
     font-family: var(--font-body);
     font-size: var(--step-0);
-    font-weight: 650;
-    padding-bottom: var(--space-3xs);
-    border-bottom: 2px solid var(--gold-200);
+    font-weight: 600;
+    padding-bottom: var(--space-2xs);
+    border-bottom: 2px solid var(--gold-300);
   }
 
   ul {
@@ -208,43 +161,19 @@ const crumbs = [
   }
 
   .cols li + li {
-    margin-top: 0.3rem;
+    margin-top: 0.35rem;
+  }
+
+  .cols a {
+    text-decoration: none;
+  }
+
+  .cols a:hover {
+    text-decoration: underline;
   }
 
   .two-col {
     columns: 2;
     column-gap: var(--space-s);
-  }
-
-  .recette {
-    background: var(--canvas-alt);
-    padding: var(--space-m);
-    border-radius: var(--radius-m);
-  }
-
-  .recette h2 {
-    font-size: var(--step-2);
-  }
-
-  .recette h3 {
-    margin-top: var(--space-m);
-  }
-
-  .recette h4 {
-    margin-top: var(--space-s);
-    color: var(--ink-muted);
-  }
-
-  .recette ul {
-    padding-left: 1.1rem;
-    list-style: disc;
-  }
-
-  .recette li {
-    margin-bottom: 0.2rem;
-  }
-
-  .facts {
-    margin-bottom: var(--space-m);
   }
 </style>

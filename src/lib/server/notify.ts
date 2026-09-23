@@ -15,6 +15,7 @@
  *    par double opt-in sert à établir.
  */
 import { escapeHtml, headerSafe } from './guard';
+import { env } from './env';
 
 interface Notification {
   subject: string;
@@ -36,8 +37,8 @@ interface Email {
  * l'appelant décide alors quoi dire au visiteur.
  */
 export async function sendEmail(email: Email): Promise<boolean> {
-  const apiKey = process.env.EMAIL_API_KEY;
-  const from = process.env.EMAIL_FROM;
+  const apiKey = env('EMAIL_API_KEY');
+  const from = env('EMAIL_FROM');
 
   if (!apiKey || !from) {
     console.warn('[notify] service d’emailing non configuré — email non envoyé');
@@ -76,7 +77,7 @@ export async function sendEmail(email: Email): Promise<boolean> {
 export const sendToVisitor = (email: Email): Promise<boolean> => sendEmail(email);
 
 export async function notifyAgency(notification: Notification): Promise<void> {
-  const to = process.env.EMAIL_TO_AGENCY;
+  const to = env('EMAIL_TO_AGENCY');
   if (!to) {
     // Sans destinataire configuré, la demande est déjà enregistrée en base :
     // aucune donnée n'est perdue, mais le défaut est signalé.

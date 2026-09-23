@@ -1,0 +1,53 @@
+---
+/** Rubrique « Textes des pages » : formulaire engendré depuis le registre `textes`. */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import BlocForm from '~/components/admin/BlocForm.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { groupPage } from '~/lib/server/admin-blocs';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const { blocks, notice, saved, loadError } = await groupPage(Astro.request, 'textes');
+---
+
+<AdminContenu
+  title="Textes des pages"
+  section="textes"
+  heading="Textes des pages"
+  intro="Les titres, introductions et listes des pages du site. Une case vidée revient au texte d’origine, jamais à du vide. Les listes « à colonnes » séparent leurs colonnes par une barre verticale « | »."
+>
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+  <nav class="jump" aria-label="Aller à un bloc">
+    {blocks.map((b) => <a href={`#bloc-${b.key.replace(/\./g, '-')}`}>{b.title}</a>)}
+  </nav>
+  {blocks.map((b) => <BlocForm block={b} saved={saved[b.key] ?? null} />)}
+</AdminContenu>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .jump a {
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .jump a:hover {
+    border-color: #0a1729;
+    color: #0a1729;
+  }
+</style>

@@ -1,0 +1,134 @@
+---
+/**
+ * Rubrique « Avis clients » : la note Google (bloc du registre) et les avis
+ * eux-mêmes (table `reviews`), copiés mot pour mot depuis la fiche Google.
+ */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import BlocForm from '~/components/admin/BlocForm.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { groupPage } from '~/lib/server/admin-blocs';
+import { AdminDataError, adminDataReady, readAgents, type AdminAgent } from '~/lib/server/admin-data';
+import { deleteReview, insertReview, parseReview, readReviews, updateReview, type AdminReview } from '~/lib/server/admin-reviews';
+import { publishMessage, publishSite } from '~/lib/server/publish';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+let form: FormData | null = null;
+let reviewNotice: { text: string; ok: boolean } | null = null;
+
+if (Astro.request.method === 'POST') {
+  form = await Astro.request.formData();
+  const action = String(form.get('action') ?? '');
+  if (action) {
+    try {
+      if (action === 'review-add') await insertReview(parseReview(form));
+      else if (action === 'review-update') await updateReview(String(form.get('id') ?? ''), parseReview(form));
+      else if (action === 'review-delete') await deleteReview(String(form.get('id') ?? ''));
+      else throw new AdminDataError('Action inconnue.');
+      reviewNotice = { text: publishMessage(await publishSite()), ok: true };
+    } catch (error) {
+      reviewNotice = {
+        text: error instanceof AdminDataError ? error.message : 'Enregistrement impossible.',
+        ok: false,
+      };
+      if (error instanceof AdminDataError && error.internal) console.warn('[admin/avis]', error.internal);
+    }
+  }
+}
+
+const { blocks, notice, saved, loadError } = await groupPage(Astro.request, 'avis', form);
+
+let reviews: AdminReview[] = [];
+let agents: AdminAgent[] = [];
+if (adminDataReady()) {
+  try {
+    [reviews, agents] = await Promise.all([readReviews(), readAgents()]);
+  } catch (error) {
+    if (!reviewNotice) reviewNotice = { text: error instanceof AdminDataError ? error.message : 'Lecture impossible.', ok: false };
+  }
+}
+---
+
+<AdminContenu
+  title="Avis clients"
+  section="avis"
+  heading="Avis clients"
+  intro="La note Google s’affiche sur l’accueil et la page Avis dès qu’elle est renseignée. Les avis sont copiés tels quels depuis votre fiche Google : ni réécriture, ni correction, c’est ce qui les rend crédibles."
+>
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {reviewNotice && <p class:list={['bo-notice', reviewNotice.ok ? 'ok' : 'ko']} role="status">{reviewNotice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+
+  {blocks.map((b) => <BlocForm block={b} saved={saved[b.key] ?? null} />)}
+
+  <section class="bo-card">
+    <div class="bo-card-head">
+      <h2>Ajouter un avis</h2>
+      <a href="/avis/" target="_blank" rel="noopener">Voir la page /avis/ ↗</a>
+    </div>
+    <form method="post">
+      <input type="hidden" name="action" value="review-add" />
+      <div class="bo-grid3">
+        <p class="bo-f"><label for="n-author">Auteur (tel qu’affiché sur Google)</label><input id="n-author" name="author" required maxlength="80" /></p>
+        <p class="bo-f"><label for="n-rating">Note</label>
+          <select id="n-rating" name="rating">{[5, 4, 3, 2, 1].map((n) => <option value={n} selected={n === 5}>{n} / 5</option>)}</select>
+        </p>
+        <p class="bo-f"><label for="n-date">Date de l’avis</label><input id="n-date" name="published_on" type="date" /></p>
+      </div>
+      <p class="bo-f"><label for="n-body">Texte de l’avis</label><textarea id="n-body" name="body" rows="4" required maxlength="3000"></textarea></p>
+      <div class="bo-grid2">
+        <p class="bo-f"><label for="n-agent">Conseiller cité</label>
+          <select id="n-agent" name="agent_slug"><option value="">Aucun</option>{agents.map((a) => <option value={a.slug}>{a.name}</option>)}</select>
+        </p>
+        <p class="bo-f"><label for="n-pos">Ordre d’affichage</label><input id="n-pos" name="position" type="number" min="0" max="999" value="100" /><span class="bo-hint">Le plus petit s’affiche en premier.</span></p>
+      </div>
+      <div class="bo-card-foot"><span class="bo-hint">L’ajout relance la mise en ligne.</span><button class="bo-btn" type="submit">Ajouter l’avis</button></div>
+    </form>
+  </section>
+
+  {
+    reviews.map((r) => (
+      <section class="bo-card">
+        <div class="bo-card-head">
+          <h2>{r.author} — {r.rating}/5</h2>
+          <form method="post" data-confirm="Supprimer définitivement cet avis ?">
+            <input type="hidden" name="action" value="review-delete" />
+            <input type="hidden" name="id" value={r.id} />
+            <button class="bo-btn bo-btn-danger bo-btn-sm" type="submit">Supprimer</button>
+          </form>
+        </div>
+        <form method="post">
+          <input type="hidden" name="action" value="review-update" />
+          <input type="hidden" name="id" value={r.id} />
+          <div class="bo-grid3">
+            <p class="bo-f"><label for={`a-${r.id}`}>Auteur</label><input id={`a-${r.id}`} name="author" value={r.author} required maxlength="80" /></p>
+            <p class="bo-f"><label for={`r-${r.id}`}>Note</label>
+              <select id={`r-${r.id}`} name="rating">{[5, 4, 3, 2, 1].map((n) => <option value={n} selected={n === r.rating}>{n} / 5</option>)}</select>
+            </p>
+            <p class="bo-f"><label for={`d-${r.id}`}>Date</label><input id={`d-${r.id}`} name="published_on" type="date" value={r.published_on ?? ''} /></p>
+          </div>
+          <p class="bo-f"><label for={`b-${r.id}`}>Texte</label><textarea id={`b-${r.id}`} name="body" rows="4" required maxlength="3000">{r.body}</textarea></p>
+          <div class="bo-grid2">
+            <p class="bo-f"><label for={`g-${r.id}`}>Conseiller cité</label>
+              <select id={`g-${r.id}`} name="agent_slug"><option value="">Aucun</option>{agents.map((a) => <option value={a.slug} selected={a.slug === r.agent_slug}>{a.name}</option>)}</select>
+            </p>
+            <p class="bo-f"><label for={`p-${r.id}`}>Ordre</label><input id={`p-${r.id}`} name="position" type="number" min="0" max="999" value={r.position} /></p>
+          </div>
+          <div class="bo-card-foot"><span></span><button class="bo-btn" type="submit">Enregistrer</button></div>
+        </form>
+      </section>
+    ))
+  }
+</AdminContenu>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form[data-confirm]').forEach((f) => {
+    f.addEventListener('submit', (e) => {
+      if (!confirm(f.dataset.confirm ?? 'Confirmer ?')) e.preventDefault();
+    });
+  });
+</script>

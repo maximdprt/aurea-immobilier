@@ -11,16 +11,18 @@
  * Rendu à la demande : la page dépend d'un paramètre d'URL.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Icon from '~/components/Icon.astro';
 import { formsClient } from '~/lib/server/supabase-admin';
 import { hashToken } from '~/lib/server/tokens';
 import { describeCriteria, readCriteria } from '~/lib/alerts';
-import { CONTACT } from '~/lib/site';
+import { agency } from '~/lib/content';
 
 export const prerender = false;
 
 type Outcome = 'ok' | 'invalide' | 'panne';
 
+const contact = agency();
 const token = Astro.url.searchParams.get('jeton') ?? '';
 let outcome: Outcome = 'invalide';
 let summary: string | null = null;
@@ -72,6 +74,11 @@ const TITLES: Record<Outcome, string> = {
   invalide: 'Ce lien n’est plus valable',
   panne: 'Confirmation impossible pour le moment',
 };
+const ICONS: Record<Outcome, 'check' | 'info' | 'clock'> = {
+  ok: 'check',
+  invalide: 'info',
+  panne: 'clock',
+};
 ---
 
 <Base
@@ -80,31 +87,26 @@ const TITLES: Record<Outcome, string> = {
   path="/alerte/confirmation/"
   crumbs={crumbs}
   noindex
+  noActionBar
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>{TITLES[outcome]}</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader title={TITLES[outcome]} crumbs={crumbs} kicker="Alerte nouveautés" width="narrow" />
 
-  <div class="wrap section">
-    <div class="panel">
+  <div class="wrap-narrow section">
+    <div class:list={['result', `is-${outcome}`]}>
+      <span class="mark"><Icon name={ICONS[outcome]} size={26} /></span>
+
       {
         outcome === 'ok' && (
           <>
-            <p class="lede">
-              C’est fait : vous serez prévenu dès qu’un bien correspondra à votre recherche.
-            </p>
+            <p class="lede">C’est fait : vous serez prévenu dès qu’un bien correspondra à votre recherche.</p>
             {summary && <p class="criteria">{summary}</p>}
             <p>
-              Chaque email que nous vous enverrons porte un lien de désinscription, actif en un
-              clic. Vous n’avez rien d’autre à faire.
+              Chaque email que nous vous enverrons porte un lien de désinscription, actif en un clic.
+              Vous n’avez rien d’autre à faire.
             </p>
-            <p class="actions">
+            <p class="cluster">
               <a class="btn" href="/acheter/">Voir les biens disponibles</a>
-              <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+              <a class="btn btn-outline" href="/">Retour à l’accueil</a>
             </p>
           </>
         )
@@ -113,17 +115,15 @@ const TITLES: Record<Outcome, string> = {
       {
         outcome === 'invalide' && (
           <>
-            <p class="lede">
-              Ce lien de confirmation a déjà servi, ou il a expiré.
-            </p>
+            <p class="lede">Ce lien de confirmation a déjà servi, ou il a expiré.</p>
             <p>
-              S’il a déjà servi, votre alerte est active et vous n’avez rien à faire. Dans le
-              doute, réinscrivez-vous : si l’alerte existe déjà, nous vous le dirons par email
-              sans rien modifier.
+              S’il a déjà servi, votre alerte est active et vous n’avez rien à faire. Dans le doute,
+              réinscrivez-vous : si l’alerte existe déjà, nous vous le dirons par email sans rien
+              modifier.
             </p>
-            <p class="actions">
+            <p class="cluster">
               <a class="btn" href="/alerte/">Créer une alerte</a>
-              <a class="btn btn-secondary" href="/contact/">Nous contacter</a>
+              <a class="btn btn-outline" href="/contact/">Nous contacter</a>
             </p>
           </>
         )
@@ -132,13 +132,11 @@ const TITLES: Record<Outcome, string> = {
       {
         outcome === 'panne' && (
           <>
-            <p class="lede">
-              Nous ne parvenons pas à enregistrer votre confirmation pour le moment.
-            </p>
+            <p class="lede">Nous ne parvenons pas à enregistrer votre confirmation pour le moment.</p>
             <p>
-              Votre inscription n’est pas perdue. Réessayez dans quelques minutes en recliquant
-              sur le lien de votre email, ou appelez-nous au{' '}
-              <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>.
+              Votre inscription n’est pas perdue. Réessayez dans quelques minutes en recliquant sur
+              le lien de votre email, ou appelez-nous au{' '}
+              <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>.
             </p>
           </>
         )
@@ -148,22 +146,40 @@ const TITLES: Record<Outcome, string> = {
 </Base>
 
 <style>
-  .panel {
-    max-width: 62ch;
+  .result {
+    padding: var(--space-l);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .mark {
+    display: inline-grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin-bottom: var(--space-s);
+    border-radius: var(--radius-pill);
+    background: var(--gold-100);
+    color: var(--gold-700);
+  }
+
+  .is-ok .mark {
+    background: var(--ok-bg);
+    color: var(--ok);
   }
 
   .criteria {
     padding: var(--space-s) var(--space-m);
-    background: var(--surface);
-    border-left: 3px solid var(--color-2);
-    font-weight: 650;
-    color: var(--color-1);
+    background: var(--sand-50);
+    border-left: 3px solid var(--gold-400);
+    border-radius: var(--radius-s);
+    font-weight: 600;
+    color: var(--navy-900);
   }
 
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-s);
-    margin-top: var(--space-l);
+  .cluster {
+    margin-top: var(--space-m);
+    margin-bottom: 0;
   }
 </style>

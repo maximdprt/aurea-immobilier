@@ -1,16 +1,21 @@
 ---
 /**
- * Barre fixe mobile : telephone cliquable et CTA estimation toujours visibles
- * (prompt v3 §8). Discrete, sans JS, masquee au-dela du mobile.
+ * Barre fixe mobile : telephone et estimation toujours a portee de pouce.
+ * Sans JS, masquee au-dela du mobile.
  */
-import { CONTACT } from '~/lib/site';
+import Icon from '~/components/Icon.astro';
+import { agency } from '~/lib/content';
+
+const contact = agency();
 ---
 
 <div class="action-bar">
-  <a class="btn btn-secondary" href={`tel:${CONTACT.phoneE164}`}>
-    <span aria-hidden="true">☎</span> Appeler
+  <a class="btn btn-outline" href={`tel:${contact.phoneE164}`}>
+    <Icon name="phone" size={18} /> Appeler
   </a>
-  <a class="btn" href="/estimation/">Estimer mon bien</a>
+  <a class="btn" href="/estimation/">
+    <Icon name="chart" size={18} /> Estimer mon bien
+  </a>
 </div>
 
 <style>
@@ -19,22 +24,21 @@ import { CONTACT } from '~/lib/site';
     inset: auto 0 0 0;
     z-index: 30;
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
+    grid-template-columns: 1fr 1.3fr;
     gap: var(--space-2xs);
-    padding: var(--space-2xs) var(--space-s)
-      calc(var(--space-2xs) + env(safe-area-inset-bottom));
-    background: color-mix(in srgb, var(--canvas) 94%, transparent);
+    padding: var(--space-2xs) var(--space-s) calc(var(--space-2xs) + env(safe-area-inset-bottom));
+    background: rgb(255 255 255 / 0.94);
     backdrop-filter: blur(10px);
     border-top: 1px solid var(--line);
   }
 
   .action-bar .btn {
-    min-height: 2.75rem;
+    min-height: 2.9rem;
     font-size: var(--step--1);
     padding-inline: var(--space-2xs);
   }
 
-  .action-bar .btn-secondary {
+  .action-bar .btn-outline {
     background: var(--surface);
   }
 

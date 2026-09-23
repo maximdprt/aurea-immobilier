@@ -38,7 +38,7 @@ if (Astro.request.method === 'POST') {
       // révéler si l'adresse existe.
       message = 'Identifiants incorrects.';
     } else {
-      return Astro.redirect('/admin/', 303);
+      return Astro.redirect('/admin/demandes/', 303);
     }
   }
 }

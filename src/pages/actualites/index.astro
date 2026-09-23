@@ -1,0 +1,107 @@
+---
+/**
+ * Actualites de l'agence, redigees dans le back-office (table `news`).
+ * Sans actualite publiee, la page le dit et renvoie vers les guides et les
+ * reseaux : jamais une grille vide.
+ */
+import Base from '~/layouts/Base.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import NewsCard from '~/components/NewsCard.astro';
+import Icon from '~/components/Icon.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import { allNews } from '~/lib/news';
+import { SOCIAL } from '~/lib/site';
+import { field } from '~/lib/content';
+
+const news = allNews();
+
+const crumbs = [
+  { label: 'Accueil', href: '/' },
+  { label: 'Actualités' },
+];
+---
+
+<Base
+  title="Actualités de l’agence – AUREA Immobilier"
+  description="Nouveaux biens, ventes conclues, vie de l’agence et conseils du moment : les actualités d’AUREA Immobilier, agence indépendante à Mantes-la-Jolie."
+  path="/actualites/"
+  crumbs={crumbs}
+>
+  <PageHeader
+    title={field('page.actualites', 'titre')}
+    crumbs={crumbs}
+    kicker="Actualités"
+    lede={field('page.actualites', 'chapo')}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      {
+        news.length > 0 ? (
+          <div class="grid-cards">
+            {news.map((n, i) => (
+              <NewsCard item={n} priority={i < 3} />
+            ))}
+          </div>
+        ) : (
+          <div class="empty">
+            <span class="icon-pill"><Icon name="sparkle" /></span>
+            <h2>Aucune actualité publiée pour le moment</h2>
+            <p>
+              Nous publions ici les nouveautés de l’agence et nos conseils. En attendant, nos
+              guides répondent aux questions les plus fréquentes, et nos réseaux montrent les
+              biens avant leur mise en ligne.
+            </p>
+            <p class="cluster">
+              <a class="btn btn-navy" href="/guides/">Lire les guides</a>
+              {SOCIAL.map((s) => (
+                <a class="btn btn-outline" href={s.url} rel="me noopener" target="_blank">
+                  <Icon name={s.label === 'Instagram' ? 'instagram' : 'tiktok'} size={18} /> {s.label}
+                  <span class="visually-hidden"> (nouvel onglet)</span>
+                </a>
+              ))}
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <CtaBand
+    title="Recevoir les nouveautés avant tout le monde"
+    text="Créez une alerte email : nous vous écrivons dès qu’un bien correspond à vos critères, et à ce moment-là seulement."
+    primaryHref="/alerte/"
+    primaryLabel="Créer une alerte"
+    secondaryHref="/acheter/"
+    secondaryLabel="Voir les biens"
+  />
+</Base>
+
+<style>
+  .empty {
+    max-width: 44rem;
+    margin-inline: auto;
+    padding: var(--space-l);
+    text-align: center;
+    background: var(--sand-50);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+  }
+
+  .empty .icon-pill {
+    margin-bottom: var(--space-s);
+  }
+
+  .empty h2 {
+    font-size: var(--step-2);
+  }
+
+  .empty p {
+    color: var(--ink-soft);
+  }
+
+  .empty .cluster {
+    justify-content: center;
+    margin: var(--space-m) 0 0;
+  }
+</style>

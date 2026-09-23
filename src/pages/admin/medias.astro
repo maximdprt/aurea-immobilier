@@ -1,0 +1,166 @@
+---
+/**
+ * Rubrique « Photos & visuels ».
+ *
+ * Trois familles : les visuels du site (accueil, agence, logo…), les
+ * portraits de l'équipe et les photos des biens. Pour chacun, l'aperçu de ce
+ * qui est affiché aujourd'hui, l'exigence de résolution et un envoi direct.
+ */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import MediaUploader from '~/components/admin/MediaUploader.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { AdminDataError, adminDataReady, readAgents, readListings } from '~/lib/server/admin-data';
+import { publicUrl, readAssets, type MediaAsset } from '~/lib/server/admin-media';
+import { EDITORIAL_MEDIA, agentSpec, listingPhotoSpec } from '~/lib/media-schema';
+import rawMedia from '~/data/media.json';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const manifest = rawMedia as Record<string, any>;
+/** Aperçu d'origine : le WebP de repli produit par le pipeline. */
+const original = (entry: any): string | null =>
+  entry && entry.base ? `${entry.base}-${entry.fallbackWidth ?? entry.widths?.at(-1)}.${entry.base.includes('/marque/') ? 'png' : 'webp'}` : null;
+
+let assets = new Map<string, MediaAsset>();
+let agents: Awaited<ReturnType<typeof readAgents>> = [];
+let listings: Awaited<ReturnType<typeof readListings>> = [];
+let loadError: string | null = null;
+
+if (adminDataReady()) {
+  try {
+    [assets, agents, listings] = await Promise.all([readAssets(), readAgents(), readListings()]);
+  } catch (error) {
+    loadError = error instanceof AdminDataError ? error.message : 'Lecture impossible.';
+  }
+} else {
+  loadError = 'La base n’est pas configurée : renseignez SUPABASE_SECRET_KEY_CONTENT pour gérer les visuels.';
+}
+
+const state = (key: string, fallback: string | null) => {
+  const a = assets.get(key);
+  return {
+    preview: a ? publicUrl(a.storage_path) : fallback,
+    overridden: Boolean(a),
+    dims: a ? `${a.width} × ${a.height} px` : null,
+  };
+};
+
+const active = listings.filter((l) => l.status === 'published' || l.status === 'under_offer');
+const archived = listings.filter((l) => l.status !== 'published' && l.status !== 'under_offer');
+const photosOf = (reference: number): any[] => manifest[`bien:${reference}`]?.photos ?? [];
+---
+
+<AdminContenu
+  title="Photos & visuels"
+  section="medias"
+  heading="Photos & visuels"
+  intro="Remplacez n’importe quelle image du site par un fichier de bonne résolution : il est vérifié, puis converti automatiquement dans les formats légers du site à la prochaine mise en ligne. Vous pouvez toujours revenir à l’image d’origine."
+>
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+  <p class="bo-notice">
+    Une photo importée apparaît en ligne au prochain déploiement (une à deux minutes après l’envoi
+    quand la mise en ligne automatique est active). L’aperçu ci-dessous montre le fichier tel qu’il a été reçu.
+  </p>
+
+  <section class="bo-card" id="site">
+    <div class="bo-card-head"><h2>Visuels du site</h2></div>
+    {
+      EDITORIAL_MEDIA.map((spec) => {
+        const s = state(spec.key, original(manifest[spec.key]));
+        return <MediaUploader spec={spec} preview={s.preview} overridden={s.overridden} dims={s.dims} />;
+      })
+    }
+  </section>
+
+  <section class="bo-card" id="equipe">
+    <div class="bo-card-head">
+      <h2>Portraits de l’équipe</h2>
+      <a href="/admin/equipe/">Modifier les fiches →</a>
+    </div>
+    {
+      agents.map((a) => {
+        const spec = agentSpec(a.slug, a.name);
+        const s = state(spec.key, original(manifest[spec.key]));
+        return <MediaUploader spec={spec} preview={s.preview} overridden={s.overridden} dims={s.dims} portrait />;
+      })
+    }
+  </section>
+
+  <section class="bo-card" id="biens">
+    <div class="bo-card-head">
+      <h2>Photos des biens en ligne</h2>
+      <a href="/admin/biens/">Modifier les annonces →</a>
+    </div>
+    <p class="bo-card-intro">
+      La première photo sert de vignette et d’image de partage. Un emplacement « nouvelle photo »
+      permet d’en ajouter une à la suite.
+    </p>
+    {
+      active.map((l) => {
+        const photos = photosOf(l.reference);
+        const slots = [...photos.map((p) => p.index), photos.length];
+        return (
+          <details class="bien" id={`bien-${l.reference}`}>
+            <summary>
+              <strong>Réf. {l.reference}</strong> — {l.title}
+              <span class="bo-pill">{photos.length} photo{photos.length > 1 ? 's' : ''}</span>
+            </summary>
+            {slots.map((index) => {
+              const spec = listingPhotoSpec(l.reference, index);
+              const orig = photos.find((p) => p.index === index);
+              const s = state(spec.key, original(orig));
+              const labelled = { ...spec, label: index === photos.length ? `Nouvelle photo (n° ${index + 1})` : spec.label };
+              return <MediaUploader spec={labelled} preview={s.preview} overridden={s.overridden} dims={s.dims} />;
+            })}
+          </details>
+        );
+      })
+    }
+    {
+      archived.length > 0 && (
+        <details class="bien">
+          <summary><strong>Biens vendus ou loués</strong> <span class="bo-pill">{archived.length}</span></summary>
+          {archived.map((l) => {
+            const photos = photosOf(l.reference);
+            return (
+              <details class="bien nested" id={`bien-${l.reference}`}>
+                <summary><strong>Réf. {l.reference}</strong> — {l.title}</summary>
+                {[...photos.map((p) => p.index), photos.length].map((index) => {
+                  const spec = listingPhotoSpec(l.reference, index);
+                  const orig = photos.find((p) => p.index === index);
+                  const s = state(spec.key, original(orig));
+                  return <MediaUploader spec={spec} preview={s.preview} overridden={s.overridden} dims={s.dims} />;
+                })}
+              </details>
+            );
+          })}
+        </details>
+      )
+    }
+  </section>
+</AdminContenu>
+
+<style>
+  .bien {
+    border-top: 1px solid #e8edf3;
+    padding: 6px 0;
+  }
+
+  .bien summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    color: #0a1729;
+  }
+
+  .bien.nested {
+    margin-left: 12px;
+  }
+</style>

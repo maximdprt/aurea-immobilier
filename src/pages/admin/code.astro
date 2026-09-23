@@ -1,0 +1,141 @@
+---
+/**
+ * Saisie du code d'accès au back-office de contenu.
+ *
+ * Deux protections se cumulent : un compteur EN MÉMOIRE, par instance (il
+ * tient même quand la base n'est pas configurée), et le compteur en base
+ * commun aux formulaires publics. Le message d'erreur est le même dans tous
+ * les cas : ni le nombre de tentatives restantes, ni la raison du refus ne
+ * sont révélés.
+ */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import { isAdminCodeConfigured, openAdminSession, verifyAdminCode } from '~/lib/server/admin-code';
+import { checkRateLimit, clientIp } from '~/lib/server/guard';
+import { COMPANY } from '~/lib/site';
+
+export const prerender = false;
+
+const WINDOW_MS = 15 * 60 * 1000;
+const MAX_TRIES = 8;
+const attempts = new Map<string, { count: number; since: number }>();
+
+function tooManyTries(ip: string): boolean {
+  if (!ip) return false;
+  const now = Date.now();
+  const seen = attempts.get(ip);
+  if (!seen || now - seen.since > WINDOW_MS) {
+    attempts.set(ip, { count: 1, since: now });
+    return false;
+  }
+  seen.count += 1;
+  return seen.count > MAX_TRIES;
+}
+
+let message: string | null = null;
+const configured = isAdminCodeConfigured();
+
+if (Astro.request.method === 'POST') {
+  if (!configured) {
+    message = 'L’accès n’est pas configuré. Renseignez ADMIN_CODE côté serveur.';
+  } else {
+    const ip = clientIp(Astro.request);
+    const form = await Astro.request.formData();
+    const submitted = String(form.get('code') ?? '');
+
+    if (tooManyTries(ip)) {
+      message = 'Trop de tentatives. Réessayez dans quelques minutes.';
+    } else {
+      try {
+        await checkRateLimit(ip, '/admin/code');
+      } catch {
+        // Quota dépassé côté base : même message, pas de détail.
+      }
+      if (await verifyAdminCode(submitted)) {
+        await openAdminSession(Astro.cookies);
+        return Astro.redirect('/admin/', 303);
+      }
+      message = 'Code incorrect.';
+    }
+  }
+}
+---
+
+<AdminContenu title="Accès" bare>
+  <div class="gate">
+    <div class="card">
+      <p class="sur">{COMPANY.name}</p>
+      <h1>Administration du site</h1>
+      <p class="lede">Saisissez le code de l’agence pour modifier le contenu du site.</p>
+
+      {message && <p class="bo-notice ko" role="alert">{message}</p>}
+      {!configured && <p class="bo-notice warn">Variable <code>ADMIN_CODE</code> absente : l’accès restera refusé tant qu’elle n’est pas définie sur le serveur.</p>}
+
+      <form method="post">
+        <p class="bo-f">
+          <label for="code">Code d’accès</label>
+          <input id="code" name="code" type="password" autocomplete="current-password" required maxlength="120" autofocus />
+        </p>
+        <button class="bo-btn go" type="submit">Entrer</button>
+      </form>
+
+      <p class="note">
+        Cet espace modifie le contenu public du site. Les demandes reçues relèvent d’un
+        <a href="/admin/connexion/">accès nominatif distinct</a>.
+      </p>
+    </div>
+  </div>
+</AdminContenu>
+
+<style>
+  .gate {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .card {
+    width: min(100%, 27rem);
+    padding: 34px 32px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgb(0 0 0 / 28%);
+  }
+
+  .sur {
+    margin: 0 0 6px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-600);
+  }
+
+  h1 {
+    margin: 0 0 10px;
+    font-family: var(--font-body);
+    font-size: 24px;
+    font-weight: 800;
+    color: #0a1729;
+  }
+
+  .lede {
+    margin: 0 0 22px;
+    color: #475569;
+    font-size: 15px;
+  }
+
+  .go {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+    padding: 12px;
+  }
+
+  .note {
+    margin: 22px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 13px;
+    color: #64748b;
+  }
+</style>

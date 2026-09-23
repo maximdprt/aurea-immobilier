@@ -8,11 +8,10 @@
  * rien à consentir, et afficher un bandeau de consentement serait trompeur.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
-import Todo from '~/components/Todo.astro';
+import PageHeader from '~/components/PageHeader.astro';
 
-const LEGAL_VERSION = 1;
-const UPDATED = '21 septembre 2026';
+const LEGAL_VERSION = 2;
+const UPDATED = '23 septembre 2026';
 
 const trackers = [
   {
@@ -28,6 +27,13 @@ const trackers = [
     purpose: 'Se souvenir que vous avez fermé le bandeau d’information',
     duration: 'Jusqu’à effacement des données du site',
     consent: 'Exempté — confort d’usage, aucune donnée personnelle',
+  },
+  {
+    name: 'aurea-selection (stockage local)',
+    issuer: 'AUREA Immobilier',
+    purpose: 'Conserver les biens mis de côté avec le cœur des annonces',
+    duration: 'Jusqu’à effacement des données du site',
+    consent: 'Exempté — reste dans votre navigateur, n’est pas transmis',
   },
   {
     name: 'aurea:estimation (stockage local)',
@@ -57,12 +63,16 @@ const crumbs = [
   path="/cookies/"
   crumbs={crumbs}
 >
-  <Breadcrumb crumbs={crumbs} />
+  <PageHeader
+    title="Politique cookies"
+    lede="Ce site ne dépose aucun traceur publicitaire ni de mesure d’audience : voici précisément ce qui est utilisé, et pourquoi il n’y a pas de bandeau de consentement."
+    crumbs={crumbs}
+    width="narrow"
+  >
+    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
+  </PageHeader>
 
   <div class="wrap-narrow section prose">
-    <h1>Politique cookies</h1>
-    <p class="updated">Version {LEGAL_VERSION} — mise à jour le {UPDATED}</p>
-
     <h2>Ce site ne dépose aucun traceur publicitaire</h2>
     <p>
       Nous n’utilisons ni régie publicitaire, ni réseau social embarqué, ni outil de mesure
@@ -114,10 +124,8 @@ const crumbs = [
     <p>
       Si une mesure d’audience est mise en place, elle le sera avec un outil sans cookie
       (Plausible, ou Matomo configuré selon les conditions d’exemption de la CNIL), produisant des
-      statistiques agrégées et non rattachables à une personne.
-    </p>
-    <p class="small muted">
-      Outil retenu : <Todo label="choix de l’outil de mesure d’audience" />
+      statistiques agrégées et non rattachables à une personne. Cette page sera mise à jour pour
+      nommer l’outil retenu.
     </p>
 
     <h2>Gérer vos données stockées localement</h2>
@@ -147,3 +155,17 @@ const crumbs = [
     </ul>
   </div>
 </Base>
+
+<style>
+  .updated {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+  }
+
+  .table-wrap {
+    margin-block: var(--space-m);
+  }
+</style>

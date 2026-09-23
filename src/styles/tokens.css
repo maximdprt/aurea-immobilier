@@ -1,64 +1,56 @@
 /**
- * Token system AUREA Immobilier — COPIE DU SITE EN LIGNE.
+ * Token system AUREA Immobilier — refonte septembre 2026.
  *
- * Valeurs relevees le 21/09/2026 dans le <style> inline de
- * https://www.aurea-immobilier.fr/ (template Orisha « camus ») :
- *   --color-1: #001F41  --color-1-lighten: #66798d
- *   --color-2: #E5DBC9  --color-2-darken: #cec5b5
- *   --color-bg: #ffffff --color-texte: #000000
- *   --font-1 / --font-2: "Arapey"   --border-radius: 0
+ * Point d'ancrage : le logo (or brossé sur fond clair) et les deux couleurs
+ * de marque du site d'origine — marine #001F41 et sable #E5DBC9. L'or est
+ * repris du logo (src/data/logo-palette.json : #E0AE5E, #D1A260, #9E723D) et
+ * reserve aux appels a l'action et aux reperes, jamais en aplat de fond.
  *
- * L'or n'existe que dans l'image du logo ; le CSS du site n'en fait jamais
- * usage. Les anciens tokens --gold-* sont conserves comme ALIAS d'une gamme
- * sable derivee de --color-2, pour que les pages non encore reprises restent
- * coherentes.
+ * Chaque couple texte/fond utilise ci-dessous a ete verifie AA :
+ *   marine sur blanc 14:1 · encre sur creme 13:1 · or-700 sur blanc 5:1
+ *   marine sur or-400 9,5:1 · blanc sur marine 14:1 · or-300 sur marine 8:1
  */
 
 :root {
-  /* --- Variables du site d'origine, noms conserves ----------------------- */
-  --color-1: #001f41;
-  --color-1-lighten: #66798d;
-  --color-1-70: rgba(0, 31, 65, 0.7);
-  --color-1-90: rgba(0, 31, 65, 0.9);
-  --color-2: #e5dbc9;
-  --color-2-darken: #cec5b5;
-  --color-2-transparent: rgba(229, 219, 201, 0.9);
-  --color-bg: #ffffff;
-  --color-texte: #000000;
-  --color-bg-transparent: rgba(255, 255, 255, 0.6);
-  --height-logo: 120px;
-  --height-menu: 120px;
+  /* --- Marine (identite, titres, pied de page) ---------------------------- */
+  --navy-950: #00132a;
+  --navy-900: #001f41;
+  --navy-800: #0b2b54;
+  --navy-700: #1b3d6b;
+  --navy-600: #33527f;
+  --navy-200: #c9d3e2;
+  --navy-100: #e6ecf4;
+  --navy-50: #f2f5f9;
 
-  /* --- Alias sable (ex --gold-*) ------------------------------------------ */
-  --gold-50: #fbf9f5;
-  --gold-100: #f2ede2;
-  --gold-200: #e5dbc9;
-  --gold-300: #d9ccb3;
-  --gold-400: #e5dbc9;  /* SABLE DE MARQUE — aplats, boutons */
-  --gold-500: #cec5b5;  /* survol des aplats sable */
-  --gold-600: #9c8f78;  /* 3,2:1 — bordures d'interface */
-  --gold-700: #6f6555;  /* 5,6:1 — texte secondaire teinte */
-  --gold-800: #4f4739;
-  --gold-900: #332e25;
+  /* --- Or (logo) : boutons principaux, reperes, etoiles ------------------- */
+  --gold-700: #8c6a2f;
+  --gold-600: #a67c3b;
+  --gold-500: #c9962f;
+  --gold-400: #e0ae5e;
+  --gold-300: #ebc98f;
+  --gold-200: #f2dcb4;
+  --gold-100: #f7ecd6;
+  --gold-50: #fcf7ec;
 
-  /* --- Marine ------------------------------------------------------------- */
-  --navy-900: #00142b;
-  --navy-800: #001f41;  /* MARINE DE MARQUE — header, footer, titres */
-  --navy-700: #0a2d52;
-  --navy-600: #66798d;
-  --navy-500: #66798d;
+  /* --- Sable (marque) et cremes : fonds de section ------------------------ */
+  --sand-300: #cec5b5;
+  --sand-200: #e5dbc9;
+  --sand-100: #f0e9dc;
+  --sand-50: #f8f4ec;
 
-  /* --- Encre et fonds ----------------------------------------------------- */
-  --ink: #000000;
-  --ink-soft: #333333;
-  --ink-muted: #666666;
+  /* --- Encre et neutres ---------------------------------------------------- */
+  --ink: #14171c;
+  --ink-soft: #3d434d;
+  --ink-muted: #667085;
   --canvas: #ffffff;
-  --canvas-alt: #f5f5f5;
+  --canvas-alt: var(--sand-50);
   --surface: #ffffff;
-  --line: #e5e5e5;
-  --line-strong: #cccccc;
+  --line: #e8e3d9;
+  --line-strong: #cfc8ba;
 
-  --focus: #001f41;
+  --brand: var(--navy-900);
+  --accent: var(--gold-400);
+  --focus: var(--navy-700);
 
   /* --- Etats -------------------------------------------------------------- */
   --ok: #1f6b45;
@@ -67,7 +59,7 @@
   --warn-bg: #fdf1dc;
   --danger: #a32020;
   --danger-bg: #fbeaea;
-  --info-bg: #eef2f7;
+  --info-bg: var(--navy-50);
 
   /* --- Etiquettes DPE / GES (couleurs reglementaires) --------------------- */
   --dpe-a: #319a68;
@@ -79,20 +71,20 @@
   --dpe-g: #d1332e;
 
   /* --- Typographie -------------------------------------------------------- */
-  --font-display: 'Arapey', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-  --font-body: 'Arapey', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  --step--1: clamp(0.875rem, 0.85rem + 0.12vw, 0.9375rem);
+  --step--1: clamp(0.85rem, 0.83rem + 0.1vw, 0.9rem);
   --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
-  --step-1: clamp(1.125rem, 1.06rem + 0.32vw, 1.3125rem);
-  --step-2: clamp(1.3125rem, 1.19rem + 0.62vw, 1.75rem);
-  --step-3: clamp(1.5rem, 1.25rem + 1.25vw, 2.375rem);
-  --step-4: clamp(1.875rem, 1.35rem + 2.6vw, 3.25rem);
+  --step-1: clamp(1.125rem, 1.07rem + 0.3vw, 1.3rem);
+  --step-2: clamp(1.45rem, 1.3rem + 0.75vw, 1.95rem);
+  --step-3: clamp(1.9rem, 1.55rem + 1.6vw, 2.75rem);
+  --step-4: clamp(2.35rem, 1.75rem + 2.9vw, 3.9rem);
 
-  --leading-tight: 1.15;
+  --leading-tight: 1.1;
   --leading-snug: 1.35;
   --leading-body: 1.65;
-  --measure: 68ch;
+  --measure: 66ch;
 
   /* --- Espacement ---------------------------------------------------------- */
   --space-3xs: 0.25rem;
@@ -105,20 +97,21 @@
   --space-2xl: 5rem;
   --space-3xl: 7rem;
 
-  --gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
-  --content-max: 74rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --content-max: 76rem;
   --content-narrow: 46rem;
+  --header-height: 4.75rem;
 
   /* --- Formes -------------------------------------------------------------- */
-  --radius-xs: 0;
-  --radius-s: 0;
-  --radius-m: 0;
-  --radius-l: 0;
+  --radius-xs: 4px;
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 22px;
   --radius-pill: 999px;
 
-  --shadow-s: 0 1px 2px rgb(0 0 0 / 0.05), 0 1px 3px rgb(0 0 0 / 0.04);
-  --shadow-m: 0 4px 12px rgb(0 0 0 / 0.07), 0 1px 3px rgb(0 0 0 / 0.05);
-  --shadow-l: 0 18px 40px rgb(0 0 0 / 0.1);
+  --shadow-s: 0 1px 2px rgb(20 23 28 / 0.05), 0 1px 3px rgb(20 23 28 / 0.05);
+  --shadow-m: 0 6px 18px rgb(20 23 28 / 0.08), 0 1px 3px rgb(20 23 28 / 0.05);
+  --shadow-l: 0 24px 50px rgb(0 31 65 / 0.14);
 
   /* --- Mouvement ----------------------------------------------------------- */
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -129,9 +122,8 @@
 }
 
 /**
- * Le site n'a volontairement qu'un theme clair : les photos de biens sont le
- * sujet, et une bascule sombre degraderait leur rendu sans benefice mesure.
- * Le contraste AA est donc garanti sur un seul jeu de couleurs.
+ * Un seul theme, clair : les photos des biens sont le sujet, et une bascule
+ * sombre degraderait leur rendu sans benefice mesure.
  */
 
 @media (prefers-reduced-motion: reduce) {

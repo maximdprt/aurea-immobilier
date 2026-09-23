@@ -1,0 +1,26 @@
+---
+/** Rubrique « Coordonnées & horaires » : formulaire engendré depuis le registre `coordonnees`. */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import BlocForm from '~/components/admin/BlocForm.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { groupPage } from '~/lib/server/admin-blocs';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const { blocks, notice, saved, loadError } = await groupPage(Astro.request, 'coordonnees');
+---
+
+<AdminContenu
+  title="Coordonnées & horaires"
+  section="coordonnees"
+  heading="Coordonnées & horaires"
+  intro="Repris dans l’en-tête, le pied de page, la page contact et les données transmises à Google. Ils doivent être strictement identiques à ceux de votre fiche Google Business."
+>
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+  {blocks.map((b) => <BlocForm block={b} saved={saved[b.key] ?? null} />)}
+</AdminContenu>

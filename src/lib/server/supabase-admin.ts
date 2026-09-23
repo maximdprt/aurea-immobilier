@@ -7,12 +7,14 @@
  * `sb_secret_` se retrouve dans la sortie du build.
  *
  * Une cle par usage, pour pouvoir en revoquer une seule :
- *  - FORMS  : insertions depuis les formulaires publics
- *  - IMPORT : import quotidien du flux Orisha
+ *  - FORMS   : insertions depuis les formulaires publics
+ *  - IMPORT  : import quotidien du flux Orisha
+ *  - CONTENT : ecritures du back-office de contenu (textes, equipe, biens)
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { env } from './env';
 
-const url = process.env.PUBLIC_SUPABASE_URL ?? import.meta.env.PUBLIC_SUPABASE_URL;
+const url = env('PUBLIC_SUPABASE_URL');
 
 function make(secret: string | undefined, label: string): SupabaseClient | null {
   if (!url || !secret) return null;
@@ -31,18 +33,26 @@ function make(secret: string | undefined, label: string): SupabaseClient | null 
 
 /** Client utilise par les routes de formulaire. Insertions uniquement. */
 export const formsClient = (): SupabaseClient | null =>
-  make(process.env.SUPABASE_SECRET_KEY_FORMS, 'forms');
+  make(env('SUPABASE_SECRET_KEY_FORMS'), 'forms');
 
 /** Client utilise par le cron d'import du flux Orisha. */
 export const importClient = (): SupabaseClient | null =>
-  make(process.env.SUPABASE_SECRET_KEY_IMPORT, 'import');
+  make(env('SUPABASE_SECRET_KEY_IMPORT'), 'import');
+
+/**
+ * Client du back-office de contenu. Separe des deux autres pour qu'une fuite
+ * du code d'acces se revoque en changeant CETTE cle, sans couper les
+ * formulaires publics ni l'import quotidien.
+ */
+export const contentClient = (): SupabaseClient | null =>
+  make(env('SUPABASE_SECRET_KEY_CONTENT'), 'content');
 
 /**
  * Hachage sale d'une adresse IP : la limitation de debit a besoin d'un
  * identifiant stable, pas de l'IP en clair (§20.2).
  */
 export async function hashIp(ip: string): Promise<string> {
-  const salt = process.env.IP_HASH_SALT ?? '';
+  const salt = env('IP_HASH_SALT') ?? '';
   const data = new TextEncoder().encode(`${salt}:${ip}`);
   const digest = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(digest))

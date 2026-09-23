@@ -41,6 +41,7 @@ const FORBIDDEN = [
     pattern: /ALERT_TOKEN_SECRET\s*[:=]\s*["'][^"']+["']/g,
     label: 'secret des jetons d’alerte',
   },
+  { pattern: /ADMIN_CODE\s*[:=]\s*["'][^"']+["']/g, label: 'code du back-office' },
 ];
 
 const SCANNED_EXTENSIONS = ['.js', '.mjs', '.css', '.html', '.json', '.txt', '.map'];
@@ -82,6 +83,8 @@ for (const dir of CLIENT_DIRS) {
 const SERVER_ONLY = [
   'SUPABASE_SECRET_KEY_FORMS',
   'SUPABASE_SECRET_KEY_IMPORT',
+  'SUPABASE_SECRET_KEY_CONTENT',
+  'ADMIN_CODE',
   'TURNSTILE_SECRET_KEY',
   'CRON_SECRET',
   'ORISHA_FEED_TOKEN',

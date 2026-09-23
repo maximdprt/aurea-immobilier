@@ -5,6 +5,8 @@
  * generatifs extraient (prompt v3 §11.1). Le balisage FAQPage n'est emis par
  * la page appelante que si cette FAQ est bien rendue.
  */
+import Icon from '~/components/Icon.astro';
+
 export interface FaqItem {
   question: string;
   answer: string;
@@ -25,8 +27,11 @@ const { items, title = 'Questions fréquentes', id = 'faq' } = Astro.props;
   <div class="list">
     {
       items.map((item) => (
-        <details name="faq">
-          <summary><h3>{item.question}</h3></summary>
+        <details name={id}>
+          <summary>
+            <h3>{item.question}</h3>
+            <Icon name="chevron" size={20} class="chev" />
+          </summary>
           <div class="answer">
             <p>{item.answer}</p>
             {item.details?.map((d) => <p class="small muted">{d}</p>)}
@@ -42,19 +47,28 @@ const { items, title = 'Questions fréquentes', id = 'faq' } = Astro.props;
     max-width: var(--measure);
   }
 
-  .list {
-    border-top: 1px solid var(--line);
+  .faq h2 {
+    margin-bottom: var(--space-m);
   }
 
   details {
-    border-bottom: 1px solid var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+    margin-bottom: 0.6rem;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+
+  details[open] {
+    border-color: var(--gold-300);
   }
 
   summary {
     display: flex;
     align-items: center;
-    gap: var(--space-2xs);
-    padding-block: var(--space-s);
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: 1rem 1.2rem;
     cursor: pointer;
     list-style: none;
   }
@@ -63,27 +77,26 @@ const { items, title = 'Questions fréquentes', id = 'faq' } = Astro.props;
     display: none;
   }
 
-  summary::after {
-    content: '+';
-    margin-left: auto;
-    font-size: 1.4em;
-    line-height: 1;
-    color: var(--gold-600);
+  summary :global(.chev) {
+    flex: none;
+    color: var(--gold-700);
     transition: transform var(--dur) var(--ease-out);
   }
 
-  details[open] summary::after {
-    transform: rotate(45deg);
+  details[open] summary :global(.chev) {
+    transform: rotate(180deg);
   }
 
   summary h3 {
     margin: 0;
     font-size: var(--step-0);
     font-weight: 600;
+    color: var(--navy-900);
   }
 
   .answer {
-    padding-bottom: var(--space-s);
+    padding: 0 1.2rem 1.1rem;
+    color: var(--ink-soft);
   }
 
   .answer p:last-child {

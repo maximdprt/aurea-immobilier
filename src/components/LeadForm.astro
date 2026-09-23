@@ -7,10 +7,12 @@
  * journalise (prompt v3 §20.5). Le honeypot et le jeton Turnstile sont ici ;
  * leur verification est cote serveur.
  *
- * Le formulaire fonctionne sans JavaScript : sans lui, la soumission recharge
- * la page vers /merci/.
+ * Sans JavaScript, la soumission part vers /api/leads/, qui redirige alors
+ * vers /merci/ ; avec, l'envoi se fait en arriere-plan et le message
+ * s'affiche en place.
  */
-import { CONTACT } from '~/lib/site';
+import Icon from '~/components/Icon.astro';
+import { agency } from '~/lib/content';
 
 interface Props {
   /** Nature de la demande, utilisee pour router le lead vers le bon conseiller. */
@@ -21,6 +23,8 @@ interface Props {
   intro?: string;
   compact?: boolean;
   id?: string;
+  /** Message pre-rempli. */
+  message?: string;
 }
 
 const {
@@ -30,15 +34,17 @@ const {
   intro,
   compact = false,
   id = 'contact',
+  message = '',
 } = Astro.props;
 
+const contact = agency();
 const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 const consentVersion = '2026-09-21';
 ---
 
 <section class:list={['lead-form', compact && 'compact']} id={id}>
   <h2>{title}</h2>
-  {intro && <p class="muted">{intro}</p>}
+  {intro && <p class="intro">{intro}</p>}
 
   <form method="post" action="/api/leads/" data-lead-form novalidate>
     <input type="hidden" name="type" value={type} />
@@ -54,57 +60,28 @@ const consentVersion = '2026-09-21';
     <div class="two">
       <p class="field">
         <label for={`${id}-firstname`}>Prénom <span aria-hidden="true">*</span></label>
-        <input
-          id={`${id}-firstname`}
-          name="firstname"
-          type="text"
-          autocomplete="given-name"
-          required
-          maxlength="80"
-        />
+        <input id={`${id}-firstname`} name="firstname" type="text" autocomplete="given-name" required maxlength="80" />
       </p>
       <p class="field">
         <label for={`${id}-lastname`}>Nom <span aria-hidden="true">*</span></label>
-        <input
-          id={`${id}-lastname`}
-          name="lastname"
-          type="text"
-          autocomplete="family-name"
-          required
-          maxlength="80"
-        />
+        <input id={`${id}-lastname`} name="lastname" type="text" autocomplete="family-name" required maxlength="80" />
       </p>
     </div>
 
     <div class="two">
       <p class="field">
         <label for={`${id}-email`}>Email <span aria-hidden="true">*</span></label>
-        <input
-          id={`${id}-email`}
-          name="email"
-          type="email"
-          autocomplete="email"
-          required
-          maxlength="254"
-        />
+        <input id={`${id}-email`} name="email" type="email" autocomplete="email" required maxlength="254" />
       </p>
       <p class="field">
         <label for={`${id}-phone`}>Téléphone</label>
-        <input
-          id={`${id}-phone`}
-          name="phone"
-          type="tel"
-          autocomplete="tel"
-          maxlength="25"
-          inputmode="tel"
-        />
+        <input id={`${id}-phone`} name="phone" type="tel" autocomplete="tel" maxlength="25" inputmode="tel" />
       </p>
     </div>
 
     <p class="field">
       <label for={`${id}-message`}>Votre message <span aria-hidden="true">*</span></label>
-      <textarea id={`${id}-message`} name="message" required maxlength="2000" rows="5"></textarea>
-      <span class="hint">2 000 caractères maximum.</span>
+      <textarea id={`${id}-message`} name="message" required maxlength="2000" rows="5">{message}</textarea>
     </p>
 
     <p class="field consent">
@@ -119,18 +96,18 @@ const consentVersion = '2026-09-21';
     </p>
 
     {
-      turnstileKey ? (
+      turnstileKey && (
         <div class="cf-turnstile" data-sitekey={turnstileKey} data-theme="light" data-language="fr" />
-      ) : (
-        <p class="small muted">
-          Protection anti-spam à activer : clé Cloudflare Turnstile non configurée.
-        </p>
       )
     }
 
     <p class="actions">
-      <button class="btn" type="submit">Envoyer ma demande</button>
-      <span class="small muted">ou appelez-nous au <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a></span>
+      <button class="btn" type="submit">
+        <Icon name="mail" size={18} /> Envoyer ma demande
+      </button>
+      <span class="small muted">
+        ou appelez-nous au <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>
+      </span>
     </p>
 
     <p class="form-status" role="status" hidden data-status></p>
@@ -152,18 +129,27 @@ const consentVersion = '2026-09-21';
   }
 
   .lead-form.compact {
-    padding: var(--space-s);
+    padding: var(--space-s) var(--space-m);
   }
 
   .lead-form h2 {
     font-size: var(--step-2);
-    margin-bottom: var(--space-2xs);
+    margin-bottom: var(--space-3xs);
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    margin-bottom: var(--space-m);
   }
 
   .two {
     display: grid;
     gap: 0 var(--space-s);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  }
+
+  textarea {
+    min-height: 7rem;
   }
 
   .consent label {
@@ -178,6 +164,9 @@ const consentVersion = '2026-09-21';
 
   .consent input {
     margin-top: 0.25rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--navy-900);
   }
 
   .actions {
@@ -201,11 +190,8 @@ const consentVersion = '2026-09-21';
     const submit = form.querySelector<HTMLButtonElement>('button[type=submit]');
 
     form.addEventListener('submit', async (event) => {
-      if (!form.reportValidity()) {
-        event.preventDefault();
-        return;
-      }
       event.preventDefault();
+      if (!form.reportValidity()) return;
       submit?.setAttribute('disabled', '');
       if (status) {
         status.hidden = false;
@@ -233,7 +219,7 @@ const consentVersion = '2026-09-21';
           status.textContent =
             error instanceof Error && error.message
               ? error.message
-              : 'Envoi impossible pour le moment. Vous pouvez nous appeler au 01 30 63 50 50.';
+              : 'Envoi impossible pour le moment. Vous pouvez nous appeler.';
         }
       } finally {
         submit?.removeAttribute('disabled');

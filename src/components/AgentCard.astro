@@ -1,0 +1,197 @@
+---
+/**
+ * Carte d'un conseiller : portrait 4:5, nom, role, ligne directe.
+ *
+ * Quand la personne n'a pas ecrit de presentation, on n'en fabrique pas : la
+ * carte reste au format court. Le format `row` sert dans les colonnes
+ * laterales (fiche bien, page commune).
+ */
+import Picture from '~/components/Picture.astro';
+import Icon from '~/components/Icon.astro';
+import { agentMedia } from '~/lib/catalog';
+import { toE164 } from '~/lib/format';
+import type { Agent } from '~/lib/types';
+
+interface Props {
+  agent: Agent;
+  variant?: 'card' | 'row';
+  /** Affiche la presentation si elle existe. */
+  withBio?: boolean;
+  sizes?: string;
+}
+const { agent, variant = 'card', withBio = false, sizes = '(min-width: 64rem) 18rem, 45vw' } = Astro.props;
+const tel = toE164(agent.phone);
+const href = `/equipe/${agent.slug}/`;
+const pro = agent.email && !agent.email.endsWith('gmail.com') ? agent.email : null;
+---
+
+<article class:list={['agent-card', `is-${variant}`]}>
+  <a class="portrait" href={href} tabindex="-1" aria-hidden="true">
+    <Picture media={agentMedia(agent.slug)} alt="" sizes={sizes} aspect="4 / 5" />
+  </a>
+  <div class="infos">
+    <h3><a href={href}>{agent.name}</a></h3>
+    <p class="role">{agent.role}</p>
+    {
+      withBio && agent.bio && (
+        <div class="bio">
+          {agent.bio
+            .split(/\n{2,}/)
+            .slice(0, 2)
+            .map((par) => <p>{par}</p>)}
+        </div>
+      )
+    }
+    <ul class="contacts">
+      {
+        tel && (
+          <li>
+            <a href={`tel:${tel}`} class="tnum">
+              <Icon name="phone" size={15} /> {agent.phone}
+            </a>
+          </li>
+        )
+      }
+      {
+        pro && variant === 'row' && (
+          <li>
+            <a href={`mailto:${pro}`}>
+              <Icon name="mail" size={15} /> Écrire
+            </a>
+          </li>
+        )
+      }
+    </ul>
+  </div>
+</article>
+
+<style>
+  .agent-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    transition: box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+  }
+
+  .agent-card:hover {
+    box-shadow: var(--shadow-l);
+    transform: translateY(-3px);
+  }
+
+  .portrait {
+    display: block;
+    background: var(--sand-100);
+  }
+
+  .portrait :global(img) {
+    width: 100%;
+    object-position: center top;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  .agent-card:hover .portrait :global(img) {
+    transform: scale(1.03);
+  }
+
+  .infos {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1rem 1.1rem 1.1rem;
+  }
+
+  h3 {
+    margin: 0 0 0.15rem;
+    font-size: 1.05rem;
+  }
+
+  h3 a {
+    color: var(--navy-900);
+    text-decoration: none;
+  }
+
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .role {
+    margin: 0 0 0.6rem;
+    font-size: var(--step--1);
+    color: var(--gold-700);
+    font-weight: 600;
+  }
+
+  .bio {
+    margin-bottom: 0.75rem;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .bio p {
+    margin: 0 0 0.5rem;
+  }
+
+  .contacts {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    margin: auto 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+  }
+
+  .contacts a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .contacts a:hover {
+    color: var(--navy-900);
+    text-decoration: underline;
+  }
+
+  /* --- Variante en ligne ---------------------------------------------------- */
+  .is-row {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .is-row:hover {
+    transform: none;
+  }
+
+  .is-row .portrait {
+    flex: 0 0 6.5rem;
+  }
+
+  .is-row .portrait :global(picture),
+  .is-row .portrait :global(img) {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .is-row .infos {
+    padding: 0.9rem 1rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agent-card:hover,
+    .agent-card:hover .portrait :global(img) {
+      transform: none;
+    }
+  }
+</style>

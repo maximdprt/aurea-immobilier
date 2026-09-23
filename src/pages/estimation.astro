@@ -1,29 +1,16 @@
 ---
 /** Estimation gratuite — formulaire multi-etapes (§7, §14). */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
+import PageHeader from '~/components/PageHeader.astro';
 import EstimationForm from '~/components/EstimationForm.astro';
+import Icon from '~/components/Icon.astro';
 import Faq, { type FaqItem } from '~/components/Faq.astro';
+import CtaBand from '~/components/CtaBand.astro';
 import { faqSchema } from '~/lib/schema';
+import { field, fieldPairs, agency } from '~/lib/content';
 
-const methods = [
-  {
-    name: 'Comparaison',
-    body: 'Confrontation aux ventes réellement conclues sur des biens comparables du secteur, et non aux prix affichés dans les annonces.',
-  },
-  {
-    name: 'Sol et construction',
-    body: 'Valeur du terrain à laquelle s’ajoute le coût de reconstruction, minoré de la vétusté. Utile sur les maisons individuelles.',
-  },
-  {
-    name: 'Capitalisation',
-    body: 'Le bien est valorisé à partir du loyer qu’il produirait, rapporté au taux de rendement constaté localement. Décisif pour l’investissement.',
-  },
-  {
-    name: 'Actualisation',
-    body: 'Projection des revenus futurs ramenés à leur valeur d’aujourd’hui. Réservée aux immeubles et aux biens de rapport.',
-  },
-];
+const methods = fieldPairs('page.estimation', 'methodes');
+const contact = agency();
 
 const faq: FaqItem[] = [
   {
@@ -56,60 +43,76 @@ const crumbs = [
 
 <Base
   title="Estimation gratuite à Mantes-la-Jolie"
-  description="Estimez votre maison ou appartement avec quatre méthodes croisées et un conseiller local. Avis de valeur écrit, gratuit et sans engagement."
+  description="Estimez votre maison ou appartement avec quatre méthodes croisées et un conseiller local. Avis de valeur écrit, gratuit et sans engagement, réponse sous 48 h."
   path="/estimation/"
   crumbs={crumbs}
   schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
+  noActionBar
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Notre philosophie</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader
+    title={field('page.estimation', 'titre')}
+    lede={field('page.estimation', 'chapo')}
+    crumbs={crumbs}
+    kicker="Estimation"
+  />
 
-  <div class="wrap section">
-    <div class="layout">
-      <div>
-        <header class="head">
-          <p class="lede">
-            Un chiffre ne vaut que par la méthode qui le produit. Nous croisons quatre approches et
-            nous vous expliquons sur quoi repose chacune d’elles.
-          </p>
-        </header>
+  <div class="wrap section layout">
+    <div class="main">
+      <ul class="promises">
+        <li><Icon name="check" size={18} /> Gratuit et sans engagement</li>
+        <li><Icon name="check" size={18} /> Rappel sous 48 h ouvrées</li>
+        <li><Icon name="check" size={18} /> Avis de valeur écrit, après visite</li>
+      </ul>
 
-        <section class="section-tight">
-          <h2>Les quatre méthodes que nous croisons</h2>
-          <dl class="methods">
-            {
-              methods.map((m, i) => (
+      <section class="section-tight">
+        <p class="kicker">Notre approche</p>
+        <h2>Les quatre méthodes que nous croisons</h2>
+        <ol class="methods">
+          {
+            methods.map(([name, body], i) => (
+              <li>
+                <span class="num" aria-hidden="true">{i + 1}</span>
                 <div>
-                  <dt>
-                    <span class="num" aria-hidden="true">{i + 1}</span>
-                    {m.name}
-                  </dt>
-                  <dd>{m.body}</dd>
+                  <h3>{name}</h3>
+                  {body && <p>{body}</p>}
                 </div>
-              ))
-            }
-          </dl>
-          <p class="small muted">
-            L’estimation en ligne ne produit aucune décision automatisée : elle est systématiquement
-            confirmée par un conseiller après visite.
-          </p>
-        </section>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="small muted">
+          Aucune décision n’est automatisée : la valeur est arrêtée par un conseiller après visite,
+          jamais par un calcul à l’écran.
+        </p>
+      </section>
 
-        <section class="section-tight">
-          <Faq items={faq} title="L’estimation en pratique" />
-        </section>
-      </div>
+      <section class="section-tight">
+        <Faq items={faq} title="L’estimation en pratique" />
+      </section>
 
-      <div class="form-col">
-        <EstimationForm />
-      </div>
+      <p class="call panel panel-cream">
+        <Icon name="phone" size={20} />
+        <span>
+          Vous préférez en parler ? Appelez l’agence au{' '}
+          <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>, nous fixons le
+          rendez-vous ensemble.
+        </span>
+      </p>
     </div>
+
+    <aside class="form-col">
+      <EstimationForm />
+    </aside>
   </div>
+
+  <CtaBand
+    title="Une question avant de vous lancer ?"
+    text="Un conseiller vous répond sur votre situation, votre bien et le marché de votre commune, sans engagement."
+    primaryHref="/contact/"
+    primaryLabel="Poser ma question"
+    secondaryHref="/vendre/"
+    secondaryLabel="Découvrir notre méthode de vente"
+  />
 </Base>
 
 <style>
@@ -118,42 +121,78 @@ const crumbs = [
     gap: var(--space-xl);
   }
 
-  .head {
-    margin-bottom: var(--space-l);
+  .promises {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.4rem;
+    list-style: none;
+    margin: 0 0 var(--space-l);
+    padding: 0;
+    font-weight: 600;
+    color: var(--navy-900);
+  }
+
+  .promises li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .promises svg {
+    color: var(--gold-600);
   }
 
   .methods {
-    margin: 0;
+    list-style: none;
+    margin: 0 0 var(--space-s);
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
   }
 
-  .methods > div {
-    padding-block: var(--space-s);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .methods dt {
+  .methods li {
     display: flex;
-    align-items: center;
-    gap: var(--space-2xs);
-    font-weight: 650;
-    margin-bottom: 0.2rem;
+    gap: 1rem;
+    padding: 1.1rem 1.2rem;
+    background: var(--sand-50);
+    border: 1px solid var(--sand-100);
+    border-radius: var(--radius-m);
   }
 
   .num {
     display: grid;
     place-items: center;
-    width: 1.6rem;
-    height: 1.6rem;
+    flex: none;
+    width: 2.2rem;
+    height: 2.2rem;
     border-radius: var(--radius-pill);
-    background: var(--gold-50);
-    border: 1px solid var(--gold-200);
-    color: var(--gold-700);
+    background: var(--gold-400);
+    color: var(--navy-900);
+    font-weight: 700;
+  }
+
+  .methods h3 {
+    margin: 0.2rem 0 0.25rem;
+    font-size: 1.05rem;
+  }
+
+  .methods p {
+    margin: 0;
+    color: var(--ink-soft);
     font-size: var(--step--1);
   }
 
-  .methods dd {
+  .call {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
     margin: 0;
-    color: var(--ink-soft);
+  }
+
+  .call svg {
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--gold-700);
   }
 
   @media (min-width: 64rem) {
@@ -163,7 +202,7 @@ const crumbs = [
     }
     .form-col {
       position: sticky;
-      top: 5.5rem;
+      top: calc(var(--header-height) + 1rem);
     }
   }
 </style>

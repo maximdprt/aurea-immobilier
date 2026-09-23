@@ -1,0 +1,86 @@
+---
+/**
+ * En-tete des pages internes : fil d'Ariane, repere, titre, chapeau, actions
+ * et, en option, un visuel a droite. Fond creme, pour que chaque page
+ * commence de la meme facon et que l'on sache toujours ou l'on est.
+ */
+import Breadcrumb from '~/components/Breadcrumb.astro';
+import Picture from '~/components/Picture.astro';
+import type { Crumb } from '~/lib/schema';
+import type { MediaVariant } from '~/lib/types';
+
+interface Props {
+  title: string;
+  crumbs?: Crumb[];
+  kicker?: string;
+  lede?: string;
+  image?: MediaVariant | null;
+  imageAlt?: string;
+  /** `narrow` : colonne de lecture, pour les pages de texte. */
+  width?: 'wide' | 'narrow';
+  class?: string;
+}
+const { title, crumbs = [], kicker, lede, image = null, imageAlt = '', width = 'wide', class: className } =
+  Astro.props;
+---
+
+<header class:list={['page-header', image && 'has-image', className]}>
+  <div class:list={[width === 'narrow' ? 'wrap-narrow' : 'wrap', 'inner']}>
+    <div class="text">
+      {crumbs.length > 1 && <Breadcrumb crumbs={crumbs} />}
+      {kicker && <p class="kicker">{kicker}</p>}
+      <h1>{title}</h1>
+      {lede && <p class="lede">{lede}</p>}
+      <slot />
+    </div>
+    {
+      image && (
+        <div class="visual rise rise-2">
+          <Picture media={image} alt={imageAlt} sizes="(min-width: 64rem) 34rem, 100vw" aspect="4 / 3" priority />
+        </div>
+      )
+    }
+  </div>
+</header>
+
+<style>
+  .page-header {
+    background: var(--sand-50);
+    border-bottom: 1px solid var(--line);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+
+  .text > :global(.breadcrumb) {
+    margin-bottom: var(--space-s);
+  }
+
+  h1 {
+    margin-bottom: var(--space-xs);
+  }
+
+  .lede {
+    margin-bottom: 0;
+  }
+
+  .text > :global(.cluster) {
+    margin-top: var(--space-m);
+    margin-bottom: 0;
+  }
+
+  .visual :global(img) {
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-l);
+  }
+
+  @media (min-width: 64rem) {
+    .has-image .inner {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    }
+  }
+</style>

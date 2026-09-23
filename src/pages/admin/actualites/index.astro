@@ -1,0 +1,103 @@
+---
+/** Rubrique « Actualités » : la liste, et la création d'un nouvel article. */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { AdminDataError, adminDataReady } from '~/lib/server/admin-data';
+import { createNews, readNews, type AdminNews } from '~/lib/server/admin-news';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+let notice: { text: string; ok: boolean } | null = null;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const form = await Astro.request.formData();
+    const created = await createNews(String(form.get('title') ?? ''));
+    return Astro.redirect(`/admin/actualites/${created.id}/`, 303);
+  } catch (error) {
+    notice = { text: error instanceof AdminDataError ? error.message : 'Création impossible.', ok: false };
+  }
+}
+
+let items: AdminNews[] = [];
+let loadError: string | null = null;
+if (adminDataReady()) {
+  try {
+    items = await readNews();
+  } catch (error) {
+    loadError = error instanceof AdminDataError ? error.message : 'Lecture impossible.';
+  }
+} else {
+  loadError = 'La base n’est pas configurée : renseignez SUPABASE_SECRET_KEY_CONTENT pour gérer les actualités.';
+}
+
+const fmt = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' });
+---
+
+<AdminContenu
+  title="Actualités"
+  section="actualites"
+  heading="Actualités"
+  intro="Nouveautés, ventes conclues, vie de l’agence, conseils. Un article reste en brouillon tant que vous ne le publiez pas ; une fois publié, il apparaît sur la page Actualités et sur l’accueil."
+>
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+
+  <section class="bo-card">
+    <div class="bo-card-head"><h2>Nouvel article</h2></div>
+    <form method="post" class="new">
+      <p class="bo-f grow">
+        <label for="title">Titre</label>
+        <input id="title" name="title" required minlength="3" maxlength="160" placeholder="Par exemple : Une maison vendue en trois semaines à Limay" />
+      </p>
+      <button class="bo-btn" type="submit">Créer et rédiger</button>
+    </form>
+  </section>
+
+  <section class="bo-card">
+    <div class="bo-card-head">
+      <h2>Tous les articles</h2>
+      <a href="/actualites/" target="_blank" rel="noopener">Voir la page /actualites/ ↗</a>
+    </div>
+    {
+      items.length ? (
+        <table class="bo-table">
+          <thead>
+            <tr><th>Titre</th><th>État</th><th>Publié le</th><th>Modifié le</th><th></th></tr>
+          </thead>
+          <tbody>
+            {items.map((n) => (
+              <tr>
+                <td><a href={`/admin/actualites/${n.id}/`}>{n.title}</a></td>
+                <td><span class:list={['bo-pill', n.is_published ? 'on' : 'off']}>{n.is_published ? 'Publié' : 'Brouillon'}</span></td>
+                <td>{n.published_at ? fmt.format(new Date(n.published_at)) : '—'}</td>
+                <td>{fmt.format(new Date(n.updated_at))}</td>
+                <td><a class="bo-btn bo-btn-ghost bo-btn-sm" href={`/admin/actualites/${n.id}/`}>Modifier</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        !loadError && <p class="bo-hint">Aucun article pour le moment. Créez le premier ci-dessus.</p>
+      )
+    }
+  </section>
+</AdminContenu>
+
+<style>
+  .new {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+  }
+
+  .new .grow {
+    flex: 1 1 20rem;
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+/**
+ * Bandeau d'appel a l'action, marine : un titre, une phrase, deux boutons.
+ * Ferme la plupart des pages sur une proposition concrete.
+ */
+import Icon from '~/components/Icon.astro';
+import { agency, field } from '~/lib/content';
+
+interface Props {
+  title?: string;
+  text?: string;
+  primaryHref?: string;
+  primaryLabel?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+}
+const {
+  title = field('accueil.cta', 'titre'),
+  text = field('accueil.cta', 'texte'),
+  primaryHref = '/estimation/',
+  primaryLabel = 'Demander une estimation gratuite',
+  secondaryHref = '/contact/',
+  secondaryLabel = 'Nous contacter',
+} = Astro.props;
+const contact = agency();
+---
+
+<section class="cta-band">
+  <div class="wrap inner">
+    <div>
+      <h2>{title}</h2>
+      <p>{text}</p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-lg" href={primaryHref}>{primaryLabel}</a>
+      <a class="btn btn-lg btn-outline-light" href={secondaryHref}>{secondaryLabel}</a>
+      <a class="phone" href={`tel:${contact.phoneE164}`}>
+        <Icon name="phone" size={18} /> <span class="tnum">{contact.phone}</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    background: var(--navy-900);
+    color: #fff;
+    padding-block: clamp(3rem, 6vw, 4.5rem);
+    background-image: radial-gradient(circle at 85% 20%, rgb(224 174 94 / 0.18), transparent 45%);
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+
+  @media (min-width: 64rem) {
+    .inner {
+      grid-template-columns: 1.3fr 1fr;
+    }
+  }
+
+  h2 {
+    color: #fff;
+    margin-bottom: var(--space-xs);
+  }
+
+  p {
+    margin: 0;
+    color: rgb(255 255 255 / 0.8);
+    max-width: 52ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .btn-outline-light {
+    --btn-bg: transparent;
+    --btn-fg: #fff;
+    --btn-border: rgb(255 255 255 / 0.5);
+  }
+
+  .btn-outline-light:hover,
+  .btn-outline-light:focus-visible {
+    --btn-bg: rgb(255 255 255 / 0.1);
+    --btn-border: #fff;
+  }
+
+  .phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .phone:hover {
+    color: var(--gold-300);
+  }
+</style>

@@ -1,47 +1,26 @@
 ---
 /**
- * Vendre avec AUREA : methode, exclusivite, marketing, preuves (§7).
- * Les differenciants annonces par l'agence sont repris, mais aucun chiffre de
- * performance n'est invente — les cases vides sont visibles.
+ * Vendre avec AUREA : methode, moyens, preuves, questions (§7).
+ * Les textes viennent du registre `page.vendre` ; aucun chiffre de performance
+ * n'est invente — les indicateurs non fournis sont simplement absents.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
-import Picture from '~/components/Picture.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Icon from '~/components/Icon.astro';
 import Faq, { type FaqItem } from '~/components/Faq.astro';
-import Todo from '~/components/Todo.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import Reviews from '~/components/Reviews.astro';
 import { catalogStats, editorialMedia } from '~/lib/catalog';
 import { faqSchema } from '~/lib/schema';
+import { field, fieldPairs, agency } from '~/lib/content';
 
 const stats = catalogStats();
 const visual = editorialMedia('services');
+const contact = agency();
 
-const steps = [
-  {
-    title: 'Estimation et avis de valeur',
-    body: 'Visite sur place, relevé des caractéristiques, croisement de quatre méthodes de valorisation, puis remise d’un avis de valeur écrit et argumenté. Gratuit, sans engagement.',
-    delay: 'Sous 48 h après votre demande',
-  },
-  {
-    title: 'Mandat et préparation',
-    body: 'Signature du mandat, constitution du dossier de diagnostics, conseils de présentation. Nous vérifions en amont ce qui bloquerait la vente : DPE, copropriété, servitudes, urbanisme.',
-    delay: 'Quelques jours',
-  },
-  {
-    title: 'Reportage et mise en marché',
-    body: 'Photos professionnelles, visite virtuelle, vidéo par drone selon le bien, rédaction de l’annonce, diffusion sur les portails, notre site et notre fichier d’acquéreurs.',
-    delay: 'Sous une semaine après le mandat',
-  },
-  {
-    title: 'Visites et sélection',
-    body: 'Nous qualifions les candidats avant la visite — budget, financement, calendrier — pour ne faire venir chez vous que des acquéreurs crédibles, et nous vous rendons compte après chaque visite.',
-    delay: 'En continu',
-  },
-  {
-    title: 'Offre, compromis, signature',
-    body: 'Négociation, vérification du plan de financement, préparation du compromis avec le notaire, suivi des conditions suspensives jusqu’à l’acte authentique.',
-    delay: 'Environ 3 mois entre compromis et acte',
-  },
-];
+const steps = fieldPairs('page.vendre', 'etapes');
+const means = fieldPairs('page.vendre', 'moyens');
+const MEAN_ICONS = ['camera', 'compass', 'sparkle', 'handshake', 'shield', 'file'] as const;
 
 const faq: FaqItem[] = [
   {
@@ -66,7 +45,7 @@ const faq: FaqItem[] = [
   {
     question: 'Combien de temps faut-il pour vendre ?',
     answer:
-      'Le délai dépend du bien, du prix et du marché local. Nous publierons notre délai moyen constaté dès que l’agence nous aura communiqué le chiffre exact, plutôt qu’une promesse invérifiable.',
+      'Le délai dépend du bien, de son prix et du marché local. Un bien estimé au juste prix, bien présenté et proposé à des acquéreurs déjà qualifiés se vend plus vite : c’est précisément l’objet de notre méthode.',
   },
 ];
 
@@ -83,173 +62,299 @@ const crumbs = [
   crumbs={crumbs}
   schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
 >
-  <div class="page-band">
+  <PageHeader
+    title={field('page.vendre', 'titre')}
+    lede={field('page.vendre', 'chapo')}
+    crumbs={crumbs}
+    kicker="Vendre"
+    image={visual}
+    imageAlt="Conseillers AUREA Immobilier en rendez-vous de présentation d’un bien"
+  >
+    <p class="cluster">
+      <a class="btn" href="/estimation/">Demander une estimation gratuite</a>
+      <a class="btn btn-outline" href="/biens-vendus/">Voir nos réussites</a>
+    </p>
+  </PageHeader>
+
+  <!-- Chiffres -->
+  <section class="proof">
+    <dl class="wrap stats">
+      <div>
+        <dd>{stats.archivedTotal}</dd>
+        <dt>biens vendus ou loués depuis août 2024</dt>
+      </div>
+      <div>
+        <dd>{stats.communes}</dd>
+        <dt>communes où nous avons conclu une transaction</dt>
+      </div>
+      <div>
+        <dd>48 h</dd>
+        <dt>pour obtenir un avis de valeur écrit, gratuit</dt>
+      </div>
+      <div>
+        <dd>1</dd>
+        <dt>interlocuteur, du premier appel à la signature</dt>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Etapes -->
+  <section class="section">
     <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Vendre votre bien dans le Mantois</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
-
-  <div class="wrap section">
-    <header class="head">
-      <p class="lede">
-        {stats.archivedTotal} biens vendus ou loués depuis août&nbsp;2024. Une méthode identique
-        pour un studio et pour une maison de famille : c’est le même travail de préparation, de
-        présentation et de sélection des acquéreurs qui fait la différence sur le prix final.
-      </p>
-      <p class="cluster">
-        <a class="btn" href="/estimation/">Demander une estimation gratuite</a>
-        <a class="btn btn-secondary" href="/biens-vendus/">Voir nos réussites</a>
-      </p>
-    </header>
-
-    <section class="section-tight">
-      <h2>Les cinq étapes de la vente</h2>
+      <div class="section-head">
+        <div>
+          <p class="kicker">La méthode</p>
+          <h2>Les étapes de votre vente</h2>
+        </div>
+        <p class="lede">Vous savez à chaque moment où en est votre vente, et ce qui vient ensuite.</p>
+      </div>
       <ol class="steps">
         {
-          steps.map((s, i) => (
+          steps.map(([title, body, delay], i) => (
             <li>
               <span class="num" aria-hidden="true">{i + 1}</span>
-              <div>
-                <h3>{s.title}</h3>
-                <p>{s.body}</p>
-                <p class="small muted delay">{s.delay}</p>
+              <div class="step-body">
+                <h3>{title}</h3>
+                {body && <p>{body}</p>}
+                {delay && (
+                  <p class="delay">
+                    <Icon name="clock" size={15} /> {delay}
+                  </p>
+                )}
               </div>
             </li>
           ))
         }
       </ol>
-    </section>
+    </div>
+  </section>
 
-    <section class="section-tight">
-      <h2>Ce que nous mettons en œuvre</h2>
-      <div class="split">
-        <ul class="means">
-          <li><strong>Reportage photo professionnel</strong> — la qualité des photos décide du nombre de visites.</li>
-          <li><strong>Visite virtuelle</strong> — filtre les curieux et fait venir des acquéreurs déjà convaincus.</li>
-          <li><strong>Vidéo par drone</strong> — pour les biens dont l’environnement est un argument.</li>
-          <li><strong>Réseau intégré</strong> — courtiers, notaires, diagnostiqueurs, architectes, géomètres et paysagistes.</li>
-          <li><strong>Assistance juridique</strong> — sur les points de droit qui ralentissent une vente.</li>
-          <li><strong>Compte rendu après chaque visite</strong> — vous savez ce qui plaît et ce qui bloque.</li>
-        </ul>
-        <Picture
-          media={visual}
-          alt="Conseillers AUREA Immobilier en rendez-vous de présentation d'un bien"
-          sizes="(min-width: 56rem) 28rem, 92vw"
-          class="visual"
-        />
+  <!-- Moyens -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="kicker">Les moyens</p>
+          <h2>Ce que nous mettons en œuvre pour votre bien</h2>
+        </div>
       </div>
-      <p class="small muted">
-        Visite virtuelle et vidéo drone sont mises en avant par l’agence ; aucun lien de média
-        enrichi n’existait sur l’ancien site.
-        <Todo label="URL des visites virtuelles et vidéos à fournir" />
-      </p>
-    </section>
+      <ul class="means">
+        {
+          means.map(([title, text], i) => (
+            <li>
+              <span class="icon-pill">
+                <Icon name={MEAN_ICONS[i % MEAN_ICONS.length]} />
+              </span>
+              <div>
+                <h3>{title}</h3>
+                {text && <p>{text}</p>}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 
-    <section class="section-tight">
-      <h2>Nos résultats</h2>
-      <dl class="facts">
-        <div>
-          <dt>Transactions réalisées</dt>
-          <dd>{stats.archivedTotal}</dd>
-        </div>
-        <div>
-          <dt>Communes couvertes</dt>
-          <dd>{stats.communes}</dd>
-        </div>
-        <div>
-          <dt>Délai moyen de vente</dt>
-          <dd><Todo label="délai moyen de vente" /></dd>
-        </div>
-        <div>
-          <dt>Part de mandats exclusifs</dt>
-          <dd><Todo label="part de mandats exclusifs sur 12 mois" /></dd>
-        </div>
-      </dl>
-      <p class="small muted">
-        Nous n’affichons que des chiffres vérifiables. Les deux derniers seront publiés dès que
-        l’agence les aura communiqués, avec leur période de référence.
-      </p>
-    </section>
+  <!-- Estimation : passerelle -->
+  <section class="section">
+    <div class="wrap bridge">
+      <div class="bridge-text">
+        <p class="kicker">Première étape</p>
+        <h2>Tout commence par une estimation argumentée</h2>
+        <p class="lede">
+          Un conseiller se déplace, relève les caractéristiques de votre bien et croise quatre
+          méthodes de valorisation. Vous recevez un avis de valeur écrit, gratuit et sans
+          engagement.
+        </p>
+        <p class="cluster">
+          <a class="btn btn-navy" href="/estimation/">Estimer mon bien</a>
+          <a class="btn btn-outline" href="/guides/estimation-immobiliere-4-methodes/">Comprendre les quatre méthodes</a>
+        </p>
+      </div>
+      <ul class="bridge-list">
+        <li><Icon name="check" size={18} /> Visite sur place sous 48 h</li>
+        <li><Icon name="check" size={18} /> Avis de valeur écrit et expliqué</li>
+        <li><Icon name="check" size={18} /> Sans engagement</li>
+        <li><Icon name="check" size={18} /> Un conseiller joignable en direct au <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a></li>
+      </ul>
+    </div>
+  </section>
 
-    <section class="section-tight">
-      <Faq items={faq} title="Vendre avec AUREA : vos questions" />
-    </section>
+  <div class="wrap">
+    <Reviews limit={3} linkAll title="Ils ont vendu avec nous" />
   </div>
+
+  <section class="section">
+    <div class="wrap">
+      <Faq items={faq} title="Vendre avec AUREA : vos questions" />
+    </div>
+  </section>
+
+  <CtaBand
+    title="Prêt à vendre ? Commençons par le juste prix."
+    text="Demandez votre estimation gratuite : un conseiller vous rappelle sous 48 h ouvrées pour convenir d’une visite."
+  />
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
+  .proof {
+    border-bottom: 1px solid var(--line);
   }
 
+  .proof .stats {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 0;
+  }
+
+  .proof .stats > div {
+    padding: var(--space-m) var(--space-s);
+    text-align: center;
+  }
+
+  .proof .stats > div + div {
+    border-left: 1px solid var(--line);
+  }
+
+  @media (max-width: 40rem) {
+    .proof .stats {
+      grid-template-columns: 1fr 1fr;
+    }
+    .proof .stats > div:nth-child(3) {
+      border-left: 0;
+    }
+    .proof .stats > div:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+  }
+
+  /* --- Etapes ------------------------------------------------------------- */
   .steps {
     list-style: none;
-    counter-reset: step;
     margin: 0;
     padding: 0;
-    max-width: var(--measure);
+    max-width: 52rem;
   }
 
   .steps li {
+    position: relative;
     display: grid;
-    grid-template-columns: 2.5rem 1fr;
-    gap: var(--space-s);
-    padding-block: var(--space-m);
-    border-bottom: 1px solid var(--line);
+    grid-template-columns: 2.75rem 1fr;
+    gap: var(--space-m);
+    padding-bottom: var(--space-l);
+  }
+
+  .steps li:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: calc(1.375rem - 1px);
+    top: 2.75rem;
+    bottom: 0;
+    width: 2px;
+    background: var(--gold-200);
   }
 
   .num {
     display: grid;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: var(--radius-pill);
-    background: var(--gold-50);
-    border: 1px solid var(--gold-200);
-    color: var(--gold-700);
-    font-family: var(--font-display);
-    font-size: var(--step-1);
-    font-weight: 600;
+    background: var(--gold-400);
+    color: var(--navy-900);
+    font-weight: 700;
+    font-size: 1.05rem;
   }
 
-  .steps h3 {
-    margin-bottom: var(--space-3xs);
+  .step-body h3 {
+    margin: 0.35rem 0 0.35rem;
   }
 
-  .steps p {
-    margin-bottom: var(--space-3xs);
+  .step-body p {
+    margin-bottom: 0.4rem;
+    color: var(--ink-soft);
   }
 
   .delay {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     margin: 0;
+    font-size: var(--step--1);
+    color: var(--gold-700);
+    font-weight: 600;
   }
 
-  .split {
-    display: grid;
-    gap: var(--space-l);
-    align-items: start;
-  }
-
+  /* --- Moyens ------------------------------------------------------------- */
   .means {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
   .means li {
-    padding-block: var(--space-2xs);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .split :global(.visual img) {
+    display: flex;
+    gap: 1rem;
+    padding: 1.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: var(--radius-m);
   }
 
-  @media (min-width: 56rem) {
-    .split {
-      grid-template-columns: 1fr 28rem;
+  .means h3 {
+    margin: 0 0 0.3rem;
+    font-size: 1.05rem;
+  }
+
+  .means p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  /* --- Passerelle estimation ---------------------------------------------- */
+  .bridge {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+
+  @media (min-width: 64rem) {
+    .bridge {
+      grid-template-columns: 1.3fr 1fr;
     }
+  }
+
+  .bridge-list {
+    list-style: none;
+    margin: 0;
+    padding: 1.4rem 1.5rem;
+    background: var(--navy-900);
+    color: #fff;
+    border-radius: var(--radius-m);
+  }
+
+  .bridge-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding-block: 0.55rem;
+  }
+
+  .bridge-list li + li {
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  .bridge-list svg {
+    flex: none;
+    margin-top: 0.2rem;
+    color: var(--gold-300);
+  }
+
+  .bridge-list a {
+    color: var(--gold-300);
   }
 </style>

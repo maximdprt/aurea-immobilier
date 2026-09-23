@@ -1,0 +1,101 @@
+---
+/**
+ * Page de remerciement, atteinte apres l'envoi d'un formulaire SANS
+ * JavaScript : la route serveur redirige alors ici avec `?etat=ok` ou
+ * `?etat=erreur`. La page est pre-rendue ; un script minuscule affiche le
+ * bon message selon le parametre, et le message par defaut (succes) reste
+ * juste sans lui.
+ */
+import Base from '~/layouts/Base.astro';
+import Icon from '~/components/Icon.astro';
+import { agency } from '~/lib/content';
+
+const contact = agency();
+---
+
+<Base
+  title="Merci pour votre message – AUREA Immobilier"
+  description="Votre demande a bien été transmise à l’équipe AUREA Immobilier. Un conseiller vous répond sous 24 h ouvrées."
+  path="/merci/"
+  noindex
+  noActionBar
+>
+  <section class="section">
+    <div class="wrap-narrow">
+      <div class="box" data-state="ok" data-merci>
+        <span class="icon-pill"><Icon name="check" /></span>
+        <h1>Merci, votre demande est bien arrivée</h1>
+        <p class="lede">
+          Un conseiller vous répond sous 24 heures ouvrées. Si votre demande est urgente, vous
+          pouvez nous appeler directement.
+        </p>
+      </div>
+
+      <div class="box is-error" data-state="erreur" data-merci hidden>
+        <span class="icon-pill"><Icon name="info" /></span>
+        <h2 class="as-h1">Votre message n’a pas pu être envoyé</h2>
+        <p class="lede">
+          Une erreur s’est produite pendant l’envoi. Réessayez dans quelques instants, ou
+          appelez-nous : nous prendrons votre demande par téléphone.
+        </p>
+      </div>
+
+      <p class="cluster actions">
+        <a class="btn btn-navy" href={`tel:${contact.phoneE164}`}>
+          <Icon name="phone" size={18} /> <span class="tnum">{contact.phone}</span>
+        </a>
+        <a class="btn btn-outline" href="/">Retour à l’accueil</a>
+        <a class="btn btn-outline" href="/acheter/">Voir les biens</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const etat = new URLSearchParams(location.search).get('etat');
+  if (etat === 'erreur') {
+    document.querySelectorAll<HTMLElement>('[data-merci]').forEach((box) => {
+      box.hidden = box.dataset.state !== 'erreur';
+    });
+  }
+</script>
+
+<style>
+  .as-h1 {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    margin-bottom: var(--space-s);
+  }
+
+  .box {
+    padding: var(--space-l);
+    text-align: center;
+    background: var(--sand-50);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+  }
+
+  .box .icon-pill {
+    margin-bottom: var(--space-s);
+    background: var(--ok-bg);
+    color: var(--ok);
+  }
+
+  .box.is-error .icon-pill {
+    background: var(--danger-bg);
+    color: var(--danger);
+  }
+
+  .box h1 {
+    font-size: var(--step-3);
+  }
+
+  .box .lede {
+    margin: 0 auto;
+  }
+
+  .actions {
+    justify-content: center;
+    margin-top: var(--space-l);
+  }
+</style>

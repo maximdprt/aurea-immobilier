@@ -170,7 +170,7 @@ export const POST: APIRoute = async ({ request }) => {
            ignorez ce message : rien n’a été modifié.</p>`
         ),
       });
-      return jsonOk();
+      return jsonOk(request);
     }
 
     /* Cas 1 et 2 — nouvelle inscription, ou inscription encore en attente : on
@@ -235,7 +235,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     return jsonOk();
   } catch (error) {
-    return jsonError(error);
+    return jsonError(error, request);
   }
 };
 

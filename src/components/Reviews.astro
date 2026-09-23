@@ -1,0 +1,211 @@
+---
+/**
+ * Avis clients : la note Google si l'agence l'a renseignee, puis les avis
+ * copies mot pour mot. Le composant ne rend RIEN quand il n'y a ni note ni
+ * avis : mieux vaut une section absente qu'une promesse vide.
+ *
+ * Rappel §12 : aucun balisage Review / AggregateRating.
+ */
+import Icon from '~/components/Icon.astro';
+import { allReviews, googleRating, type Review } from '~/lib/reviews';
+import { agentBySlug } from '~/lib/catalog';
+import { frDate } from '~/lib/format';
+
+interface Props {
+  title?: string;
+  /** Nombre d'avis affiches ; tous par defaut. */
+  limit?: number;
+  reviews?: Review[];
+  /** Affiche le lien « tous les avis » vers /avis/. */
+  linkAll?: boolean;
+  compact?: boolean;
+}
+const { title = 'Ils nous ont fait confiance', limit, reviews = allReviews(), linkAll = false, compact = false } =
+  Astro.props;
+
+const rating = googleRating();
+const shown = limit ? reviews.slice(0, limit) : reviews;
+const stars = (n: number) => '★'.repeat(Math.max(0, Math.min(5, n)));
+---
+
+{
+  (rating || shown.length > 0) && (
+    <section class:list={['reviews', compact && 'is-compact']}>
+      <div class="head">
+        <div>
+          <p class="kicker">Avis clients</p>
+          <h2>{title}</h2>
+        </div>
+        {rating && (
+          <p class="rating">
+            <span class="score">{rating.rating}<small>/5</small></span>
+            <span class="stars" aria-hidden="true">{stars(Math.round(Number(rating.rating.replace(',', '.'))))}</span>
+            <span class="count">
+              {rating.count} avis Google{rating.surveyedAt && `, relevés le ${rating.surveyedAt}`}
+            </span>
+            {rating.profileUrl && (
+              <a href={rating.profileUrl} rel="noopener" target="_blank" class="small">
+                Voir sur Google <span class="visually-hidden">(nouvel onglet)</span>
+              </a>
+            )}
+          </p>
+        )}
+      </div>
+
+      {shown.length > 0 && (
+        <ul class="list">
+          {shown.map((r) => {
+            const agent = r.agentSlug ? agentBySlug(r.agentSlug) : null;
+            return (
+              <li class="card">
+                <Icon name="quote" size={26} class="q" />
+                <p class="stars-row" aria-label={`${r.rating} étoiles sur 5`}>
+                  <span aria-hidden="true">{stars(r.rating)}</span>
+                </p>
+                <blockquote>
+                  <p>{r.body}</p>
+                </blockquote>
+                <footer>
+                  <strong>{r.author}</strong>
+                  {r.publishedOn && <span class="muted"> · {frDate(r.publishedOn)}</span>}
+                  {agent && (
+                    <span class="muted">
+                      {' '}· conseiller : <a href={`/equipe/${agent.slug}/`}>{agent.name}</a>
+                    </span>
+                  )}
+                </footer>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <p class="policy small muted">
+        Les avis affichés sont publiés sur Google et reproduits sans modification.
+        {linkAll && (
+          <>
+            {' '}
+            <a href="/avis/">Voir tous les avis</a>.
+          </>
+        )}
+        {rating?.reviewUrl && (
+          <>
+            {' '}
+            <a href={rating.reviewUrl} rel="noopener" target="_blank">
+              Laisser un avis <span class="visually-hidden">(nouvel onglet)</span>
+            </a>
+            .
+          </>
+        )}
+      </p>
+    </section>
+  )
+}
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-m);
+    margin-bottom: var(--space-l);
+  }
+
+  .head h2 {
+    margin: 0;
+  }
+
+  .rating {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 0 0.75rem;
+    margin: 0;
+    padding: 0.9rem 1.2rem;
+    background: var(--sand-50);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .score {
+    grid-row: 1 / span 2;
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--navy-900);
+  }
+
+  .score small {
+    font-size: 1rem;
+    color: var(--ink-muted);
+  }
+
+  .stars {
+    color: var(--gold-500);
+    letter-spacing: 0.08em;
+    font-size: 1.1rem;
+  }
+
+  .count {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .rating .small {
+    grid-column: 1 / -1;
+    margin-top: 0.35rem;
+  }
+
+  .list {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    list-style: none;
+    margin: 0 0 var(--space-s);
+    padding: 0;
+  }
+
+  .card {
+    position: relative;
+    padding: 1.4rem 1.4rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .card :global(.q) {
+    position: absolute;
+    top: 1rem;
+    right: 1.1rem;
+    color: var(--gold-200);
+  }
+
+  .stars-row {
+    margin: 0 0 0.6rem;
+    color: var(--gold-500);
+    letter-spacing: 0.08em;
+  }
+
+  blockquote {
+    margin: 0 0 0.9rem;
+  }
+
+  blockquote p {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    font-size: var(--step--1);
+  }
+
+  .policy {
+    margin: 0;
+  }
+
+  .is-compact .card {
+    padding: 1.1rem;
+  }
+</style>

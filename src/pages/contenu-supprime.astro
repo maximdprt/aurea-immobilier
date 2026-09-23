@@ -1,13 +1,46 @@
 ---
 /**
  * Destination des URL de l'ancien site dont la fonctionnalité n'est pas reprise
- * (espace compte, sélection, URL parasites).
+ * (espace compte, URL parasites).
  *
  * Vercel ne sait pas répondre 410 depuis sa table de redirections : on redirige
  * vers cette page, qui porte un `noindex` et explique la disparition plutôt que
  * de laisser une 404 muette (§9, §10).
  */
 import Base from '~/layouts/Base.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Icon from '~/components/Icon.astro';
+
+const replacements = [
+  {
+    icon: 'user',
+    was: 'Espace « Mon compte »',
+    now: 'Supprimé. Le site ne crée plus de compte client : moins de données personnelles collectées, et moins de surface exposée. Pour suivre un dossier, votre conseiller reste votre interlocuteur direct.',
+    href: '/equipe/',
+    label: 'Trouver mon conseiller',
+  },
+  {
+    icon: 'heart',
+    was: '« Ma sélection »',
+    now: 'Vos biens favoris sont désormais mémorisés dans votre navigateur, sans compte ni envoi de données à l’agence.',
+    href: '/selection/',
+    label: 'Voir ma sélection',
+  },
+  {
+    icon: 'bell',
+    was: 'Alertes par email',
+    now: 'Toujours disponibles, avec confirmation par email et désabonnement en un clic.',
+    href: '/alerte/',
+    label: 'Créer une alerte',
+  },
+  {
+    icon: 'file',
+    was: 'Fiches imprimables',
+    now: 'Supprimées : chaque fiche de bien s’imprime directement depuis votre navigateur, avec une mise en page adaptée.',
+    href: '/acheter/',
+    label: 'Voir les biens',
+  },
+] as const;
 ---
 
 <Base
@@ -16,88 +49,68 @@ import Base from '~/layouts/Base.astro';
   path="/contenu-supprime/"
   noindex
 >
-  <div class="wrap-narrow section">
-    <h1>Cette page n’existe plus</h1>
-    <p class="lede">
-      Vous suivez un lien vers une fonctionnalité de l’ancien site qui n’a pas été reprise.
-    </p>
+  <PageHeader
+    title="Cette page n’existe plus"
+    lede="Vous suivez un lien vers une fonctionnalité de l’ancien site qui n’a pas été reprise. Voici ce qui la remplace."
+    width="narrow"
+  />
 
-    <div class="panel">
-      <h2>Ce qui remplace quoi</h2>
-      <dl>
-        <div>
-          <dt>Espace « Mon compte »</dt>
-          <dd>
-            Supprimé. Le site ne crée plus de compte client : moins de données personnelles
-            collectées, et moins de surface exposée. Pour suivre un dossier, votre conseiller reste
-            votre interlocuteur direct.
-          </dd>
-        </div>
-        <div>
-          <dt>« Ma sélection »</dt>
-          <dd>
-            Vos biens favoris sont désormais mémorisés dans votre navigateur, sans compte ni envoi
-            de données à l’agence.
-          </dd>
-        </div>
-        <div>
-          <dt>Alertes par email</dt>
-          <dd>
-            Toujours disponibles, avec confirmation par email et désabonnement en un clic.
-            <a href="/contact/">Nous écrire pour créer une alerte</a>.
-          </dd>
-        </div>
-        <div>
-          <dt>Fiches imprimables</dt>
-          <dd>
-            Supprimées : chaque fiche de bien s’imprime directement depuis votre navigateur, avec
-            une mise en page adaptée.
-          </dd>
-        </div>
-      </dl>
-    </div>
+  <div class="wrap-narrow section">
+    <ul class="list">
+      {
+        replacements.map((r) => (
+          <li>
+            <span class="icon-pill"><Icon name={r.icon} /></span>
+            <div>
+              <h2>{r.was}</h2>
+              <p>{r.now}</p>
+              <a class="link-arrow" href={r.href}>{r.label}</a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
 
     <p class="cluster">
       <a class="btn" href="/acheter/">Voir les biens à vendre</a>
-      <a class="btn btn-secondary" href="/">Retour à l’accueil</a>
+      <a class="btn btn-outline" href="/">Retour à l’accueil</a>
     </p>
   </div>
 </Base>
 
 <style>
-  h1 {
-    margin-bottom: var(--space-2xs);
+  .list {
+    display: grid;
+    gap: var(--space-s);
+    list-style: none;
+    margin: 0 0 var(--space-l);
+    padding: 0;
   }
 
-  .panel {
-    margin-block: var(--space-l);
+  .list li {
+    display: flex;
+    gap: 1rem;
+    padding: 1.2rem 1.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
   }
 
-  .panel h2 {
+  h2 {
     font-family: var(--font-body);
-    font-size: var(--step-1);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
   }
 
-  dl {
-    margin: 0;
-  }
-
-  dl > div {
-    padding-block: var(--space-s);
-    border-bottom: 1px solid var(--line);
-  }
-
-  dl > div:last-child {
-    border-bottom: 0;
-  }
-
-  dt {
-    font-weight: 650;
-    margin-bottom: 0.15rem;
-  }
-
-  dd {
-    margin: 0;
+  .list p {
+    margin-bottom: 0.5rem;
     color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  .list .link-arrow {
+    font-size: var(--step--1);
+    color: var(--gold-700);
   }
 </style>

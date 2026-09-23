@@ -1,0 +1,186 @@
+---
+/**
+ * Rubrique « Équipe ».
+ *
+ * Écrit directement dans la table `agents`, que le site lit au build. Le
+ * `slug` d'une fiche existante n'est pas modifiable : il sert d'adresse à la
+ * page publique et de clé aux annonces. Un nouveau conseiller reçoit un slug
+ * dérivé de son nom.
+ */
+import AdminContenu from '~/layouts/AdminContenu.astro';
+import { hasAdminSession } from '~/lib/server/admin-code';
+import { AdminDataError, adminDataReady, insertAgent, readAgents, updateAgent, type AdminAgent } from '~/lib/server/admin-data';
+import { publicUrl, readAssets } from '~/lib/server/admin-media';
+import { slugify } from '~/lib/server/admin-news';
+import { publishMessage, publishSite } from '~/lib/server/publish';
+import rawMedia from '~/data/media.json';
+
+export const prerender = false;
+
+if (!(await hasAdminSession(Astro.cookies))) {
+  return Astro.redirect('/admin/code/', 302);
+}
+
+const manifest = rawMedia as Record<string, any>;
+let notice: { text: string; ok: boolean } | null = null;
+
+const optional = (form: FormData, field: string, max: number): string | null => {
+  const raw = String(form.get(field) ?? '').trim();
+  return raw === '' ? null : raw.slice(0, max);
+};
+
+const validate = (form: FormData) => {
+  const name = String(form.get('name') ?? '').trim();
+  const role = String(form.get('role') ?? '').trim();
+  if (name.length < 2 || name.length > 80) throw new AdminDataError('Le nom doit faire entre 2 et 80 caractères.');
+  if (role.length < 2 || role.length > 80) throw new AdminDataError('Le rôle doit faire entre 2 et 80 caractères.');
+  const email = optional(form, 'email', 254);
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new AdminDataError('L’adresse email n’est pas valide.');
+  const phone = optional(form, 'phone', 25);
+  if (phone && !/^[0-9+().\s-]+$/.test(phone)) throw new AdminDataError('Le téléphone ne doit contenir que des chiffres et des séparateurs.');
+  const position = Number(form.get('position') ?? 100);
+  return { name, role, email, phone, position: Number.isInteger(position) ? Math.max(0, Math.min(999, position)) : 100 };
+};
+
+if (Astro.request.method === 'POST') {
+  try {
+    const form = await Astro.request.formData();
+    const action = String(form.get('action') ?? 'update');
+    const data = validate(form);
+
+    if (action === 'create') {
+      const slug = slugify(data.name);
+      if (!/^[a-z0-9-]{2,80}$/.test(slug)) throw new AdminDataError('Ce nom ne permet pas de créer une adresse de page.');
+      await insertAgent({ slug, ...data });
+    } else {
+      const slug = String(form.get('slug') ?? '').trim();
+      if (!/^[a-z0-9-]{2,80}$/.test(slug)) throw new AdminDataError('Fiche inconnue.');
+      await updateAgent(slug, {
+        ...data,
+        // Reprise telle quelle sur /equipe/. Vidée, la fiche passe au format
+        // court : aucun texte n'est fabriqué à la place.
+        bio: optional(form, 'bio', 4000),
+        is_active: form.get('is_active') === '1',
+      });
+    }
+    notice = { text: publishMessage(await publishSite()), ok: true };
+  } catch (error) {
+    notice = { text: error instanceof AdminDataError ? error.message : 'Enregistrement impossible.', ok: false };
+    if (error instanceof AdminDataError && error.internal) console.warn('[admin/equipe]', error.internal);
+  }
+}
+
+let agents: AdminAgent[] = [];
+let assets = new Map<string, { storage_path: string }>();
+let loadError: string | null = null;
+if (adminDataReady()) {
+  try {
+    [agents, assets] = await Promise.all([readAgents(), readAssets()]);
+  } catch (error) {
+    loadError = error instanceof AdminDataError ? error.message : 'Lecture impossible.';
+  }
+} else {
+  loadError = 'La base n’est pas configurée : renseignez SUPABASE_SECRET_KEY_CONTENT pour modifier l’équipe.';
+}
+
+const portrait = (slug: string): string | null => {
+  const a = assets.get(`agent:${slug}`);
+  if (a) return publicUrl(a.storage_path);
+  const m = manifest[`agent:${slug}`];
+  return m ? `${m.base}-${m.fallbackWidth}.webp` : null;
+};
+---
+
+<AdminContenu
+  title="Équipe"
+  section="equipe"
+  heading="Équipe"
+  intro="Ces fiches alimentent la page « L’équipe », la page « Notre agence », les fiches des biens et les signatures des actualités. L’ordre d’affichage suit le champ « ordre » (le plus petit en premier)."
+>
+  {notice && <p class:list={['bo-notice', notice.ok ? 'ok' : 'ko']} role="status">{notice.text}</p>}
+  {loadError && <p class="bo-notice ko">{loadError}</p>}
+
+  <section class="bo-card">
+    <div class="bo-card-head"><h2>Ajouter un conseiller</h2></div>
+    <form method="post">
+      <input type="hidden" name="action" value="create" />
+      <div class="bo-grid3">
+        <p class="bo-f"><label for="c-name">Nom complet</label><input id="c-name" name="name" required maxlength="80" /></p>
+        <p class="bo-f"><label for="c-role">Rôle</label><input id="c-role" name="role" required maxlength="80" placeholder="Négociateur, Gestionnaire locative…" /></p>
+        <p class="bo-f"><label for="c-pos">Ordre</label><input id="c-pos" name="position" type="number" min="0" max="999" value="100" /></p>
+        <p class="bo-f"><label for="c-email">Email professionnel</label><input id="c-email" name="email" type="email" maxlength="254" /></p>
+        <p class="bo-f"><label for="c-phone">Ligne directe</label><input id="c-phone" name="phone" maxlength="25" /></p>
+      </div>
+      <div class="bo-card-foot">
+        <span class="bo-hint">Le portrait s’ajoute ensuite dans « Photos & visuels ».</span>
+        <button class="bo-btn" type="submit">Créer la fiche</button>
+      </div>
+    </form>
+  </section>
+
+  {
+    agents.map((a) => (
+      <form class="bo-card fiche" method="post">
+        <input type="hidden" name="action" value="update" />
+        <input type="hidden" name="slug" value={a.slug} />
+        <div class="portrait">
+          {portrait(a.slug) ? <img src={portrait(a.slug)!} alt="" loading="lazy" /> : <span class="bo-hint">Pas de portrait</span>}
+          <a class="bo-btn bo-btn-ghost bo-btn-sm" href="/admin/medias/#equipe">Changer la photo</a>
+        </div>
+        <div>
+          <div class="bo-card-head">
+            <h2>{a.name}</h2>
+            <a href={`/equipe/${a.slug}/`} target="_blank" rel="noopener">/equipe/{a.slug}/ ↗</a>
+          </div>
+          <div class="bo-grid3">
+            <p class="bo-f"><label for={`n-${a.slug}`}>Nom affiché</label><input id={`n-${a.slug}`} name="name" value={a.name} required maxlength="80" /></p>
+            <p class="bo-f"><label for={`r-${a.slug}`}>Rôle</label><input id={`r-${a.slug}`} name="role" value={a.role} required maxlength="80" /></p>
+            <p class="bo-f"><label for={`o-${a.slug}`}>Ordre</label><input id={`o-${a.slug}`} name="position" type="number" min="0" max="999" value={a.position} /></p>
+            <p class="bo-f"><label for={`e-${a.slug}`}>Email</label><input id={`e-${a.slug}`} name="email" type="email" value={a.email ?? ''} maxlength="254" /></p>
+            <p class="bo-f"><label for={`t-${a.slug}`}>Ligne directe</label><input id={`t-${a.slug}`} name="phone" value={a.phone ?? ''} maxlength="25" /></p>
+          </div>
+          <p class="bo-f">
+            <label for={`b-${a.slug}`}>Présentation</label>
+            <textarea id={`b-${a.slug}`} name="bio" rows="5" maxlength="4000">{a.bio ?? ''}</textarea>
+            <span class="bo-hint">Écrite à la première personne par le conseiller. Une ligne vide sépare deux paragraphes. Laissée vide, la fiche reste au format court.</span>
+          </p>
+          <div class="bo-card-foot">
+            <label class="bo-check"><input type="checkbox" name="is_active" value="1" checked={a.is_active} /><span>Affiché sur le site</span></label>
+            <button class="bo-btn" type="submit">Enregistrer</button>
+          </div>
+        </div>
+      </form>
+    ))
+  }
+</AdminContenu>
+
+<style>
+  .fiche {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .portrait {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+
+  .portrait img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
+
+  @media (max-width: 700px) {
+    .fiche {
+      grid-template-columns: 1fr;
+    }
+    .portrait img {
+      max-width: 8rem;
+    }
+  }
+</style>

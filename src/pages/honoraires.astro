@@ -3,25 +3,24 @@
  * Barème des honoraires.
  *
  * Obligation professionnelle : le barème doit être accessible depuis toutes
- * les pages, en HTML et pas seulement en PDF (§15). Sur l'ancien site, il
- * n'existait qu'en PDF, et le serveur le servait de façon instable — la même
- * URL renvoyait tantôt le PDF, tantôt un PNG (§3.2).
- *
- * Les taux ci-dessous sont transcrits du PDF publié par l'agence
- * (scrapper_aurea/files/nos-honoraires-385554.pdf). Ils doivent être confirmés
- * et datés avant la mise en ligne : un barème est un document opposable.
+ * les pages, en HTML et pas seulement en PDF (§15). Les taux viennent du
+ * back-office (registre `agence.honoraires`), avec pour repli ceux transcrits
+ * du PDF publié par l'agence.
  */
 import Base from '~/layouts/Base.astro';
-import Breadcrumb from '~/components/Breadcrumb.astro';
-import Todo from '~/components/Todo.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Icon from '~/components/Icon.astro';
 import { COMPANY, REGULATED, LEGAL_DISCREPANCIES, isMissing } from '~/lib/site';
+import { agency, field, fieldPairs } from '~/lib/content';
 
-const sale = [
-  ['Biens immobiliers à usage d’habitation', '6 %', '10 000 € TTC'],
-  ['Terrain non constructible', '10 %', '—'],
-  ['Terrain constructible', '10 %', '—'],
-  ['Parkings et box', '10 %', '2 500 € TTC'],
-];
+const recette = import.meta.env.PUBLIC_RECETTE === '1';
+const contact = agency();
+
+const sale = fieldPairs('agence.honoraires', 'vente');
+const rental = fieldPairs('agence.honoraires', 'location');
+const management = fieldPairs('agence.honoraires', 'gestion');
+const inForce = field('agence.honoraires', 'en_vigueur');
+const mention = field('agence.honoraires', 'mention');
 
 const crumbs = [
   { label: 'Accueil', href: '/' },
@@ -35,51 +34,52 @@ const crumbs = [
   path="/honoraires/"
   crumbs={crumbs}
 >
-  <div class="page-band">
-    <div class="wrap">
-      <Breadcrumb crumbs={crumbs} onDark />
-      <h1>Barème des honoraires</h1>
-    </div>
-  </div>
-  <div class="border-header" aria-hidden="true"></div>
+  <PageHeader
+    title="Barème des honoraires"
+    kicker="Transparence"
+    lede="Nos honoraires sont publics. Le prix affiché sur chaque annonce les inclut, et l’annonce précise qui les prend en charge."
+    crumbs={crumbs}
+    width="narrow"
+  >
+    {
+      inForce && (
+        <p class="updated">
+          <Icon name="calendar" size={15} /> Barème en vigueur depuis le {inForce}
+        </p>
+      )
+    }
+  </PageHeader>
 
   <div class="wrap-narrow section">
-    <header class="head">
-      <p class="lede">
-        Nos honoraires sont publics. Le prix affiché sur chaque annonce les inclut, et l’annonce
-        précise qui les prend en charge.
-      </p>
-      <p class="updated">
-        Barème en vigueur au <Todo label="date d’entrée en vigueur du barème" />. Transcrit du
-        document publié par l’agence.
-      </p>
-    </header>
-
-    <section>
+    <section class="bloc">
       <h2>Transaction — vente</h2>
-      <div class="table-wrap">
-        <table>
-          <caption class="visually-hidden">Honoraires de transaction</caption>
-          <thead>
-            <tr>
-              <th scope="col">Nature du bien</th>
-              <th scope="col">Forfait ou % du prix de vente</th>
-              <th scope="col">Minimum</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              sale.map(([label, rate, min]) => (
+      {
+        sale.length > 0 ? (
+          <div class="table-wrap">
+            <table>
+              <caption class="visually-hidden">Honoraires de transaction</caption>
+              <thead>
                 <tr>
-                  <th scope="row">{label}</th>
-                  <td>{rate}</td>
-                  <td>{min}</td>
+                  <th scope="col">Nature du bien</th>
+                  <th scope="col">Honoraires</th>
+                  <th scope="col">Minimum</th>
                 </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {sale.map(([label, rate, min]) => (
+                  <tr>
+                    <th scope="row">{label}</th>
+                    <td class="tnum">{rate ?? '—'}</td>
+                    <td class="tnum">{min || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p class="notice">Barème de transaction communiqué sur simple demande à l’agence.</p>
+        )
+      }
       <p>
         Les honoraires sont <strong>à la charge du vendeur</strong>. À titre exceptionnel, ils
         peuvent être mis à la charge de l’acquéreur : le barème appliqué est alors identique à
@@ -88,67 +88,76 @@ const crumbs = [
       <p class="small muted">La délivrance d’une note d’honoraires est obligatoire.</p>
     </section>
 
-    <section>
+    <section class="bloc">
       <h2>Location</h2>
-      <div class="table-wrap">
-        <table>
-          <caption class="visually-hidden">Honoraires de location</caption>
-          <thead>
-            <tr>
-              <th scope="col">Prestation</th>
-              <th scope="col">Part locataire</th>
-              <th scope="col">Part bailleur</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Visite, constitution du dossier et rédaction du bail</th>
-              <td><Todo label="€/m² de surface habitable, part locataire" /></td>
-              <td><Todo label="part bailleur" /></td>
-            </tr>
-            <tr>
-              <th scope="row">État des lieux</th>
-              <td><Todo label="€/m², part locataire" /></td>
-              <td><Todo label="part bailleur" /></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {
+        rental.length > 0 ? (
+          <div class="table-wrap">
+            <table>
+              <caption class="visually-hidden">Honoraires de location</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Prestation</th>
+                  <th scope="col">Part locataire</th>
+                  <th scope="col">Part bailleur</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rental.map(([label, tenant, owner]) => (
+                  <tr>
+                    <th scope="row">{label}</th>
+                    <td class="tnum">{tenant || '—'}</td>
+                    <td class="tnum">{owner || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p class="notice">Barème de location communiqué sur simple demande à l’agence.</p>
+        )
+      }
       <p class="small muted">
         Les honoraires à la charge du locataire sont plafonnés par décret, au mètre carré de
         surface habitable et selon la zone. Ils ne peuvent pas dépasser ceux du bailleur.
       </p>
     </section>
 
-    <section>
+    <section class="bloc">
       <h2>Gestion locative</h2>
-      <div class="table-wrap">
-        <table>
-          <caption class="visually-hidden">Honoraires de gestion locative</caption>
-          <thead>
-            <tr>
-              <th scope="col">Prestation</th>
-              <th scope="col">Honoraires</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Gestion courante</th>
-              <td><Todo label="% HT et TTC des loyers encaissés" /></td>
-            </tr>
-            <tr>
-              <th scope="row">Garantie loyers impayés (option)</th>
-              <td><Todo label="taux de la GLI, si l’offre existe" /></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {
+        management.length > 0 ? (
+          <div class="table-wrap">
+            <table>
+              <caption class="visually-hidden">Honoraires de gestion locative</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Prestation</th>
+                  <th scope="col">Honoraires</th>
+                </tr>
+              </thead>
+              <tbody>
+                {management.map(([label, fee]) => (
+                  <tr>
+                    <th scope="row">{label}</th>
+                    <td class="tnum">{fee || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p class="notice">Barème de gestion locative communiqué sur simple demande à l’agence.</p>
+        )
+      }
       <p class="small">
-        <a href="/gestion-locative/">Découvrir ce que comprend notre mandat de gestion</a>
+        <a href="/gestion-locative/" class="link-arrow">Découvrir ce que comprend notre mandat de gestion</a>
       </p>
     </section>
 
-    <section class="regulated">
+    {mention && <p class="mention">{mention}</p>}
+
+    <section class="bloc regulated">
       <h2>Mentions réglementaires</h2>
       <dl>
         <div>
@@ -179,66 +188,83 @@ const crumbs = [
             représentatifs de sa rémunération ou de sa commission.
           </dd>
         </div>
-        <div>
-          <dt>Garantie financière</dt>
-          <dd>
-            {
-              isMissing(REGULATED.financialGuarantee) ? (
-                <Todo label={REGULATED.financialGuarantee.__missing} />
-              ) : (
-                REGULATED.financialGuarantee
-              )
-            }
-          </dd>
-        </div>
+        {
+          !isMissing(REGULATED.financialGuarantee) && (
+            <div>
+              <dt>Garantie financière</dt>
+              <dd>{REGULATED.financialGuarantee}</dd>
+            </div>
+          )
+        }
       </dl>
       <p class="small muted">Source : {REGULATED.source}.</p>
     </section>
 
-    <aside class="notice">
-      <h2>Points à trancher avant publication</h2>
-      <ul>
-        {
-          LEGAL_DISCREPANCIES.map((d) => (
+    {
+      recette && (
+        <aside class="notice">
+          <h2 class="notice-title">Points à trancher avant publication</h2>
+          <ul>
+            {LEGAL_DISCREPANCIES.map((d) => (
+              <li>
+                <strong>{d.field}</strong> — mentions légales : {d.inLegalNotice} ; barème des
+                honoraires : {d.inFeesPdf}. {d.note}
+              </li>
+            ))}
             <li>
-              <strong>{d.field}</strong> — mentions légales : {d.inLegalNotice} ; barème des
-              honoraires : {d.inFeesPdf}. {d.note}
+              <strong>Garantie financière et gestion locative</strong> — la déclaration de
+              non-détention de fonds figurant au barème est difficilement compatible avec
+              l’encaissement de loyers pour le compte de propriétaires. À faire confirmer.
             </li>
-          ))
-        }
-        <li>
-          <strong>Garantie financière et gestion locative</strong> — la déclaration de
-          non-détention de fonds figurant au barème est difficilement compatible avec
-          l’encaissement de loyers pour le compte de propriétaires. À faire confirmer.
-        </li>
-      </ul>
-      <p class="small">
-        Cet encadré est destiné à l’agence et sera retiré une fois les points résolus.
-      </p>
-    </aside>
+          </ul>
+          <p class="small">Cet encadré n’est visible qu’en recette.</p>
+        </aside>
+      )
+    }
 
-    <p class="small muted">
-      <a href="/files/nos-honoraires.pdf" download>Télécharger le barème au format PDF</a> — la
-      version HTML ci-dessus fait foi pour l’accessibilité.
+    <p class="foot">
+      <a class="btn btn-outline" href="/files/nos-honoraires.pdf" download>
+        <Icon name="file" size={18} /> Télécharger le barème (PDF)
+      </a>
+      <span class="small muted">
+        La version HTML ci-dessus fait foi pour l’accessibilité. Une question ?{' '}
+        <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>
+      </span>
     </p>
   </div>
 </Base>
 
 <style>
-  .head {
-    margin-bottom: var(--space-l);
+  .updated {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: var(--space-s) 0 0;
   }
 
-  section {
+  .bloc {
     margin-bottom: var(--space-xl);
   }
 
-  section h2 {
+  .bloc h2 {
     font-size: var(--step-2);
   }
 
+  .table-wrap {
+    margin-bottom: var(--space-s);
+  }
+
+  .mention {
+    padding: var(--space-s) var(--space-m);
+    margin-bottom: var(--space-xl);
+    background: var(--sand-50);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    color: var(--ink-soft);
+  }
+
   .regulated dl {
-    margin: 0;
+    margin: 0 0 var(--space-s);
   }
 
   .regulated dl > div {
@@ -255,7 +281,7 @@ const crumbs = [
     margin: 0;
   }
 
-  .notice h2 {
+  .notice-title {
     font-family: var(--font-body);
     font-size: var(--step-0);
     margin-bottom: var(--space-2xs);
@@ -268,5 +294,13 @@ const crumbs = [
 
   .notice li + li {
     margin-top: var(--space-2xs);
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    margin: var(--space-l) 0 0;
   }
 </style>

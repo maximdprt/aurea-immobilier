@@ -41,7 +41,7 @@ const scaleName = kind === 'dpe' ? 'classe énergie' : 'classe climat';
         </ol>
         <p class="value">
           <strong>Classe {value}</strong>
-          {amount != null && <> — {amount} {unit}</>}
+          {amount != null && <span class="muted"> · {amount} {unit}</span>}
         </p>
       </>
     ) : (
@@ -53,7 +53,11 @@ const scaleName = kind === 'dpe' ? 'classe énergie' : 'classe climat';
 <style>
   .energy {
     display: grid;
-    gap: 0.4rem;
+    gap: 0.5rem;
+    padding: 1rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
   }
 
   .label {
@@ -65,7 +69,7 @@ const scaleName = kind === 'dpe' ? 'classe énergie' : 'classe climat';
 
   .scale {
     display: flex;
-    gap: 3px;
+    gap: 4px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -75,8 +79,8 @@ const scaleName = kind === 'dpe' ? 'classe énergie' : 'classe climat';
     flex: 1;
     display: grid;
     place-items: center;
-    padding-block: 0.3rem;
-    background: color-mix(in srgb, var(--bar) 26%, var(--canvas-alt));
+    padding-block: 0.4rem;
+    background: color-mix(in srgb, var(--bar) 22%, var(--sand-50));
     color: var(--ink-muted);
     font-size: var(--step--1);
     font-weight: 600;
@@ -84,15 +88,17 @@ const scaleName = kind === 'dpe' ? 'classe énergie' : 'classe climat';
   }
 
   .scale li.current {
+    flex: 1.4;
     background: var(--bar);
     /* Les jaunes de l'echelle reglementaire exigent un texte sombre */
     color: #17130d;
-    outline: 2px solid var(--ink);
-    outline-offset: 1px;
+    font-size: var(--step-0);
+    box-shadow: 0 0 0 2px var(--navy-900);
   }
 
   .value {
     margin: 0;
     font-size: var(--step--1);
+    color: var(--navy-900);
   }
 </style>
