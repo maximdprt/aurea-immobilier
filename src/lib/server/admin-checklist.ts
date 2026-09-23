@@ -91,7 +91,7 @@ function definitions(c: Context): TaskGroup[] {
           id: 'cpi-rcp',
           label: 'Vérifier que la carte professionnelle et l’assurance RCP sont au nom d’AUREA IMMOBILIER',
           detail:
-            'Carte CPI 9501 2024 000 000 031 et RCP VERSPIEREN n° 41543943 : elles proviennent du barème PDF, lui-même repris de la SAS MAUME VR. À contrôler sur la carte et l’attestation d’assurance.',
+            'Carte CPI 9501 2024 000 000 031 et RCP VERSPIEREN n° 41543943 : elles proviennent du barème PDF, lui-même repris de la SAS MAUME VR. À contrôler sur la carte et l’attestation d’assurance, ou en cherchant « AUREA IMMOBILIER » dans le registre officiel des CCI : cci.fr › Trouver un professionnel de l’immobilier (la fiche indique aussi la garantie financière déclarée).',
           kind: 'manuel',
           state: manual('cpi-rcp'),
           blocking: true,
@@ -100,7 +100,7 @@ function definitions(c: Context): TaskGroup[] {
           id: 'garantie',
           label: 'Préciser la garantie financière',
           detail:
-            'La gestion locative implique d’encaisser des loyers pour le compte des propriétaires, ce qui exige une garantie financière (organisme et montant). Le barème déclare au contraire ne détenir aucun fonds.',
+            'La gestion locative implique d’encaisser des loyers pour le compte des propriétaires, ce qui exige une garantie financière (organisme et montant). Le barème déclare au contraire ne détenir aucun fonds. Le registre des CCI (lien dans la tâche précédente) indique ce qui a été déclaré à la délivrance de la carte.',
           kind: 'manuel',
           state: manual('garantie'),
           blocking: true,
@@ -109,7 +109,7 @@ function definitions(c: Context): TaskGroup[] {
           id: 'bareme-pdf',
           label: 'Refaire le barème des honoraires au nom d’AUREA',
           detail:
-            'Le PDF actuel porte le RCS 909 023 830 (MAUME VR). Il a été retiré du site ; la page Honoraires affiche le barème saisi dans le back-office. Pensez aussi à la version affichée en vitrine.',
+            'Le PDF d’origine portait le RCS 909 023 830 (MAUME VR) : il a été retiré. La page Honoraires affiche désormais le barème saisi ici, avec les mentions d’AUREA, et son bouton « Imprimer ou enregistrer en PDF » produit la version pour la vitrine. Complétez la location et la gestion, imprimez, affichez, puis cochez.',
           href: '/admin/honoraires/',
           kind: 'manuel',
           state: manual('bareme-pdf'),
@@ -178,7 +178,8 @@ function definitions(c: Context): TaskGroup[] {
         {
           id: 'search-console',
           label: 'Donner accès à la Google Search Console existante',
-          detail: 'Pour suivre l’indexation du nouveau site et déclarer le plan du site après la bascule.',
+          detail:
+            'La balise de validation de votre propriété actuelle a été reprise sur le nouveau site : elle restera validée après la bascule. Il reste à y déclarer le plan du site (https://www.aurea-immobilier.fr/sitemap-index.xml) le jour de la bascule.',
           kind: 'manuel',
           state: manual('search-console'),
         },
@@ -308,7 +309,7 @@ function definitions(c: Context): TaskGroup[] {
           id: 'domaine',
           label: 'Relier le domaine aurea-immobilier.fr au nouveau site',
           detail:
-            'Dans Vercel › Settings › Domains, ajouter le domaine, puis modifier les DNS chez le registrar. À faire le jour de la bascule : l’ancien site s’arrête à ce moment-là.',
+            'Les domaines sont déjà rattachés au projet Vercel. Le jour de la bascule, chez Namebay (registrar actuel), remplacer UNIQUEMENT : l’enregistrement CNAME de « www » (aujourd’hui mojo46.immo-facile.com) par un A vers 76.76.21.21, et ajouter un A « @ » vers 76.76.21.21. Ne pas toucher aux enregistrements MX (Vadesecure) : ce sont vos emails. L’ancien site s’arrête à ce moment-là.',
           kind: 'manuel',
           state: manual('domaine'),
           blocking: true,

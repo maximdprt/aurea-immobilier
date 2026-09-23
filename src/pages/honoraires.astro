@@ -168,6 +168,14 @@ const crumbs = [
           </dd>
         </div>
         <div>
+          <dt>Siège social</dt>
+          <dd>{COMPANY.headOffice}</dd>
+        </div>
+        <div>
+          <dt>Agence</dt>
+          <dd>{contact.street}, {contact.postalCode} {contact.city} — SIRET {COMPANY.agencySiret}</dd>
+        </div>
+        <div>
           <dt>Carte professionnelle</dt>
           <dd>
             {REGULATED.cpiScope}, n° {REGULATED.cpiNumber}, délivrée par la
@@ -223,8 +231,12 @@ const crumbs = [
     }
 
     <p class="foot">
-      {/* Le PDF d'origine porte le RCS d'une autre société (MAUME VR) : il n'est
-          plus proposé tant qu'un barème au nom d'AUREA ne l'a pas remplacé. */}
+      {/* Le PDF d'origine portait le RCS d'une autre société (MAUME VR). La
+          version imprimable de cette page le remplace : mêmes chiffres que
+          ceux saisis dans le back-office, mentions d'AUREA IMMOBILIER. */}
+      <button type="button" class="btn btn-outline no-print" data-print>
+        <Icon name="file" size={18} /> Imprimer ou enregistrer en PDF
+      </button>
       <span class="small muted">
         Ce barème est celui affiché en agence. Une question ?{' '}
         <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>
@@ -233,7 +245,49 @@ const crumbs = [
   </div>
 </Base>
 
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>
+
 <style>
+  /* Impression : le barème seul, au format affiché en vitrine. */
+  @media print {
+    :global(.site-header),
+    :global(.site-footer),
+    :global(.action-bar),
+    :global(.cookie-notice),
+    :global(.breadcrumb),
+    :global(.cta-band),
+    .no-print {
+      display: none !important;
+    }
+
+    :global(body) {
+      font-size: 11pt;
+    }
+
+    :global(.page-header) {
+      padding-block: 0 1rem;
+      background: none;
+      border: 0;
+    }
+
+    :global(.table-wrap) {
+      overflow: visible;
+      border-color: #999;
+    }
+
+    :global(th),
+    :global(td) {
+      padding: 0.35rem 0.5rem;
+    }
+
+    :global(a) {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
   .updated {
     display: inline-flex;
     align-items: center;
