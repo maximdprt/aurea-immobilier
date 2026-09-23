@@ -1,8 +1,8 @@
 ---
 /**
  * Vue d'ensemble du back-office : les rubriques, l'état de la mise en ligne,
- * et ce qui manque encore — côté contenu (à faire ici) et côté configuration
- * (à transmettre à la personne qui déploie).
+ * puis le suivi de ce qui reste à faire — détecté automatiquement quand c'est
+ * possible, à cocher sinon (voir ~/lib/server/admin-checklist.ts).
  */
 import AdminContenu from '~/layouts/AdminContenu.astro';
 import { hasAdminSession } from '~/lib/server/admin-code';
@@ -10,9 +10,8 @@ import { AdminDataError, adminDataReady, countDocs, readAgents, readListings } f
 import { readNews } from '~/lib/server/admin-news';
 import { readReviews } from '~/lib/server/admin-reviews';
 import { readAssets } from '~/lib/server/admin-media';
-import { configChecklist, contentChecklist } from '~/lib/server/admin-checklist';
+import { checklist, toggleTask, type TaskGroup } from '~/lib/server/admin-checklist';
 import { deployConfigured, publishMessage, type PublishResult } from '~/lib/server/publish';
-import { MISSING_INFO } from '~/lib/site';
 
 export const prerender = false;
 
@@ -20,39 +19,58 @@ if (!(await hasAdminSession(Astro.cookies))) {
   return Astro.redirect('/admin/code/', 302);
 }
 
+/* Cocher / décocher une tâche. Aucune mise en ligne : cela ne change pas le site. */
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const id = String(form.get('tache') ?? '');
+  if (/^[a-z0-9-]{2,40}$/.test(id) && adminDataReady()) {
+    try {
+      await toggleTask(id, form.get('fait') === '1');
+    } catch (error) {
+      console.warn('[admin] suivi', error instanceof AdminDataError ? error.internal : error);
+    }
+  }
+  return Astro.redirect(`/admin/#${id || 'suivi'}`, 303);
+}
+
 const publication = Astro.url.searchParams.get('publication') as PublishResult | null;
+const showAll = Astro.url.searchParams.get('vue') === 'tout';
 
 let counts = { agents: 0, listings: 0, blocs: 0, news: 0, reviews: 0, medias: 0 };
 let dataError: string | null = null;
-let checklist: Awaited<ReturnType<typeof contentChecklist>> = [];
+let groups: TaskGroup[] = [];
 
 if (adminDataReady()) {
   try {
-    const [a, l, n, news, reviews, assets, check] = await Promise.all([
+    const [a, l, n, news, reviews, assets, g] = await Promise.all([
       readAgents(),
       readListings(),
       countDocs(),
       readNews(),
       readReviews(),
       readAssets(),
-      contentChecklist(),
+      checklist(),
     ]);
     counts = { agents: a.length, listings: l.length, blocs: n, news: news.length, reviews: reviews.length, medias: assets.size };
-    checklist = check;
+    groups = g;
   } catch (error) {
     dataError = error instanceof AdminDataError ? error.message : 'Lecture impossible.';
     if (error instanceof AdminDataError && error.internal) console.warn('[admin]', error.internal);
   }
 } else {
-  dataError =
-    'La base n’est pas configurée : renseignez SUPABASE_SECRET_KEY_CONTENT pour lire et modifier le contenu.';
+  dataError = 'La base n’est pas configurée : renseignez SUPABASE_SECRET_KEY_CONTENT pour lire et modifier le contenu.';
+  groups = await checklist();
 }
 
-const config = configChecklist();
+const all = groups.flatMap((g) => g.tasks);
+const done = all.filter((t) => t.state === 'fait').length;
+const blockingLeft = all.filter((t) => t.blocking && t.state !== 'fait').length;
+const percent = all.length ? Math.round((done / all.length) * 100) : 0;
+const visible = (g: TaskGroup) => (showAll ? g.tasks : g.tasks.filter((t) => t.state !== 'fait'));
 
 const TILES = [
   { href: '/admin/accueil/', name: 'Page d’accueil', body: 'Titre du bandeau, trois entrées, arguments, étapes, bandeau final.', count: 'Textes' },
-  { href: '/admin/textes/', name: 'Textes des pages', body: 'Agence, vendre, estimation, gestion, contact, alerte, réussites…', count: `${counts.blocs} bloc${counts.blocs > 1 ? 's' : ''} personnalisé${counts.blocs > 1 ? 's' : ''}` },
+  { href: '/admin/textes/', name: 'Textes des pages', body: 'Agence, vendre, estimation, gestion, contact, alerte, réussites…', count: `${counts.blocs} bloc${counts.blocs > 1 ? 's' : ''} enregistré${counts.blocs > 1 ? 's' : ''}` },
   { href: '/admin/medias/', name: 'Photos & visuels', body: 'Grande photo d’accueil, photos de l’agence, portraits, photos des biens.', count: `${counts.medias} visuel${counts.medias > 1 ? 's' : ''} importé${counts.medias > 1 ? 's' : ''}` },
   { href: '/admin/actualites/', name: 'Actualités', body: 'Rédigez et publiez les nouvelles de l’agence.', count: `${counts.news} article${counts.news > 1 ? 's' : ''}` },
   { href: '/admin/equipe/', name: 'Équipe', body: 'Rôle, ligne directe, email, présentation et ordre d’affichage.', count: `${counts.agents} fiche${counts.agents > 1 ? 's' : ''}` },
@@ -67,18 +85,103 @@ const TILES = [
   title="Vue d’ensemble"
   section="tableau"
   heading="Le contenu du site"
-  intro="Chaque rubrique correspond à une partie du site public. Une modification enregistrée part en ligne en une à deux minutes, le temps que le site se reconstruise — sans toucher au code."
+  intro="Chaque rubrique correspond à une partie du site public. Une modification enregistrée part en ligne en une à deux minutes, le temps que le site se reconstruise."
 >
   {publication && <p class:list={['bo-notice', publication === 'lance' ? 'ok' : 'warn']} role="status">{publishMessage(publication).replace('Enregistré. ', '')}</p>}
-  <p class:list={['bo-notice', deployConfigured() ? 'ok' : 'warn']}>
-    {
-      deployConfigured()
-        ? 'Mise en ligne automatique active : chaque enregistrement relance la publication du site.'
-        : 'Mise en ligne automatique inactive (VERCEL_DEPLOY_HOOK_URL absente). Vos modifications sont enregistrées, mais n’apparaîtront en ligne qu’au prochain déploiement.'
-    }
-  </p>
+  {!deployConfigured() && (
+    <p class="bo-notice warn">
+      Mise en ligne automatique inactive (VERCEL_DEPLOY_HOOK_URL absente) : vos modifications n’apparaîtront qu’au prochain déploiement.
+    </p>
+  )}
   {dataError && <p class="bo-notice ko">{dataError}</p>}
 
+  <!-- Suivi -------------------------------------------------------------- -->
+  <section class="bo-card suivi" id="suivi">
+    <div class="bo-card-head">
+      <h2>Ce qu’il reste à faire</h2>
+      <a href={showAll ? '/admin/#suivi' : '/admin/?vue=tout#suivi'}>
+        {showAll ? 'Masquer ce qui est fait' : `Voir aussi ce qui est fait (${done})`}
+      </a>
+    </div>
+
+    <div class="progress">
+      <div class="bar" role="progressbar" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100">
+        <span style={`width:${percent}%`}></span>
+      </div>
+      <p>
+        <strong>{done} / {all.length}</strong> tâches terminées
+        {blockingLeft > 0 ? (
+          <span class="bo-pill off">{blockingLeft} bloquante{blockingLeft > 1 ? 's' : ''} avant la mise en ligne</span>
+        ) : (
+          <span class="bo-pill on">Plus rien de bloquant</span>
+        )}
+      </p>
+    </div>
+
+    <p class="legend bo-hint">
+      Les tâches marquées <em>auto</em> se valident d’elles-mêmes dès que l’information est saisie. Les autres se cochent
+      quand c’est fait ; cela ne modifie pas le site.
+    </p>
+
+    {
+      groups.map((g) => {
+        const tasks = visible(g);
+        const left = g.tasks.filter((t) => t.state !== 'fait').length;
+        return (
+          <div class="group">
+            <h3>
+              {g.title}
+              <span class:list={['bo-pill', left ? 'off' : 'on']}>{left ? `${left} à faire` : 'terminé'}</span>
+            </h3>
+            {tasks.length ? (
+              <ul class="tasks">
+                {tasks.map((t) => (
+                  <li id={t.id} class:list={['task', t.state === 'fait' && 'is-done']}>
+                    {t.kind === 'manuel' ? (
+                      <form method="post" class="tick">
+                        <input type="hidden" name="tache" value={t.id} />
+                        <input type="hidden" name="fait" value={t.state === 'fait' ? '0' : '1'} />
+                        <button
+                          type="submit"
+                          class:list={['box', t.state === 'fait' && 'on']}
+                          aria-label={t.state === 'fait' ? `Marquer « ${t.label} » comme à faire` : `Marquer « ${t.label} » comme fait`}
+                        >
+                          {t.state === 'fait' ? '✓' : ''}
+                        </button>
+                      </form>
+                    ) : (
+                      <span class:list={['box', 'static', t.state === 'fait' && 'on']} aria-hidden="true">
+                        {t.state === 'fait' ? '✓' : ''}
+                      </span>
+                    )}
+                    <div class="body">
+                      <p class="label">
+                        {t.label}
+                        {t.blocking && t.state !== 'fait' && <span class="tag block">bloquant</span>}
+                        {t.kind === 'auto' && <span class="tag">auto</span>}
+                        {t.kind === 'regle' && <span class="tag ok">vérifié</span>}
+                      </p>
+                      <p class="detail">{t.detail}</p>
+                      {t.href && t.state !== 'fait' && (
+                        <a class="bo-btn bo-btn-ghost bo-btn-sm" href={t.href}>
+                          Y aller →
+                        </a>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="bo-hint all-done">Tout est fait dans cette partie.</p>
+            )}
+          </div>
+        );
+      })
+    }
+  </section>
+
+  <!-- Rubriques --------------------------------------------------------- -->
+  <h2 class="q">Modifier le site</h2>
   <ul class="bo-cards">
     {
       TILES.map((t) => (
@@ -90,101 +193,173 @@ const TILES = [
       ))
     }
   </ul>
-
-  <div class="two">
-    <section class="bo-card">
-      <div class="bo-card-head"><h2>À compléter dans ce back-office</h2></div>
-      {
-        checklist.length ? (
-          <ul class="bo-check-list">
-            {checklist.map((c) => (
-              <li>
-                <span class:list={['mark', c.done && 'done']}>{c.done ? '✓' : '!'}</span>
-                <div>
-                  <strong>{c.href && !c.done ? <a href={c.href}>{c.label}</a> : c.label}</strong>
-                  <span>{c.detail}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class="bo-hint">Liste indisponible tant que la base n’est pas configurée.</p>
-        )
-      }
-    </section>
-
-    <section class="bo-card">
-      <div class="bo-card-head"><h2>Configuration technique</h2></div>
-      <p class="bo-card-intro">
-        À transmettre à la personne qui gère l’hébergement (Vercel). Chaque variable manquante
-        désactive la fonction indiquée, sans casser le reste du site.
-      </p>
-      <ul class="bo-check-list">
-        {
-          config.map((c) => (
-            <li>
-              <span class:list={['mark', c.done && 'done']}>{c.done ? '✓' : '!'}</span>
-              <div>
-                <strong>{c.label}</strong>
-                <span>{c.detail}</span>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
-  </div>
-
-  <section class="bo-card">
-    <div class="bo-card-head"><h2>Informations à fournir avant la mise en ligne définitive</h2></div>
-    <p class="bo-card-intro">
-      Ces éléments ne figuraient pas sur l’ancien site et ne peuvent pas être inventés. Le site
-      public n’affiche rien à leur place ; ils apparaîtront dès qu’ils seront communiqués.
-    </p>
-    <div class="missing">
-      {
-        Object.entries(MISSING_INFO).map(([section, items]) => (
-          <div>
-            <h3>{section}</h3>
-            <ul>
-              {items.map((i) => <li>{i}</li>)}
-            </ul>
-          </div>
-        ))
-      }
-    </div>
-  </section>
 </AdminContenu>
 
 <style>
-  .two {
-    display: grid;
-    gap: 18px;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
-    align-items: start;
+  .suivi {
+    margin-bottom: 30px;
   }
 
-  .missing {
-    display: grid;
-    gap: 18px;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  .progress {
+    margin-bottom: 8px;
   }
 
-  .missing h3 {
-    margin: 0 0 6px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #475569;
+  .bar {
+    height: 10px;
+    border-radius: 999px;
+    background: #e8edf3;
+    overflow: hidden;
   }
 
-  .missing ul {
-    margin: 0;
-    padding-left: 1.1rem;
-    font-size: 13.5px;
+  .bar span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--gold-500), var(--gold-400));
+  }
+
+  .progress p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 0;
+    font-size: 14px;
     color: #334155;
   }
 
-  .missing li {
-    margin-bottom: 4px;
+  .legend {
+    margin: 0 0 8px;
+  }
+
+  .group {
+    padding-top: 18px;
+    margin-top: 18px;
+    border-top: 1px solid #e8edf3;
+  }
+
+  .group h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    color: #0a1729;
+  }
+
+  .tasks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .task {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+    scroll-margin-top: 20px;
+  }
+
+  .task:last-child {
+    border-bottom: 0;
+  }
+
+  .tick {
+    margin: 0;
+  }
+
+  .box {
+    display: grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-top: 1px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  button.box:hover {
+    border-color: #0a1729;
+  }
+
+  .box.on {
+    background: #12805c;
+    border-color: #12805c;
+  }
+
+  .box.static {
+    cursor: default;
+    border-style: dashed;
+  }
+
+  .box.static.on {
+    border-style: solid;
+  }
+
+  .label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 3px;
+    font-weight: 650;
+    color: #0a1729;
+  }
+
+  .is-done .label {
+    color: #64748b;
+    text-decoration: line-through;
+    text-decoration-color: #cbd5e1;
+  }
+
+  .detail {
+    margin: 0 0 8px;
+    max-width: 80ch;
+    font-size: 13.5px;
+    color: #475569;
+  }
+
+  .tag {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: #eef2f6;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .tag.block {
+    background: #fef3f2;
+    color: #b42318;
+  }
+
+  .tag.ok {
+    background: #ecfdf3;
+    color: #085d3a;
+  }
+
+  .all-done {
+    margin: 0;
+  }
+
+  .q {
+    margin: 0 0 16px;
+    font-family: var(--font-body);
+    font-size: 20px;
+    font-weight: 750;
+    color: #0a1729;
   }
 </style>

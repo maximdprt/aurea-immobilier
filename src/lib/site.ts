@@ -7,7 +7,7 @@
  * production avec une information fausse.
  */
 
-/** Information non encore fournie par l'agence. Voir `MISSING_INFO`. */
+/** Information non encore fournie par l'agence. Voir le suivi du back-office. */
 export type Missing = { readonly __missing: string };
 export const missing = (label: string): Missing => ({ __missing: label });
 export const isMissing = (v: unknown): v is Missing =>
@@ -374,41 +374,7 @@ export const FOOTER_LEGAL = [
 ] as const;
 
 /* ------------------------------------------------- Informations manquantes */
-
-/** Reprise du §19 du brief : sert la page /plan-du-site/ et l'audit de recette. */
-export const MISSING_INFO = {
-  'Bloquant — légal': [
-    'Médiateur de la consommation : nom, adresse, site (toujours « NC » sur l’ancien site au 23/09/2026)',
-    'Garantie financière : la non-détention de fonds déclarée au barème est incompatible avec l’encaissement de loyers en gestion locative',
-    'Confirmer que la carte professionnelle CPI 9501 2024 000 000 031 et la RCP VERSPIEREN n° 41543943 sont au nom d’AUREA IMMOBILIER (le barème PDF a été repris de la SAS MAUME VR)',
-    'Remplacer le barème PDF : il porte le numéro RCS de MAUME VR (909 023 830) au lieu de 931 635 924',
-    'Adresse email dédiée aux demandes RGPD (à défaut, contact@ est utilisée)',
-  ],
-  'Bloquant — SEO local': [
-    'Note et nombre d’avis Google, lien de la fiche et lien « Demander des avis » (à saisir dans Avis clients)',
-    'Texte exact des avis Google retenus (à saisir dans Avis clients)',
-    'Accès à la propriété Google Search Console existante',
-    'URL d’une page Facebook ou LinkedIn de l’agence, si elle existe (aucune trouvée)',
-  ],
-  'Bloquant — catalogue': [
-    'Format et identifiants du flux passerelle Orisha (XML / Poliris / API)',
-    'URL des visites virtuelles et vidéos drone',
-  ],
-  'Bloquant — sécurité et mise en production': [
-    'Propriété des comptes Vercel, Supabase, registrar, Cloudflare et emailing au nom de l’agence',
-    'Accès au DNS de aurea-immobilier.fr (bascule, SPF, DKIM, DMARC)',
-    'Liste des utilisateurs de l’espace « Demandes » et leur rôle',
-    'Contrats de sous-traitance (DPA) signés',
-    'Durées de conservation validées par l’agence',
-  ],
-  'Nécessaire — contenu': [
-    'Chiffres réels : délai moyen de vente, part de mandats exclusifs',
-    'Zachary Denat : agent commercial indépendant (EI, SIREN 912 612 744) présenté comme « AUREA Immobilier » — confirmer s’il doit figurer dans l’équipe, avec portrait',
-    'Emails professionnels de Justine Vitry et Jill Thépaut',
-    'Portrait photo de Jill Thépaut',
-    'Honoraires de gestion locative en % HT/TTC et garantie loyers impayés',
-  ],
-} as const;
+/* Suivies dans le tableau de bord du back-office : src/lib/server/admin-checklist.ts */
 
 /* ----------------------------------------------------------- Robots et IA */
 

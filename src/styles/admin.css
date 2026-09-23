@@ -27,7 +27,9 @@
   background: var(--navy-900);
 }
 
-.bo a {
+/* Liens de la zone de travail seulement : la barre latérale et les boutons
+   ont leurs propres couleurs, qu'une règle `.bo a` écrasait (liens bleus). */
+.bo-main a:not(.bo-btn) {
   color: #1554b8;
 }
 
