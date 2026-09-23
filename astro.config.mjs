@@ -50,6 +50,10 @@ export default defineConfig({
   site: SITE,
   trailingSlash: 'always',
   output: 'static',
+  // Remplace par src/middleware.ts : la verification integree comparait
+  // l'origine a une URL que l'adaptateur Vercel reconstruit autrement, et
+  // refusait la connexion au back-office sur l'alias *.vercel.app.
+  security: { checkOrigin: false },
   adapter: vercel({
     // La region des fonctions est fixee dans vercel.json (`regions: ['cdg1']`),
     // au plus pres de la base Supabase (§20.7).

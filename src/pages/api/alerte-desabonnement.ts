@@ -14,8 +14,7 @@
 import type { APIRoute } from 'astro';
 import { formsClient } from '~/lib/server/supabase-admin';
 import { hashToken } from '~/lib/server/tokens';
-import { isLocalOrigin } from '~/lib/server/guard';
-import { env } from '~/lib/server/env';
+import { isSameOrigin } from '~/lib/server/origin';
 
 export const prerender = false;
 
@@ -33,19 +32,9 @@ export const POST: APIRoute = async ({ request, url }) => {
    * elle a sa place sur un formulaire public, pas sur un désabonnement, qu'il
    * faut au contraire rendre aussi simple que possible.
    */
-  const origin = request.headers.get('origin');
-  if (origin) {
-    const allowed = [
-      env('PUBLIC_SITE_URL'),
-      env('VERCEL_URL') ? `https://${env('VERCEL_URL')}` : null,
-    ].filter(Boolean) as string[];
-    const ok =
-      allowed.some((base) => origin === base.replace(/\/$/, '')) ||
-      (import.meta.env.DEV && isLocalOrigin(origin));
-    if (!ok) {
-      console.warn('[alerte] désabonnement refusé — origine', origin);
-      return back(url, 'invalide');
-    }
+  if (!isSameOrigin(request)) {
+    console.warn('[alerte] désabonnement refusé — origine', request.headers.get('origin'));
+    return back(url, 'invalide');
   }
 
   let token = '';

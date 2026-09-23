@@ -13,6 +13,7 @@
  */
 import { formsClient, hashIp } from './supabase-admin';
 import { env } from './env';
+import { isSameOrigin } from './origin';
 
 const MAX_BODY_BYTES = 16 * 1024;
 const RATE_LIMIT = { max: 5, windowSeconds: 60 };
@@ -65,30 +66,6 @@ export const jsonOk = (request?: Request): Response =>
     headers: { 'content-type': 'application/json; charset=utf-8' },
   });
 
-/**
- * Origine locale, quel que soit le port.
- *
- * Le serveur de développement choisit son port : 4321 s'il est libre, 4322,
- * 4331… sinon. Un port codé en dur condamnait donc les formulaires à répondre
- * 403 dès que le port par défaut était pris, et ce pour les trois formulaires
- * du site.
- *
- * Deux précautions :
- *  - on compare le NOM D'HÔTE après analyse de l'URL, jamais le préfixe de la
- *    chaîne — `http://localhost.attaquant.fr` commence par `http://localhost` ;
- *  - l'appelant ne consulte cette fonction que sous `import.meta.env.DEV`, figé
- *    à la compilation : la tolérance n'existe pas dans le build de production.
- */
-export const isLocalOrigin = (value: string): boolean => {
-  try {
-    const { hostname } = new URL(value);
-    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
-  } catch {
-    // En-tête `Origin` qui n'est pas une URL : rien à autoriser.
-    return false;
-  }
-};
-
 /** 1 et 2 — méthode, taille, origine. */
 export async function readForm(request: Request): Promise<FormData> {
   if (request.method !== 'POST') {
@@ -105,20 +82,8 @@ export async function readForm(request: Request): Promise<FormData> {
     throw new GuardError('Message trop long.', 413, `corps de ${length} octets`);
   }
 
-  const origin = request.headers.get('origin');
-  if (origin) {
-    const allowed = [
-      env('PUBLIC_SITE_URL'),
-      env('VERCEL_URL') ? `https://${env('VERCEL_URL')}` : null,
-    ].filter(Boolean) as string[];
-
-    const ok =
-      allowed.some((base) => origin === base.replace(/\/$/, '')) ||
-      (import.meta.env.DEV && isLocalOrigin(origin));
-
-    if (!ok) {
-      throw new GuardError('Requête refusée.', 403, `origine ${origin}`);
-    }
+  if (!isSameOrigin(request)) {
+    throw new GuardError('Requête refusée.', 403, `origine ${request.headers.get('origin')}`);
   }
 
   return request.formData();
