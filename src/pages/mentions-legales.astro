@@ -42,7 +42,6 @@ const crumbs = [
           <strong>À faire valider par un juriste avant publication.</strong> Ce texte est une base
           complète et structurée, rédigée à partir des documents publiés par l’agence. Il engage la
           responsabilité d’AUREA Immobilier et doit être relu par un professionnel du droit.
-          L’adresse du siège est à confronter au Kbis.
         </p>
       )
     }
@@ -52,9 +51,10 @@ const crumbs = [
       <strong>{COMPANY.legalName}</strong>, {COMPANY.legalForm} au capital de {COMPANY.capital}.
     </p>
     <ul>
-      <li>Siège social : {contact.street}, {contact.postalCode} {contact.city}</li>
+      <li>Siège social : {COMPANY.headOffice} (SIRET {COMPANY.siret})</li>
+      <li>Agence : {contact.street}, {contact.postalCode} {contact.city} (SIRET {COMPANY.agencySiret})</li>
       <li>RCS {COMPANY.rcsCity} {COMPANY.rcs}</li>
-      <li>SIRET {COMPANY.siret}</li>
+      <li>Présidente : {COMPANY.president}</li>
       <li>TVA intracommunautaire {COMPANY.vatId}</li>
       <li>Téléphone : <a href={`tel:${contact.phoneE164}`}>{contact.phone}</a></li>
       <li>Email : <a href={`mailto:${contact.email}`}>{contact.email}</a></li>

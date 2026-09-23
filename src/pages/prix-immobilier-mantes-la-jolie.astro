@@ -18,6 +18,12 @@ import Icon from '~/components/Icon.astro';
 import { allListings, archivedByCommune } from '~/lib/catalog';
 import { area, money, plural, propertyTypeLabel } from '~/lib/format';
 import { faqSchema } from '~/lib/schema';
+import DvfPanel from '~/components/DvfPanel.astro';
+import { allDvf, dvfFor, dvfMeta, perSqm } from '~/lib/dvf';
+
+const dvf = dvfFor('mantes-la-jolie');
+const meta = dvfMeta();
+const neighbours = allDvf();
 
 const listings = allListings().filter((l) => l.communeSlug === 'mantes-la-jolie');
 const archived = archivedByCommune('Mantes-la-Jolie');
@@ -46,8 +52,9 @@ const totalTransactions = listings.filter((l) => l.status !== 'published').lengt
 const faq: FaqItem[] = [
   {
     question: 'Quel est le prix au m² à Mantes-la-Jolie ?',
-    answer:
-      'Le prix de référence est la médiane des ventes réellement enregistrées par l’administration fiscale, publiée dans la base DVF et consultable gratuitement. Sur les biens que nous avons nous-mêmes commercialisés, nous publions ci-dessous le prix médian constaté, avec la surface et le prix de chaque bien.',
+    answer: dvf
+      ? `Sur les ventes enregistrées en ${meta.period.replace('-', ' et ')} (base DVF), le prix médian est de ${perSqm(dvf.maison.medianPerSqm)} pour une maison et de ${perSqm(dvf.appartement.medianPerSqm)} pour un appartement à Mantes-la-Jolie. Ce sont des médianes : l’état, l’étage, l’exposition et le DPE font varier la valeur d’un bien précis.`
+      : 'Le prix de référence est la médiane des ventes réellement enregistrées par l’administration fiscale, publiée dans la base DVF et consultable gratuitement.',
   },
   {
     question: 'Pourquoi les prix d’annonce diffèrent-ils des prix de vente ?',
@@ -69,19 +76,25 @@ const crumbs = [
 
 <Base
   title="Prix immobilier à Mantes-la-Jolie"
-  description="Prix au m² à Mantes-la-Jolie : ce que nous constatons sur nos propres ventes, bien par bien, et où consulter les prix issus des ventes réellement enregistrées."
+  description="Prix au m² à Mantes-la-Jolie : médianes des ventes réellement enregistrées (DVF), comparatif des communes voisines et prix constatés sur nos propres ventes."
   path="/prix-immobilier-mantes-la-jolie/"
   crumbs={crumbs}
   schemas={[faqSchema(faq.map((f) => ({ question: f.question, answer: f.answer })))]}
 >
   <PageHeader
     title="Prix de l’immobilier à Mantes-la-Jolie"
-    lede="Deux séries de chiffres distinctes : les prix que nous constatons nous-mêmes sur les biens que nous commercialisons, et les prix de marché issus des ventes enregistrées par l’administration fiscale. Nous ne publions aucun chiffre que nous ne pouvons pas sourcer."
+    lede="Les prix de marché issus des ventes réellement enregistrées par l’administration fiscale, puis ceux que nous constatons sur les biens que nous commercialisons. Chaque chiffre est sourcé et daté."
     crumbs={crumbs}
     kicker="Données de marché"
   >
     <p class="updated">Dernière mise à jour : 23 septembre 2026 · Révision trimestrielle</p>
   </PageHeader>
+
+  <section class="section">
+    <div class="wrap">
+      <DvfPanel slug="mantes-la-jolie" title="Les prix du marché" />
+    </div>
+  </section>
 
   <section class="section">
     <div class="wrap">
@@ -180,7 +193,7 @@ const crumbs = [
       <span class="icon-pill icon-pill-navy"><Icon name="chart" /></span>
       <div>
         <p class="kicker">Source de marché</p>
-        <h2>Les prix de marché : la base DVF</h2>
+        <h2>Les communes de notre secteur</h2>
         <p>
           La base « Demandes de valeurs foncières » publie chaque vente enregistrée par
           l’administration fiscale : prix, surface, date et adresse. C’est la seule source qui mesure
@@ -194,8 +207,33 @@ const crumbs = [
           </a>
           <a class="btn btn-outline" href="/guides/estimation-immobiliere-4-methodes/">Comprendre les méthodes d’estimation</a>
         </p>
+        {neighbours.length > 1 && (
+          <div class="table-wrap compare">
+            <table>
+              <caption class="visually-hidden">Prix médian au m² par commune, ventes {meta.period}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Commune</th>
+                  <th scope="col">Maisons</th>
+                  <th scope="col">Appartements</th>
+                </tr>
+              </thead>
+              <tbody>
+                {neighbours.map(([slug, c]) => (
+                  <tr>
+                    <th scope="row">
+                      <a href={`/agence-immobiliere/${slug}/`}>{c.name}</a>
+                    </th>
+                    <td class="tnum">{perSqm(c.maison.medianPerSqm)} <span class="muted">({c.maison.count})</span></td>
+                    <td class="tnum">{perSqm(c.appartement.medianPerSqm)} <span class="muted">({c.appartement.count})</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         <p class="small muted">
-          Un prix médian ne dit rien de votre logement : son étage, son exposition, son état et son
+          Entre parenthèses, le nombre de ventes sur {meta.period}. Un prix médian ne dit rien de votre logement : son étage, son exposition, son état et son
           DPE font varier la valeur de plusieurs dizaines de milliers d’euros à surface égale. Un
           conseiller vous donne, sur rendez-vous, les ventes comparables récentes de votre quartier.
         </p>
@@ -246,6 +284,10 @@ const crumbs = [
     .dvf {
       grid-template-columns: auto 1fr;
     }
+  }
+
+  .compare {
+    margin: var(--space-m) 0;
   }
 
   .dvf p {

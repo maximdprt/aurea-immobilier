@@ -4,32 +4,56 @@
     "slug": "mantes-la-jolie",
     "postalCode": "78200",
     "activeCount": 4,
-    "soldCount": 33,
-    "total": 37
+    "soldCount": 38,
+    "total": 42
   },
   {
     "name": "Mantes-la-Ville",
     "slug": "mantes-la-ville",
     "postalCode": "78711",
     "activeCount": 1,
-    "soldCount": 9,
-    "total": 10
+    "soldCount": 13,
+    "total": 14
   },
   {
     "name": "Juziers",
     "slug": "juziers",
     "postalCode": "78820",
     "activeCount": 0,
-    "soldCount": 3,
-    "total": 3
+    "soldCount": 8,
+    "total": 8
   },
   {
     "name": "Limay",
     "slug": "limay",
     "postalCode": "78520",
     "activeCount": 0,
-    "soldCount": 3,
-    "total": 3
+    "soldCount": 5,
+    "total": 5
+  },
+  {
+    "name": "Évreux",
+    "slug": "evreux",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 4,
+    "total": 4
+  },
+  {
+    "name": "Maule",
+    "slug": "maule",
+    "postalCode": "78580",
+    "activeCount": 0,
+    "soldCount": 4,
+    "total": 4
+  },
+  {
+    "name": "Aubergenville",
+    "slug": "aubergenville",
+    "postalCode": "78410",
+    "activeCount": 0,
+    "soldCount": 4,
+    "total": 4
   },
   {
     "name": "Cergy",
@@ -40,8 +64,24 @@
     "total": 3
   },
   {
+    "name": "Bonnières-sur-Seine",
+    "slug": "bonnieres-sur-seine",
+    "postalCode": "78270",
+    "activeCount": 0,
+    "soldCount": 3,
+    "total": 3
+  },
+  {
     "name": "L'Isle-Adam",
     "slug": "l-isle-adam",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 2,
+    "total": 2
+  },
+  {
+    "name": "Éragny",
+    "slug": "eragny",
     "postalCode": null,
     "activeCount": 0,
     "soldCount": 2,
@@ -56,9 +96,9 @@
     "total": 2
   },
   {
-    "name": "Bonnières-sur-Seine",
-    "slug": "bonnieres-sur-seine",
-    "postalCode": "78270",
+    "name": "Rosny-sur-Seine",
+    "slug": "rosny-sur-seine",
+    "postalCode": "78710",
     "activeCount": 0,
     "soldCount": 2,
     "total": 2
@@ -112,14 +152,6 @@
     "total": 1
   },
   {
-    "name": "Évreux",
-    "slug": "evreux",
-    "postalCode": null,
-    "activeCount": 0,
-    "soldCount": 1,
-    "total": 1
-  },
-  {
     "name": "Verneuil-sur-Seine",
     "slug": "verneuil-sur-seine",
     "postalCode": "78480",
@@ -128,24 +160,8 @@
     "total": 1
   },
   {
-    "name": "Maule",
-    "slug": "maule",
-    "postalCode": "78580",
-    "activeCount": 0,
-    "soldCount": 1,
-    "total": 1
-  },
-  {
     "name": "Pontoise",
     "slug": "pontoise",
-    "postalCode": null,
-    "activeCount": 0,
-    "soldCount": 1,
-    "total": 1
-  },
-  {
-    "name": "Éragny",
-    "slug": "eragny",
     "postalCode": null,
     "activeCount": 0,
     "soldCount": 1,
@@ -224,14 +240,6 @@
     "total": 1
   },
   {
-    "name": "Aubergenville",
-    "slug": "aubergenville",
-    "postalCode": "78410",
-    "activeCount": 0,
-    "soldCount": 1,
-    "total": 1
-  },
-  {
     "name": "Les Mureaux",
     "slug": "les-mureaux",
     "postalCode": "78130",
@@ -248,6 +256,78 @@
     "total": 1
   },
   {
+    "name": "Buchelay",
+    "slug": "buchelay",
+    "postalCode": "78200",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Montigny-Les-Cormeilles",
+    "slug": "montigny-les-cormeilles",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Gisors",
+    "slug": "gisors",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Longjumeau",
+    "slug": "longjumeau",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Épône",
+    "slug": "epone",
+    "postalCode": "78680",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Sagy",
+    "slug": "sagy",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Drocourt",
+    "slug": "drocourt",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Chars",
+    "slug": "chars",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Villers-en-Arthies",
+    "slug": "villers-en-arthies",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
     "name": "Maudétour-en-Vexin",
     "slug": "maudetour-en-vexin",
     "postalCode": null,
@@ -256,9 +336,57 @@
     "total": 1
   },
   {
-    "name": "Rosny-sur-Seine",
-    "slug": "rosny-sur-seine",
-    "postalCode": "78710",
+    "name": "Mery-Sur-Oise",
+    "slug": "mery-sur-oise",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Le-Vaudreuil",
+    "slug": "le-vaudreuil",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Francheville",
+    "slug": "francheville",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Asnieres-Sur-Seine",
+    "slug": "asnieres-sur-seine",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Villers-en-Vexin",
+    "slug": "villers-en-vexin",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Champigny-Sur-Marne",
+    "slug": "champigny-sur-marne",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Magnanville",
+    "slug": "magnanville",
+    "postalCode": "78200",
     "activeCount": 0,
     "soldCount": 1,
     "total": 1
@@ -267,6 +395,38 @@
     "name": "Oinville-sur-Montcient",
     "slug": "oinville-sur-montcient",
     "postalCode": "78250",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Guerville",
+    "slug": "guerville",
+    "postalCode": "78930",
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Aincourt",
+    "slug": "aincourt",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Nanterre",
+    "slug": "nanterre",
+    "postalCode": null,
+    "activeCount": 0,
+    "soldCount": 1,
+    "total": 1
+  },
+  {
+    "name": "Magny-en-Vexin",
+    "slug": "magny-en-vexin",
+    "postalCode": null,
     "activeCount": 0,
     "soldCount": 1,
     "total": 1

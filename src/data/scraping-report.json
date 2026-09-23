@@ -1,18 +1,17 @@
 {
-  "generatedAt": "2026-09-23T09:11:12.183Z",
+  "generatedAt": "2026-09-23T13:09:29.376Z",
   "source": "scrapper_aurea (crawl du 2026-09-18)",
   "listings": 21,
   "listingsPublished": 9,
   "listingsArchivedWithFullSheet": 12,
-  "archivesFromListPages": 67,
-  "totalSoldOrRented": 79,
-  "announcedArchivedTotal": 128,
+  "archivesFromListPages": 115,
+  "totalSoldOrRented": 127,
+  "announcedArchivedTotal": 127,
   "agents": 9,
-  "communes": 34,
+  "communes": 54,
   "redirects": 276,
   "photos": 86,
   "gaps": [
-    "Pages 7 a 10 de products_selled.php non scrapees : 79 biens archives recuperes sur 128 annonces (compteur de l ancien site).",
     "Aucun media riche (visite virtuelle, video drone) dans le HTML scrape : medias.csv est vide.",
     "Aucun avis client dans le scraping : la section avis reste a alimenter manuellement.",
     "Certains visuels sont declares generes par IA (Gemini, immofacile, immowise, scout) : tri a valider par l agence."

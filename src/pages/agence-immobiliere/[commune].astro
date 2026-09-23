@@ -26,6 +26,8 @@ import {
 } from '~/lib/catalog';
 import { area, composeDescription, composeTitle, plural, propertyTypeLabel } from '~/lib/format';
 import { faqSchema } from '~/lib/schema';
+import DvfPanel from '~/components/DvfPanel.astro';
+import { dvfFor, dvfMeta, perSqm } from '~/lib/dvf';
 import { agency } from '~/lib/content';
 import type { Commune } from '~/lib/types';
 
@@ -78,6 +80,9 @@ const crumbs = [
   { label: commune.name },
 ];
 
+const dvf = dvfFor(commune.slug);
+const dvfPeriod = dvfMeta().period.replace('-', ' et ');
+
 const faq: FaqItem[] = [
   {
     question: `AUREA Immobilier intervient-elle à ${commune.name} ?`,
@@ -85,8 +90,9 @@ const faq: FaqItem[] = [
   },
   {
     question: `Quel est le prix au m² à ${commune.name} ?`,
-    answer:
-      'Les prix de marché fiables sont ceux des ventes réellement enregistrées par l’administration fiscale, publiés dans la base DVF. Un conseiller vous donne, sur rendez-vous, les ventes comparables récentes du secteur pour situer votre bien.',
+    answer: dvf
+      ? `Sur les ventes enregistrées en ${dvfPeriod} (base DVF), le prix médian à ${commune.name} est de ${perSqm(dvf.maison.medianPerSqm)} pour une maison et de ${perSqm(dvf.appartement.medianPerSqm)} pour un appartement. Un conseiller vous donne, sur rendez-vous, les ventes comparables de votre rue.`
+      : 'Les prix de marché fiables sont ceux des ventes réellement enregistrées par l’administration fiscale, publiés dans la base DVF. Un conseiller vous donne, sur rendez-vous, les ventes comparables récentes du secteur pour situer votre bien.',
     details: [
       'Une estimation fiable ne se déduit pas d’un prix moyen : elle tient compte de l’état, de l’étage, de l’exposition et du DPE.',
     ],
@@ -161,6 +167,16 @@ const lede =
     )
   }
 
+  {
+    dvf && (
+      <section class="section">
+        <div class="wrap">
+          <DvfPanel slug={commune.slug} title="Le marché immobilier" />
+        </div>
+      </section>
+    )
+  }
+
   <section class="section section-alt">
     <div class="wrap market">
       <div>
@@ -184,12 +200,7 @@ const lede =
             )
           }
         </dl>
-        <p class="small muted">
-          Pour les prix de marché de la commune, nous nous appuyons sur les ventes réellement
-          enregistrées (base DVF, direction générale des finances publiques), consultables sur{' '}
-          <a href="https://app.dvf.etalab.gouv.fr/" rel="noopener">app.dvf.etalab.gouv.fr</a>. Nous ne
-          publions aucun prix que nous ne pouvons pas sourcer.
-        </p>
+
       </div>
 
       {

@@ -500,12 +500,62 @@
     "propertyType": "maison"
   },
   {
+    "reference": 302,
+    "title": "Appartement - Aubergenville - 4 pièces",
+    "commune": "Aubergenville",
+    "status": "sold",
+    "rooms": 4,
+    "area": 67,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 301,
+    "title": "Appartement Évreux 1 pièce(s) 16.9 m²",
+    "commune": "Évreux",
+    "status": "sold",
+    "rooms": 1,
+    "area": 17,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 299,
+    "title": "Appartement Maule 2 pièce(s)",
+    "commune": "Maule",
+    "status": "rented",
+    "rooms": 2,
+    "area": 45,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 297,
+    "title": "Appartement 3 pièces à Mantes-la-Jolie",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 3,
+    "area": 74,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
     "reference": 289,
     "title": "Maison - Mantes-la-Ville - 6 pièces",
     "commune": "Mantes-la-Ville",
     "status": "sold",
     "rooms": 6,
     "area": 115,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 285,
+    "title": "Maison Juziers 88 m² - 4 pièces",
+    "commune": "Juziers",
+    "status": "sold",
+    "rooms": 4,
+    "area": 88,
     "isExclusive": false,
     "propertyType": "maison"
   },
@@ -540,6 +590,16 @@
     "propertyType": "appartement"
   },
   {
+    "reference": 245,
+    "title": "Maison - Limay - 3 piece - 2 chambres",
+    "commune": "Limay",
+    "status": "sold",
+    "rooms": 3,
+    "area": 80,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
     "reference": 241,
     "title": "Terrain constructible à Mantes-la-Ville",
     "commune": "Mantes-la-Ville",
@@ -548,6 +608,26 @@
     "area": 507,
     "isExclusive": false,
     "propertyType": "terrain"
+  },
+  {
+    "reference": 237,
+    "title": "Appartement Maule 3 pièces 52.55 m²",
+    "commune": "Maule",
+    "status": "rented",
+    "rooms": 3,
+    "area": 53,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 234,
+    "title": "Maison - Buchelay",
+    "commune": "Buchelay",
+    "status": "sold",
+    "rooms": 2,
+    "area": 36,
+    "isExclusive": false,
+    "propertyType": "maison"
   },
   {
     "reference": 221,
@@ -560,12 +640,82 @@
     "propertyType": "immeuble"
   },
   {
+    "reference": 211,
+    "title": "Appartement 4 pièces à Montigny les Cormeilles",
+    "commune": "Montigny-Les-Cormeilles",
+    "status": "sold",
+    "rooms": 4,
+    "area": 83,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 181,
+    "title": "Maison",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 4,
+    "area": 81,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 176,
+    "title": "Maison - Mantes-la-Ville - 6 pièces",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 6,
+    "area": 113,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 171,
+    "title": "Appartement 4 pièces à Limay",
+    "commune": "Limay",
+    "status": "rented",
+    "rooms": 4,
+    "area": 82,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
     "reference": 166,
     "title": "Parking / box Mantes-la-Jolie 15 m²",
     "commune": "Mantes-la-Jolie",
     "status": "sold",
     "rooms": 1,
     "area": 11,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 161,
+    "title": "Maison Gisors 6 pièce(s) 98.04 m²",
+    "commune": "Gisors",
+    "status": "sold",
+    "rooms": 6,
+    "area": 98,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 156,
+    "title": "Appartement meublé de 2 pièces sur Bonnières sur Seine",
+    "commune": "Bonnières-sur-Seine",
+    "status": "rented",
+    "rooms": 2,
+    "area": 39,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 151,
+    "title": "Appartement 3 pièces de 66 m²",
+    "commune": "Longjumeau",
+    "status": "rented",
+    "rooms": 3,
+    "area": 66,
     "isExclusive": false,
     "propertyType": "appartement"
   },
@@ -580,12 +730,112 @@
     "propertyType": "maison"
   },
   {
+    "reference": 141,
+    "title": "Appartement Mantes-la-Jolie 2 pièces 47 m²",
+    "commune": "Mantes-la-Jolie",
+    "status": "rented",
+    "rooms": 2,
+    "area": 47,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
     "reference": 139,
     "title": "Maison - Mantes-la-Jolie - Centre ville - 3 pièces",
     "commune": "Mantes-la-Jolie",
     "status": "sold",
     "rooms": 3,
     "area": 78,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 133,
+    "title": "Maison - 5 piece - 3 chambres",
+    "commune": "Épône",
+    "status": "sold",
+    "rooms": 5,
+    "area": 107,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 122,
+    "title": "Appartement - Mantes-la-Jolie - Centre-Ville - 2 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 2,
+    "area": 40,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 113,
+    "title": "Maison à fort potentiel sur Mantes-la-Ville",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 5,
+    "area": 111,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 108,
+    "title": "Maison de caractere - Sagy - 7 pièces",
+    "commune": "Sagy",
+    "status": "sold",
+    "rooms": 7,
+    "area": 244,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 106,
+    "title": "Appartement Évreux 1 pièce(s) 20.55 m²",
+    "commune": "Évreux",
+    "status": "sold",
+    "rooms": 1,
+    "area": 21,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 104,
+    "title": "Appartement 1 pièce(s) 17.45 m² Évreux",
+    "commune": "Évreux",
+    "status": "sold",
+    "rooms": 1,
+    "area": 17,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 101,
+    "title": "Maison - Drocourt - 5 pièces",
+    "commune": "Drocourt",
+    "status": "sold",
+    "rooms": 5,
+    "area": 110,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 98,
+    "title": "Appartement - Dernier etage - Chars",
+    "commune": "Chars",
+    "status": "sold",
+    "rooms": 3,
+    "area": 62,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 97,
+    "title": "Maison en pierres du vexin - Villers en Arthies - 5 pièces",
+    "commune": "Villers-en-Arthies",
+    "status": "sold",
+    "rooms": 5,
+    "area": 127,
     "isExclusive": false,
     "propertyType": "maison"
   },
@@ -600,12 +850,122 @@
     "propertyType": "maison"
   },
   {
+    "reference": 92,
+    "title": "Maison 4 pièces 95m² Aubergenville",
+    "commune": "Aubergenville",
+    "status": "sold",
+    "rooms": 4,
+    "area": 95,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 90,
+    "title": "Maison de 5 pièces disponibles à la location",
+    "commune": "Mery-Sur-Oise",
+    "status": "rented",
+    "rooms": 5,
+    "area": 120,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 86,
+    "title": "Appartement Juziers 2 pièces à Juziers",
+    "commune": "Juziers",
+    "status": "rented",
+    "rooms": 2,
+    "area": 47,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 85,
+    "title": "Appartement 4 pièce à Juziers",
+    "commune": "Juziers",
+    "status": "rented",
+    "rooms": 4,
+    "area": 74,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 84,
+    "title": "Appartement 3 pièce",
+    "commune": "Maule",
+    "status": "rented",
+    "rooms": 3,
+    "area": 74,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
     "reference": 81,
     "title": "Maison Rosny-sur-Seine 6 pièce(s) 120 m²",
     "commune": "Rosny-sur-Seine",
     "status": "sold",
     "rooms": 6,
     "area": 120,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 75,
+    "title": "Appartement Le Vaudreuil 5 pièce(s) 86.2 m²",
+    "commune": "Le-Vaudreuil",
+    "status": "sold",
+    "rooms": 5,
+    "area": 86,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 72,
+    "title": "Maison Verneuil D'Avre Et D'Iton 1 pièce(s) 66 m²",
+    "commune": "Francheville",
+    "status": "sold",
+    "rooms": 1,
+    "area": 66,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 71,
+    "title": "Appartement Asnieres Sur Seine 4 pièce(s) 84 m²",
+    "commune": "Asnieres-Sur-Seine",
+    "status": "sold",
+    "rooms": 4,
+    "area": 85,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 68,
+    "title": "Appartement Aubergenville 5 pièce(s) 77.94 m²",
+    "commune": "Aubergenville",
+    "status": "sold",
+    "rooms": 5,
+    "area": 78,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 65,
+    "title": "Maison Villers En Vexin 163.10 m²",
+    "commune": "Villers-en-Vexin",
+    "status": "sold",
+    "rooms": 5,
+    "area": 163,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 61,
+    "title": "Maison de ville à Juziers",
+    "commune": "Juziers",
+    "status": "rented",
+    "rooms": 3,
+    "area": 64,
     "isExclusive": false,
     "propertyType": "maison"
   },
@@ -650,12 +1010,72 @@
     "propertyType": "appartement"
   },
   {
+    "reference": 52,
+    "title": "Appartement 4 pièce(s)",
+    "commune": "Champigny-Sur-Marne",
+    "status": "rented",
+    "rooms": 4,
+    "area": 86,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 51,
+    "title": "Immeuble",
+    "commune": "Rosny-sur-Seine",
+    "status": "sold",
+    "rooms": 6,
+    "area": 96,
+    "isExclusive": false,
+    "propertyType": "immeuble"
+  },
+  {
+    "reference": 49,
+    "title": "Appartement 2 pièces",
+    "commune": "Éragny",
+    "status": "rented",
+    "rooms": 2,
+    "area": 41,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 48,
+    "title": "Appartement Magnanville 4 pièce(s) 79.88 m²",
+    "commune": "Magnanville",
+    "status": "rented",
+    "rooms": 4,
+    "area": 80,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 45,
+    "title": "Appartement - Mantes-la-Jolie - 3 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 3,
+    "area": 60,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
     "reference": 39,
     "title": "Appartement - Mantes-la-Jolie - Centre ville - 4 pièces",
     "commune": "Mantes-la-Jolie",
     "status": "sold",
     "rooms": 4,
     "area": 77,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 38,
+    "title": "Appartement - Mantes-la-Jolie - Centre ville - 2 pièces",
+    "commune": "Mantes-la-Jolie",
+    "status": "sold",
+    "rooms": 2,
+    "area": 32,
     "isExclusive": false,
     "propertyType": "appartement"
   },
@@ -668,5 +1088,65 @@
     "area": 216,
     "isExclusive": false,
     "propertyType": "maison"
+  },
+  {
+    "reference": 34,
+    "title": "Maison - Guerville - 7 pièces",
+    "commune": "Guerville",
+    "status": "sold",
+    "rooms": 7,
+    "area": 145,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 33,
+    "title": "Maison - Aincourt - 9 pièces",
+    "commune": "Aincourt",
+    "status": "sold",
+    "rooms": 9,
+    "area": 227,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 31,
+    "title": "Appartement avec jardin - Nanterre - 4 pièces",
+    "commune": "Nanterre",
+    "status": "sold",
+    "rooms": 4,
+    "area": 77,
+    "isExclusive": false,
+    "propertyType": "appartement"
+  },
+  {
+    "reference": 27,
+    "title": "Maison",
+    "commune": "Magny-en-Vexin",
+    "status": "rented",
+    "rooms": 5,
+    "area": 121,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 16,
+    "title": "Maison + Appartement Juziers",
+    "commune": "Juziers",
+    "status": "sold",
+    "rooms": 7,
+    "area": 107,
+    "isExclusive": false,
+    "propertyType": "maison"
+  },
+  {
+    "reference": 10,
+    "title": "Appartement Mantes-la-Ville 3 pièces 70 m²",
+    "commune": "Mantes-la-Ville",
+    "status": "sold",
+    "rooms": 3,
+    "area": 70,
+    "isExclusive": false,
+    "propertyType": "appartement"
   }
 ]

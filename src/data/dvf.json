@@ -1,0 +1,520 @@
+{
+  "source": "DVF — Demandes de valeurs foncières (DGFiP), fichiers geo-dvf publiés par Etalab sur data.gouv.fr",
+  "sourceUrl": "https://explore.data.gouv.fr/fr/immobilier",
+  "extractedAt": "2026-09-23",
+  "period": "2024-2025",
+  "lastSaleDate": "2025-12-31",
+  "method": "Médiane des ventes d’un seul logement (maison ou appartement), prix au m² = valeur foncière / surface réelle bâtie. Chiffre publié à partir de 5 ventes.",
+  "communes": {
+    "mantes-la-jolie": {
+      "name": "Mantes-la-Jolie",
+      "insee": "78361",
+      "maison": {
+        "medianPerSqm": 2800,
+        "medianPrice": 230000,
+        "medianSurface": 82,
+        "count": 121
+      },
+      "appartement": {
+        "medianPerSqm": 2402,
+        "medianPrice": 125000,
+        "medianSurface": 60,
+        "count": 428
+      },
+      "byYear": {
+        "2023": {
+          "maison": 3012,
+          "appartement": 2787
+        },
+        "2024": {
+          "maison": 2831,
+          "appartement": 2471
+        },
+        "2025": {
+          "maison": 2796,
+          "appartement": 2324
+        }
+      }
+    },
+    "mantes-la-ville": {
+      "name": "Mantes-la-Ville",
+      "insee": "78362",
+      "maison": {
+        "medianPerSqm": 2496,
+        "medianPrice": 224500,
+        "medianSurface": 91,
+        "count": 180
+      },
+      "appartement": {
+        "medianPerSqm": 2499,
+        "medianPrice": 130000,
+        "medianSurface": 59,
+        "count": 144
+      },
+      "byYear": {
+        "2023": {
+          "maison": 2936,
+          "appartement": 2500
+        },
+        "2024": {
+          "maison": 2637,
+          "appartement": 2621
+        },
+        "2025": {
+          "maison": 2456,
+          "appartement": 2433
+        }
+      }
+    },
+    "juziers": {
+      "name": "Juziers",
+      "insee": "78327",
+      "maison": {
+        "medianPerSqm": 2750,
+        "medianPrice": 240750,
+        "medianSurface": 92,
+        "count": 52
+      },
+      "appartement": {
+        "medianPerSqm": 2696,
+        "medianPrice": 130000,
+        "medianSurface": 42,
+        "count": 17
+      },
+      "byYear": {
+        "2023": {
+          "maison": 3177,
+          "appartement": 3118
+        },
+        "2024": {
+          "maison": 2683,
+          "appartement": 2731
+        },
+        "2025": {
+          "maison": 2757,
+          "appartement": 2667
+        }
+      }
+    },
+    "limay": {
+      "name": "Limay",
+      "insee": "78335",
+      "maison": {
+        "medianPerSqm": 2623,
+        "medianPrice": 229500,
+        "medianSurface": 84,
+        "count": 130
+      },
+      "appartement": {
+        "medianPerSqm": 2228,
+        "medianPrice": 125000,
+        "medianSurface": 60,
+        "count": 73
+      },
+      "byYear": {
+        "2023": {
+          "maison": 2827,
+          "appartement": 2396
+        },
+        "2024": {
+          "maison": 2759,
+          "appartement": 2098
+        },
+        "2025": {
+          "maison": 2530,
+          "appartement": 2400
+        }
+      }
+    },
+    "evreux": {
+      "name": "Évreux",
+      "insee": "27229",
+      "maison": {
+        "medianPerSqm": 1962,
+        "medianPrice": 160500,
+        "medianSurface": 83,
+        "count": 408
+      },
+      "appartement": {
+        "medianPerSqm": 1747,
+        "medianPrice": 90000,
+        "medianSurface": 53,
+        "count": 737
+      },
+      "byYear": {
+        "2023": {
+          "maison": 2054,
+          "appartement": 1816
+        },
+        "2024": {
+          "maison": 1959,
+          "appartement": 1747
+        },
+        "2025": {
+          "maison": 1976,
+          "appartement": 1747
+        }
+      }
+    },
+    "maule": {
+      "name": "Maule",
+      "insee": "78380",
+      "maison": {
+        "medianPerSqm": 3536,
+        "medianPrice": 330000,
+        "medianSurface": 89,
+        "count": 59
+      },
+      "appartement": {
+        "medianPerSqm": 2781,
+        "medianPrice": 144700,
+        "medianSurface": 54,
+        "count": 17
+      },
+      "byYear": {
+        "2023": {
+          "maison": 3585,
+          "appartement": 3559
+        },
+        "2024": {
+          "maison": 3333,
+          "appartement": 2781
+        },
+        "2025": {
+          "maison": 3682,
+          "appartement": 2809
+        }
+      }
+    },
+    "aubergenville": {
+      "name": "Aubergenville",
+      "insee": "78029",
+      "maison": {
+        "medianPerSqm": 3192,
+        "medianPrice": 291020,
+        "medianSurface": 91,
+        "count": 112
+      },
+      "appartement": {
+        "medianPerSqm": 1852,
+        "medianPrice": 127000,
+        "medianSurface": 68,
+        "count": 126
+      },
+      "byYear": {
+        "2023": {
+          "maison": 3309,
+          "appartement": 2114
+        },
+        "2024": {
+          "maison": 3230,
+          "appartement": 1912
+        },
+        "2025": {
+          "maison": 3158,
+          "appartement": 1817
+        }
+      }
+    },
+    "cergy": {
+      "name": "Cergy",
+      "insee": "95127",
+      "maison": {
+        "medianPerSqm": 2951,
+        "medianPrice": 295000,
+        "medianSurface": 98,
+        "count": 208
+      },
+      "appartement": {
+        "medianPerSqm": 3182,
+        "medianPrice": 165500,
+        "medianSurface": 57,
+        "count": 849
+      },
+      "byYear": {
+        "2023": {
+          "maison": 3070,
+          "appartement": 3314
+        },
+        "2024": {
+          "maison": 2947,
+          "appartement": 3199
+        },
+        "2025": {
+          "maison": 2989,
+          "appartement": 3169
+        }
+      }
+    },
+    "bonnieres-sur-seine": {
+      "name": "Bonnières-sur-Seine",
+      "insee": "78089",
+      "maison": {
+        "medianPerSqm": 2373,
+        "medianPrice": 221250,
+        "medianSurface": 90,
+        "count": 48
+      },
+      "appartement": {
+        "medianPerSqm": 2183,
+        "medianPrice": 137500,
+        "medianSurface": 57,
+        "count": 26
+      },
+      "byYear": {
+        "2023": {
+          "maison": 2625,
+          "appartement": 1974
+        },
+        "2024": {
+          "maison": 2272,
+          "appartement": 2069
+        },
+        "2025": {
+          "maison": 2392,
+          "appartement": 2196
+        }
+      }
+    },
+    "l-isle-adam": {
+      "name": "L'Isle-Adam",
+      "insee": "95313",
+      "maison": {
+        "medianPerSqm": 4011,
+        "medianPrice": 430000,
+        "medianSurface": 109,
+        "count": 136
+      },
+      "appartement": {
+        "medianPerSqm": 4242,
+        "medianPrice": 214445,
+        "medianSurface": 59,
+        "count": 189
+      },
+      "byYear": {
+        "2023": {
+          "maison": 4491,
+          "appartement": 4436
+        },
+        "2024": {
+          "maison": 3989,
+          "appartement": 4076
+        },
+        "2025": {
+          "maison": 4098,
+          "appartement": 4400
+        }
+      }
+    },
+    "eragny": {
+      "name": "Éragny",
+      "insee": "95218",
+      "maison": {
+        "medianPerSqm": 3334,
+        "medianPrice": 322675,
+        "medianSurface": 96,
+        "count": 142
+      },
+      "appartement": {
+        "medianPerSqm": 3060,
+        "medianPrice": 190000,
+        "medianSurface": 63,
+        "count": 167
+      },
+      "byYear": {
+        "2023": {
+          "maison": 3698,
+          "appartement": 3000
+        },
+        "2024": {
+          "maison": 3411,
+          "appartement": 2943
+        },
+        "2025": {
+          "maison": 3247,
+          "appartement": 3122
+        }
+      }
+    },
+    "porcheville": {
+      "name": "Porcheville",
+      "insee": "78501",
+      "maison": {
+        "medianPerSqm": 2651,
+        "medianPrice": 248300,
+        "medianSurface": 90,
+        "count": 38
+      },
+      "appartement": {
+        "medianPerSqm": null,
+        "medianPrice": null,
+        "medianSurface": null,
+        "count": 1
+      },
+      "byYear": {
+        "2023": {
+          "maison": 2634,
+          "appartement": null
+        },
+        "2024": {
+          "maison": 2626,
+          "appartement": null
+        },
+        "2025": {
+          "maison": 2911,
+          "appartement": null
+        }
+      }
+    },
+    "rosny-sur-seine": {
+      "name": "Rosny-sur-Seine",
+      "insee": "78531",
+      "maison": {
+        "medianPerSqm": 2684,
+        "medianPrice": 247000,
+        "medianSurface": 92,
+        "count": 61
+      },
+      "appartement": {
+        "medianPerSqm": 2413,
+        "medianPrice": 114680,
+        "medianSurface": 47,
+        "count": 18
+      },
+      "byYear": {
+        "2023": {
+          "maison": 2522,
+          "appartement": 2097
+        },
+        "2024": {
+          "maison": 2874,
+          "appartement": 2425
+        },
+        "2025": {
+          "maison": 2336,
+          "appartement": 2311
+        }
+      }
+    },
+    "andresy": {
+      "name": "Andrésy",
+      "insee": "78015",
+      "maison": {
+        "medianPerSqm": 3706,
+        "medianPrice": 364600,
+        "medianSurface": 97,
+        "count": 141
+      },
+      "appartement": {
+        "medianPerSqm": 3086,
+        "medianPrice": 194000,
+        "medianSurface": 66,
+        "count": 188
+      },
+      "byYear": {
+        "2023": {
+          "maison": 4041,
+          "appartement": 3037
+        },
+        "2024": {
+          "maison": 3706,
+          "appartement": 3086
+        },
+        "2025": {
+          "maison": 3706,
+          "appartement": 3085
+        }
+      }
+    },
+    "mericourt": {
+      "name": "Méricourt",
+      "insee": "78391",
+      "maison": {
+        "medianPerSqm": 2165,
+        "medianPrice": 143160,
+        "medianSurface": 60,
+        "count": 7
+      },
+      "appartement": {
+        "medianPerSqm": null,
+        "medianPrice": null,
+        "medianSurface": null,
+        "count": 0
+      },
+      "byYear": {
+        "2023": {
+          "maison": null,
+          "appartement": null
+        },
+        "2024": {
+          "maison": null,
+          "appartement": null
+        },
+        "2025": {
+          "maison": 2165,
+          "appartement": null
+        }
+      }
+    },
+    "la-couture-boussey": {
+      "name": "La Couture-Boussey",
+      "insee": "27183",
+      "maison": {
+        "medianPerSqm": 2262,
+        "medianPrice": 198000,
+        "medianSurface": 89,
+        "count": 40
+      },
+      "appartement": {
+        "medianPerSqm": null,
+        "medianPrice": null,
+        "medianSurface": null,
+        "count": 2
+      },
+      "byYear": {
+        "2023": {
+          "maison": 2346,
+          "appartement": null
+        },
+        "2024": {
+          "maison": 2210,
+          "appartement": null
+        },
+        "2025": {
+          "maison": 2291,
+          "appartement": null
+        }
+      }
+    },
+    "chatou": {
+      "name": "Chatou",
+      "insee": "78146",
+      "maison": {
+        "medianPerSqm": 6880,
+        "medianPrice": 680000,
+        "medianSurface": 105,
+        "count": 177
+      },
+      "appartement": {
+        "medianPerSqm": 4720,
+        "medianPrice": 282325,
+        "medianSurface": 65,
+        "count": 480
+      },
+      "byYear": {
+        "2023": {
+          "maison": 7271,
+          "appartement": 4780
+        },
+        "2024": {
+          "maison": 6985,
+          "appartement": 4788
+        },
+        "2025": {
+          "maison": 6781,
+          "appartement": 4677
+        }
+      }
+    }
+  }
+}

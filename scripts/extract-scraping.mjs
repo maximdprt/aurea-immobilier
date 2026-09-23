@@ -476,7 +476,12 @@ function breadcrumbCommune(title) {
  * On s'ancre sur « Réf : », seul repere toujours present, puis on remonte.
  */
 function parseArchives() {
-  const files = readdirSync(PAGES).filter((f) => /^catalog-products_selled.*\.json$/.test(f));
+  // Les pages « -live- » ont été relevées le 23/09/2026 sur l'ancien site : elles
+  // complètent les pages 7 à 10 absentes du crawl initial, et leur compteur fait
+  // foi puisqu'il est le plus récent. Elles sont donc lues en premier.
+  const files = readdirSync(PAGES)
+    .filter((f) => /^catalog-products_selled.*\.json$/.test(f))
+    .sort((a, b) => Number(b.includes('-live-')) - Number(a.includes('-live-')));
   const out = [];
   const seen = new Set();
   let announced = null;
@@ -950,7 +955,11 @@ function main() {
     redirects: redirects.length,
     photos: unique.reduce((n, l) => n + l.photos.length, 0),
     gaps: [
-      `Pages 7 a 10 de products_selled.php non scrapees : ${archives.length + unique.filter((l) => l.status !== 'published').length} biens archives recuperes sur ${allArchives.announcedTotal ?? '?'} annonces (compteur de l ancien site).`,
+      ...(archives.length + unique.filter((l) => l.status !== 'published').length < (allArchives.announcedTotal ?? 0)
+        ? [
+            `Archives incompletes : ${archives.length + unique.filter((l) => l.status !== 'published').length} biens archives recuperes sur ${allArchives.announcedTotal} annonces (compteur de l ancien site).`,
+          ]
+        : []),
       'Aucun media riche (visite virtuelle, video drone) dans le HTML scrape : medias.csv est vide.',
       'Aucun avis client dans le scraping : la section avis reste a alimenter manuellement.',
       'Certains visuels sont declares generes par IA (Gemini, immofacile, immowise, scout) : tri a valider par l agence.',

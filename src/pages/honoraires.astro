@@ -223,11 +223,10 @@ const crumbs = [
     }
 
     <p class="foot">
-      <a class="btn btn-outline" href="/files/nos-honoraires.pdf" download>
-        <Icon name="file" size={18} /> Télécharger le barème (PDF)
-      </a>
+      {/* Le PDF d'origine porte le RCS d'une autre société (MAUME VR) : il n'est
+          plus proposé tant qu'un barème au nom d'AUREA ne l'a pas remplacé. */}
       <span class="small muted">
-        La version HTML ci-dessus fait foi pour l’accessibilité. Une question ?{' '}
+        Ce barème est celui affiché en agence. Une question ?{' '}
         <a href={`tel:${contact.phoneE164}`} class="tnum">{contact.phone}</a>
       </span>
     </p>

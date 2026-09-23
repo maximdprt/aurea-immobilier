@@ -318,12 +318,14 @@ const crumbs = [
         </summary>
         <dl class="legal">
           <div><dt>Raison sociale</dt><dd>{COMPANY.legalName}, {COMPANY.legalForm} au capital de {COMPANY.capital}</dd></div>
-          <div><dt>SIRET</dt><dd>{COMPANY.siret}</dd></div>
+          <div><dt>SIRET de l’agence</dt><dd>{COMPANY.agencySiret}</dd></div>
           <div><dt>RCS</dt><dd>{COMPANY.rcs} — {COMPANY.rcsCity}</dd></div>
           <div><dt>TVA intracommunautaire</dt><dd>{COMPANY.vatId}</dd></div>
           <div><dt>Carte professionnelle</dt><dd>{REGULATED.cpiNumber}, délivrée par la {REGULATED.cpiIssuer}</dd></div>
           <div><dt>Assurance RCP</dt><dd>{REGULATED.insurer}, police n° {REGULATED.insurancePolicy}</dd></div>
-          <div><dt>Siège</dt><dd>{contact.street}, {contact.postalCode} {contact.city}</dd></div>
+          <div><dt>Agence</dt><dd>{contact.street}, {contact.postalCode} {contact.city}</dd></div>
+          <div><dt>Siège social</dt><dd>{COMPANY.headOffice}</dd></div>
+          <div><dt>Présidente</dt><dd>{COMPANY.president}</dd></div>
         </dl>
         <p class="small">
           <a href="/mentions-legales/">Mentions légales complètes</a> · <a href="/honoraires/">Barème des honoraires</a>

@@ -18,7 +18,8 @@
     "audit:seo": "node scripts/audit-seo.mjs",
     "audit:secrets": "node scripts/check-build-secrets.mjs",
     "verify": "npm run check && npm run build && npm run audit:secrets && npm run audit:seo",
-    "prebuild": "node scripts/build-images.mjs"
+    "prebuild": "node scripts/build-images.mjs",
+    "dvf": "node scripts/fetch-dvf.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

@@ -29,8 +29,19 @@ export const COMPANY = {
   legalName: 'AUREA IMMOBILIER',
   legalForm: 'SAS',
   capital: '1 000 €',
+  /** SIRET du siège social. */
   siret: '931 635 924 00018',
   rcs: '931 635 924',
+  /**
+   * Siège social et président : registre national des entreprises (INSEE /
+   * INPI), relevé le 23/09/2026 sur annuaire-entreprises.data.gouv.fr. Le
+   * siège n'est PAS l'agence de la rue Nationale, qui est un établissement
+   * secondaire ouvert le 22/10/2024.
+   */
+  headOffice: '2 route de la Grand Mare, 95420 Maudetour-en-Vexin',
+  agencySiret: '931 635 924 00026',
+  president: 'Hélène Vermeire Benz',
+  nafCode: '68.31Z — Agences immobilières',
   rcsCity: 'Pontoise',
   vatId: 'FR30931635924',
   foundingDate: '2024-08',
@@ -133,10 +144,16 @@ export const openingHoursSchema = () =>
  * « Notre agence » de l'ancien site (parametres !3d / !2d de l'embed) :
  * 44 rue Nationale, 78200 Mantes-la-Jolie.
  */
+/*
+ * Coordonnées du point d'adresse officiel « 44 Rue Nationale 78200
+ * Mantes-la-Jolie » dans la Base Adresse Nationale (api-adresse.data.gouv.fr,
+ * relevé le 23/09/2026, score 0,97). Le point de l'ancienne carte Google était
+ * décalé d'environ 190 m.
+ */
 export const GEO = {
   '@type': 'GeoCoordinates',
-  latitude: 48.9903367914126,
-  longitude: 1.7143302759697245,
+  latitude: 48.990285,
+  longitude: 1.716906,
 } as const;
 
 /** URL d'integration de la carte, telle qu'utilisee par l'ancien site. */
@@ -208,7 +225,8 @@ export const REGULATED = {
   insurancePolicy: '41543943',
   insurerAddress: '44 avenue Georges Pompidou, 92300 Levallois-Perret',
   mediator: missing('médiateur de la consommation : nom, adresse, site'),
-  publicationDirector: missing('directeur de la publication'),
+  /** Représentante légale de la société éditrice (présidente de la SAS). */
+  publicationDirector: 'Hélène Vermeire Benz, présidente d’AUREA Immobilier',
   dpoEmail: missing('adresse email professionnelle pour les demandes RGPD'),
   /** Source de ces mentions, a citer dans la page legale. */
   source: 'Barème des honoraires AUREA Immobilier (PDF publié sur le site actuel)',
@@ -219,14 +237,25 @@ export const REGULATED = {
  * Elle doit etre tranchee avant la mise en ligne : publier un numero RCS
  * errone dans les mentions legales est une faute.
  */
-export const LEGAL_DISCREPANCIES = [
+/*
+ * Contradiction RCS tranchée le 23/09/2026 : le numéro 909 023 830 du barème
+ * PDF est celui de la SAS MAUME VR (Cergy, présidée par Vincent Maume). Le
+ * barème a été repris de cette structure ; le bon numéro est 931 635 924.
+ * Le PDF reste à corriger par l'agence.
+ */
+export const LEGAL_DISCREPANCIES: readonly {
+  field: string;
+  inLegalNotice: string;
+  inFeesPdf: string;
+  note: string;
+}[] = [
   {
-    field: 'Numéro RCS',
-    inLegalNotice: '931 635 924 (RCS Pontoise)',
-    inFeesPdf: '909 023 830 (RCS Pontoise)',
-    note: 'Les deux documents du site actuel se contredisent. Le SIRET 931 635 924 00018 concorde avec le premier. Le barème PDF est peut-être un modèle repris d’une autre structure — à vérifier sur le Kbis.',
+    field: 'Barème PDF',
+    inLegalNotice: '931 635 924 (RCS Pontoise) — AUREA IMMOBILIER',
+    inFeesPdf: '909 023 830 — SAS MAUME VR, Cergy',
+    note: 'Le PDF du barème porte le numéro RCS d’une autre société (MAUME VR). À remplacer par un barème au nom d’AUREA IMMOBILIER.',
   },
-] as const;
+];
 
 export const HOSTING = {
   site: {
@@ -349,42 +378,35 @@ export const FOOTER_LEGAL = [
 /** Reprise du §19 du brief : sert la page /plan-du-site/ et l'audit de recette. */
 export const MISSING_INFO = {
   'Bloquant — légal': [
-    'Médiateur de la consommation : nom, adresse, site — reste « NC » partout',
-    'Adresse email professionnelle pour le responsable de traitement RGPD',
-    'Nom du directeur de la publication',
-    'Trancher la contradiction sur le numéro RCS entre les mentions légales (931 635 924) et le barème des honoraires (909 023 830)',
+    'Médiateur de la consommation : nom, adresse, site (toujours « NC » sur l’ancien site au 23/09/2026)',
     'Garantie financière : la non-détention de fonds déclarée au barème est incompatible avec l’encaissement de loyers en gestion locative',
-    'Confirmer que la carte professionnelle CPI 9501 2024 000 000 031 et la RCP VERSPIEREN n° 41543943 sont toujours en vigueur',
+    'Confirmer que la carte professionnelle CPI 9501 2024 000 000 031 et la RCP VERSPIEREN n° 41543943 sont au nom d’AUREA IMMOBILIER (le barème PDF a été repris de la SAS MAUME VR)',
+    'Remplacer le barème PDF : il porte le numéro RCS de MAUME VR (909 023 830) au lieu de 931 635 924',
+    'Adresse email dédiée aux demandes RGPD (à défaut, contact@ est utilisée)',
   ],
   'Bloquant — SEO local': [
-    'Coordonnées GPS exactes de la fiche Google Business Profile',
-    'Horaires d’ouverture officiels, à aligner site / Google / annuaires',
-    'URL de la fiche Google Maps et lien court « Demander des avis »',
-    'Note, nombre d’avis Google et texte exact des 5 avis retenus',
+    'Note et nombre d’avis Google, lien de la fiche et lien « Demander des avis » (à saisir dans Avis clients)',
+    'Texte exact des avis Google retenus (à saisir dans Avis clients)',
     'Accès à la propriété Google Search Console existante',
-    'URL des comptes Facebook et LinkedIn (Instagram et TikTok fournis)',
+    'URL d’une page Facebook ou LinkedIn de l’agence, si elle existe (aucune trouvée)',
   ],
   'Bloquant — catalogue': [
     'Format et identifiants du flux passerelle Orisha (XML / Poliris / API)',
-    'URL des visites virtuelles et vidéos drone (absentes du HTML actuel)',
-    'Complément de scraping : pages 7 à 10 de products_selled.php',
+    'URL des visites virtuelles et vidéos drone',
   ],
   'Bloquant — sécurité et mise en production': [
     'Propriété des comptes Vercel, Supabase, registrar, Cloudflare et emailing au nom de l’agence',
     'Accès au DNS de aurea-immobilier.fr (bascule, SPF, DKIM, DMARC)',
-    'Liste des utilisateurs du back-office et leur rôle',
+    'Liste des utilisateurs de l’espace « Demandes » et leur rôle',
     'Contrats de sous-traitance (DPA) signés',
-    'Choix du service d’envoi d’emails transactionnels',
     'Durées de conservation validées par l’agence',
   ],
   'Nécessaire — contenu': [
-    'Chiffres réels : délai moyen de vente, part de mandats exclusifs, ventes sur 12 mois',
-    'Rôle exact de Zachary Denat',
+    'Chiffres réels : délai moyen de vente, part de mandats exclusifs',
+    'Zachary Denat : agent commercial indépendant (EI, SIREN 912 612 744) présenté comme « AUREA Immobilier » — confirmer s’il doit figurer dans l’équipe, avec portrait',
     'Emails professionnels de Justine Vitry et Jill Thépaut',
     'Portrait photo de Jill Thépaut',
-    'Validation du tri « photo réelle / visuel IA » sur le dossier images/',
     'Honoraires de gestion locative en % HT/TTC et garantie loyers impayés',
-    'Données DVF par commune (prix médian au m², nombre de transactions, date)',
   ],
 } as const;
 

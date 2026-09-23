@@ -1,0 +1,178 @@
+---
+/**
+ * Prix de marché d'une commune (DVF) : prix médian au m² des maisons et des
+ * appartements, nombre de ventes, prix et surface médians, évolution sur trois
+ * ans, et la source datée. Ne rend rien si la commune n'a pas de données.
+ */
+import Icon from '~/components/Icon.astro';
+import { dvfFor, dvfMeta, evolution, frDay, perSqm } from '~/lib/dvf';
+import { money } from '~/lib/format';
+
+interface Props {
+  slug: string;
+  /** Titre de la section ; le nom de la commune est ajouté. */
+  title?: string;
+}
+const { slug, title = 'Les prix du marché' } = Astro.props;
+const c = dvfFor(slug);
+const meta = dvfMeta();
+const years = c ? Object.keys(c.byYear).sort() : [];
+const TYPES = [
+  ['maison', 'Maisons', 'home'],
+  ['appartement', 'Appartements', 'building'],
+] as const;
+---
+
+{
+  c && (
+    <section class="dvf-panel">
+      <div class="head">
+        <p class="kicker">Prix de marché · ventes {meta.period}</p>
+        <h2>
+          {title} à {c.name}
+        </h2>
+      </div>
+
+      <div class="cards">
+        {TYPES.map(([type, label, icon]) => {
+          const s = c[type];
+          const evo = evolution(c, type);
+          return s.medianPerSqm ? (
+            <article class="card-dvf">
+              <p class="type">
+                <Icon name={icon} size={18} /> {label}
+              </p>
+              <p class="value tnum">{perSqm(s.medianPerSqm)}</p>
+              <p class="count">prix médian, sur {s.count} ventes</p>
+              <dl>
+                <div>
+                  <dt>Prix médian</dt>
+                  <dd class="tnum">{money(s.medianPrice)}</dd>
+                </div>
+                <div>
+                  <dt>Surface médiane</dt>
+                  <dd class="tnum">{s.medianSurface} m²</dd>
+                </div>
+                {evo !== null && (
+                  <div>
+                    <dt>
+                      Évolution {years[0]}–{years[years.length - 1]}
+                    </dt>
+                    <dd class:list={['tnum', evo >= 0 ? 'up' : 'down']}>
+                      {evo >= 0 ? '+' : ''}
+                      {String(evo).replace('.', ',')} %
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </article>
+          ) : (
+            <article class="card-dvf is-empty">
+              <p class="type">
+                <Icon name={icon} size={18} /> {label}
+              </p>
+              <p class="count">
+                Trop peu de ventes ({s.count}) pour publier un prix médian fiable.
+              </p>
+            </article>
+          );
+        })}
+      </div>
+
+      <p class="source small muted">
+        Source : {meta.source}. Ventes enregistrées jusqu’au {frDay(meta.lastSaleDate)}, extraction du{' '}
+        {frDay(meta.extractedAt)}. {meta.method}{' '}
+        <a href={meta.sourceUrl} rel="noopener" target="_blank">
+          Voir les ventes sur la carte officielle <span class="visually-hidden">(nouvel onglet)</span>
+        </a>
+        .
+      </p>
+    </section>
+  )
+}
+
+<style>
+  .head h2 {
+    margin-bottom: var(--space-m);
+  }
+
+  .cards {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    margin-bottom: var(--space-s);
+  }
+
+  .card-dvf {
+    padding: 1.4rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+
+  .type {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+    color: var(--gold-700);
+  }
+
+  .value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--navy-900);
+  }
+
+  .count {
+    margin: 0.25rem 0 1rem;
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+
+  dl {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--line);
+    font-size: var(--step--1);
+  }
+
+  dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  dt {
+    color: var(--ink-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--navy-900);
+  }
+
+  .up {
+    color: var(--ok);
+  }
+
+  .down {
+    color: var(--danger);
+  }
+
+  .is-empty {
+    background: var(--sand-50);
+  }
+
+  .source {
+    max-width: 80ch;
+    margin: 0;
+  }
+</style>

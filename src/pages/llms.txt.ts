@@ -35,7 +35,9 @@ export const GET: APIRoute = async () => {
   L.push('## Identité');
   L.push('');
   L.push(`- Raison sociale : ${COMPANY.legalName} (${COMPANY.legalForm})`);
-  L.push(`- SIRET : ${COMPANY.siret}`);
+  L.push(`- SIRET du siège : ${COMPANY.siret} (${COMPANY.headOffice})`);
+  L.push(`- SIRET de l’agence : ${COMPANY.agencySiret}`);
+  L.push(`- Présidente : ${COMPANY.president}`);
   L.push(`- RCS : ${COMPANY.rcs} — ${COMPANY.rcsCity}`);
   L.push(`- Carte professionnelle : ${REGULATED.cpiNumber}, ${REGULATED.cpiIssuer}`);
   L.push(`- Adresse : ${CONTACT.street}, ${CONTACT.postalCode} ${CONTACT.city}`);
