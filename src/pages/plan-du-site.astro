@@ -19,7 +19,10 @@ const agents = allAgents();
 const guides = await getCollection('guides', ({ data }) => !data.draft);
 const news = allNews();
 
-const main = NAV.flatMap((n) => (n.children ? n.children.map((c) => ({ href: c.href, label: c.label })) : [n]));
+const main = NAV.flatMap((n) => (n.children ? n.children.map((c) => ({ href: c.href, label: c.label })) : [n])).filter(
+  // Les raccourcis filtrés (?type=maison) ne sont pas des pages distinctes.
+  (l) => !l.href.includes('?')
+);
 const seen = new Set<string>();
 const mainLinks = [...main, ...FOOTER_SERVICES, { href: '/contact/', label: 'Contact' }].filter((l) => {
   if (seen.has(l.href)) return false;

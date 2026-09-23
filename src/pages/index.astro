@@ -328,7 +328,9 @@ const steps = fieldPairs('accueil.etapes', 'etapes');
   /* ---------------------------------------------------------- Hero ------ */
   .hero {
     position: relative;
-    min-height: min(88vh, 46rem);
+    /* La photo passe sous la barre de navigation, transparente en haut de page. */
+    margin-top: calc(var(--header-height) * -1);
+    min-height: min(92vh, 50rem);
     display: flex;
     align-items: flex-end;
     background: var(--navy-900);
@@ -363,6 +365,7 @@ const steps = fieldPairs('accueil.etapes', 'etapes');
     position: absolute;
     inset: 0;
     background:
+      linear-gradient(180deg, rgb(0 19 42 / 0.6) 0%, rgb(0 19 42 / 0) 22%),
       linear-gradient(180deg, rgb(0 19 42 / 0.15) 0%, rgb(0 19 42 / 0.55) 55%, rgb(0 19 42 / 0.85) 100%),
       linear-gradient(90deg, rgb(0 19 42 / 0.55) 0%, rgb(0 19 42 / 0.1) 70%);
   }
@@ -372,7 +375,7 @@ const steps = fieldPairs('accueil.etapes', 'etapes');
     z-index: 1;
     display: grid;
     gap: var(--space-l);
-    padding-block: clamp(3.5rem, 8vw, 6rem) clamp(2rem, 5vw, 3.5rem);
+    padding-block: calc(var(--header-height) + clamp(3.5rem, 8vw, 6rem)) clamp(2rem, 5vw, 3.5rem);
   }
 
   .hero-text {

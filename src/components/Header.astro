@@ -1,17 +1,30 @@
 ---
 /**
- * En-tete du site : barre claire, collante, logo a gauche, menu par intention
- * au centre, telephone et appel a l'action a droite. Sous 1024 px, un
- * panneau plein ecran remplace le menu.
+ * En-tête du site.
  *
- * Le menu « L'agence » deroule un panneau avec une ligne d'explication par
- * entree : un visiteur qui ne connait pas l'agence sait ou il va avant de
- * cliquer.
+ *  - Barre d'informations marine (adresse, téléphone, email, réseaux) : elle
+ *    défile avec la page, seule la barre principale reste collée en haut.
+ *  - Barre principale : logo, quatre intentions (Acheter, Vendre, Louer,
+ *    L'agence) qui ouvrent chacune un méga-menu, Contact, puis les outils :
+ *    téléphone, sélection, et l'appel à l'action « Estimer mon bien ».
+ *  - Chaque méga-menu montre les sous-rubriques avec une ligne d'explication
+ *    et une carte mise en avant (le dernier bien, l'estimation, la gestion,
+ *    l'agence) : le visiteur sait où il va avant de cliquer.
+ *  - Sur l'accueil, la barre est transparente sur la photo et devient blanche
+ *    dès que l'on fait défiler ou qu'un menu s'ouvre.
+ *  - Sous 1100 px : tiroir latéral avec rubriques dépliables, gros boutons
+ *    d'appel et d'estimation, horaires.
+ *
+ * Accessibilité : les rubriques sont des boutons `aria-expanded` pilotant
+ * leur panneau ; Échap ferme, le focus revient au déclencheur ; sans
+ * JavaScript, les panneaux s'ouvrent au survol et au focus clavier.
  */
-import Icon from '~/components/Icon.astro';
-import { NAV, COMPANY } from '~/lib/site';
-import { logoMedia } from '~/lib/catalog';
+import Icon, { type IconName } from '~/components/Icon.astro';
+import Picture from '~/components/Picture.astro';
+import { NAV, COMPANY, SOCIAL, type NavItem } from '~/lib/site';
+import { activeListings, catalogStats, editorialMedia, listingMedia, logoMedia } from '~/lib/catalog';
 import { agency } from '~/lib/content';
+import { listingHeading, priceLine } from '~/lib/format';
 
 interface Props {
   path: string;
@@ -19,25 +32,57 @@ interface Props {
 const { path } = Astro.props;
 const logo = logoMedia();
 const contact = agency();
-const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
-const isCurrentGroup = (item: (typeof NAV)[number]) =>
-  isCurrent(item.href) || Boolean(item.children?.some((c) => isCurrent(c.href)));
+const stats = catalogStats();
+const isHome = path === '/';
+
+const isCurrent = (href: string) => path === href.split('?')[0];
+const isActive = (item: NavItem) =>
+  path === item.href || Boolean(item.match?.some((m) => path.startsWith(m)));
+
+/* Cartes mises en avant, calculées une fois au build. */
+const latest = activeListings('vente')[0] ?? null;
+const latestPhoto = latest ? (listingMedia(latest.reference)?.photos[0] ?? null) : null;
+const gestionPhoto = editorialMedia('gestion-locative');
+const agencePhoto = editorialMedia('agence');
+const socialIcon = (label: string): IconName => (label === 'Instagram' ? 'instagram' : 'tiktok');
 ---
 
-<header class="site-header" data-header>
+<div class="topbar">
+  <div class="wrap topbar-inner">
+    <p class="tb-left">
+      <a href="/contact/"><Icon name="pin" size={15} /> {contact.street}, {contact.city}</a>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <a href="/contact/#horaires"><Icon name="clock" size={15} /> Horaires &amp; accès</a>
+    </p>
+    <p class="tb-right">
+      <a href={`mailto:${contact.email}`}><Icon name="mail" size={15} /> {contact.email}</a>
+      <span class="tb-sep" aria-hidden="true"></span>
+      {
+        SOCIAL.map((s) => (
+          <a href={s.url} rel="me noopener" target="_blank" class="tb-social">
+            <Icon name={socialIcon(s.label)} size={15} />
+            <span class="visually-hidden">{s.label} (nouvel onglet)</span>
+          </a>
+        ))
+      }
+    </p>
+  </div>
+</div>
+
+<header class:list={['site-header', isHome && 'is-top']} data-header data-transparent={isHome ? '' : undefined}>
   <div class="wrap bar">
     <a href="/" class="logo" aria-label={`${COMPANY.name} — accueil`}>
       {
         logo && (
           <picture>
-            <source type="image/avif" srcset={`${logo.base}-180.avif 180w, ${logo.base}-360.avif 360w`} sizes="128px" />
+            <source type="image/avif" srcset={`${logo.base}-180.avif 180w, ${logo.base}-360.avif 360w`} sizes="108px" />
             <img
               src={`${logo.base}-360.png`}
               srcset={`${logo.base}-180.png 180w, ${logo.base}-360.png 360w`}
-              sizes="128px"
+              sizes="108px"
               alt={COMPANY.legalName}
-              width="128"
-              height={Math.round(128 / logo.ratio)}
+              width="108"
+              height={Math.round(108 / logo.ratio)}
               fetchpriority="high"
               decoding="sync"
             />
@@ -46,128 +91,327 @@ const isCurrentGroup = (item: (typeof NAV)[number]) =>
       }
     </a>
 
-    <nav class="nav-desktop" aria-label="Navigation principale">
-      <ul>
+    <nav class="nav" aria-label="Navigation principale">
+      <ul class="nav-list">
         {
-          NAV.map((item) => (
-            <li class:list={[item.children && 'has-sub']}>
-              <a
-                href={item.href}
-                aria-current={isCurrentGroup(item) ? 'page' : undefined}
-                aria-haspopup={item.children ? 'true' : undefined}
-              >
-                {item.label}
-                {item.children && <Icon name="chevron" size={16} />}
-              </a>
-              {item.children && (
-                <div class="sub">
-                  <ul>
-                    {item.children.map((c) => (
-                      <li>
-                        <a href={c.href} aria-current={isCurrent(c.href) ? 'page' : undefined}>
-                          <span class="sub-label">{c.label}</span>
-                          {c.hint && <span class="sub-hint">{c.hint}</span>}
+          NAV.map((item, i) =>
+            item.children ? (
+              <li class="nav-item" data-nav-item>
+                <button
+                  type="button"
+                  class:list={['nav-trigger', isActive(item) && 'is-active']}
+                  aria-expanded="false"
+                  aria-controls={`panel-${i}`}
+                  data-nav-trigger
+                >
+                  {item.label}
+                  <Icon name="chevron" size={16} class="chev" />
+                </button>
+
+                <div class="panel" id={`panel-${i}`} data-nav-panel hidden>
+                  <div class="wrap panel-inner">
+                    <div class="panel-links">
+                      <p class="panel-title">
+                        <a href={item.href} class="link-arrow">
+                          {item.label === 'L’agence' ? 'Découvrir l’agence' : `${item.label} avec AUREA`}
                         </a>
-                      </li>
-                    ))}
-                  </ul>
+                      </p>
+                      <ul>
+                        {item.children.map((c) => (
+                          <li>
+                            <a href={c.href} class="panel-link" aria-current={isCurrent(c.href) ? 'page' : undefined}>
+                              <span class="pl-icon">
+                                <Icon name={(c.icon ?? 'arrow') as IconName} size={20} />
+                              </span>
+                              <span>
+                                <span class="pl-label">{c.label}</span>
+                                {c.hint && <span class="pl-hint">{c.hint}</span>}
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <aside class="panel-feature">
+                      {item.feature === 'achat' && latest && (
+                        <a class="feat feat-photo" href={`/bien/${latest.slug}/`}>
+                          <Picture media={latestPhoto} alt="" aspect="4 / 3" sizes="20rem" />
+                          <span class="feat-body">
+                            <span class="feat-kicker">Dernier bien en vente</span>
+                            <span class="feat-price tnum">{priceLine(latest)}</span>
+                            <span class="feat-title">{listingHeading(latest)}</span>
+                          </span>
+                        </a>
+                      )}
+                      {item.feature === 'achat' && (
+                        <p class="feat-note">
+                          <strong>{stats.forSale}</strong> biens à vendre en ce moment dans le Mantois.
+                        </p>
+                      )}
+
+                      {item.feature === 'vente' && (
+                        <div class="feat feat-navy">
+                          <span class="feat-kicker">Vous vendez ?</span>
+                          <span class="feat-big">Estimation gratuite sous 48 h</span>
+                          <span class="feat-text">
+                            Un conseiller se déplace, croise quatre méthodes et vous remet un avis de valeur
+                            écrit. Sans engagement.
+                          </span>
+                          <a class="btn" href="/estimation/">Estimer mon bien</a>
+                          <span class="feat-proof">
+                            <Icon name="check" size={16} /> {stats.archivedTotal} biens vendus ou loués depuis 2024
+                          </span>
+                        </div>
+                      )}
+
+                      {item.feature === 'location' && (
+                        <a class="feat feat-photo" href="/gestion-locative/">
+                          <Picture media={gestionPhoto} alt="" aspect="4 / 3" sizes="20rem" />
+                          <span class="feat-body">
+                            <span class="feat-kicker">Propriétaire bailleur</span>
+                            <span class="feat-title">
+                              Loyers encaissés, locataire choisi, travaux suivis : confiez-nous votre bien.
+                            </span>
+                          </span>
+                        </a>
+                      )}
+
+                      {item.feature === 'agence' && (
+                        <div class="feat feat-plain">
+                          <Picture media={agencePhoto} alt="" aspect="16 / 10" sizes="20rem" class="feat-img" />
+                          <span class="feat-kicker">Passez nous voir</span>
+                          <span class="feat-title">{contact.street}, {contact.postalCode} {contact.city}</span>
+                          <ul class="feat-hours">
+                            {contact.hours.map((h) => (
+                              <li>{h}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </aside>
+                  </div>
                 </div>
-              )}
-            </li>
-          ))
+              </li>
+            ) : (
+              <li class="nav-item">
+                <a href={item.href} class:list={['nav-trigger', isActive(item) && 'is-active']} aria-current={isActive(item) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            )
+          )
         }
       </ul>
     </nav>
 
     <div class="tools">
-      <a class="phone" href={`tel:${contact.phoneE164}`}>
+      <a class="tool tool-phone" href={`tel:${contact.phoneE164}`}>
         <Icon name="phone" size={18} />
-        <span class="phone-number tnum">{contact.phone}</span>
+        <span class="tool-phone-text">
+          <span class="tool-phone-label">Une question ?</span>
+          <span class="tnum">{contact.phone}</span>
+        </span>
         <span class="visually-hidden">Appeler l’agence</span>
       </a>
-      <a class="fav" href="/selection/" title="Ma sélection">
+      <a class="tool tool-fav" href="/selection/" title="Ma sélection">
         <Icon name="heart" size={20} />
         <span class="visually-hidden">Ma sélection</span>
         <span class="fav-count" data-fav-count hidden></span>
       </a>
-      <a class="btn btn-sm cta" href="/contact/">Contact</a>
-      <button
-        class="burger"
-        type="button"
-        aria-expanded="false"
-        aria-controls="menu-mobile"
-        data-burger
-      >
-        <Icon name="menu" size={24} class="i-open" />
-        <Icon name="close" size={24} class="i-close" />
-        <span class="visually-hidden">Menu</span>
+      <a class="btn cta" href="/estimation/">Estimer mon bien</a>
+      <button class="tool burger" type="button" aria-expanded="false" aria-controls="drawer" data-burger>
+        <Icon name="menu" size={24} />
+        <span class="visually-hidden">Ouvrir le menu</span>
       </button>
     </div>
   </div>
-
-  <nav id="menu-mobile" class="nav-mobile" aria-label="Navigation principale (mobile)" hidden>
-    <div class="wrap">
-      <ul class="mobile-list">
-        {
-          NAV.map((item) => (
-            <li>
-              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-                {item.label}
-              </a>
-              {item.children && (
-                <ul class="mobile-sub">
-                  {item.children.map((c) => (
-                    <li>
-                      <a href={c.href}>{c.label}</a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))
-        }
-      </ul>
-      <div class="mobile-actions">
-        <a class="btn" href="/estimation/">Estimer mon bien</a>
-        <a class="btn btn-outline" href="/contact/">Nous contacter</a>
-        <a class="mobile-phone" href={`tel:${contact.phoneE164}`}>
-          <Icon name="phone" size={18} /> {contact.phone}
-        </a>
-      </div>
-    </div>
-  </nav>
 </header>
 
+<div class="backdrop" data-backdrop hidden></div>
+
+<aside id="drawer" class="drawer" aria-label="Menu" data-drawer hidden>
+  <div class="drawer-head">
+    <a href="/" class="drawer-logo" aria-label={`${COMPANY.name} — accueil`}>
+      {logo && <img src={`${logo.base}-180.png`} alt="" width="96" height={Math.round(96 / logo.ratio)} loading="lazy" />}
+    </a>
+    <button type="button" class="drawer-close" data-drawer-close>
+      <Icon name="close" size={24} />
+      <span class="visually-hidden">Fermer le menu</span>
+    </button>
+  </div>
+
+  <nav class="drawer-nav" aria-label="Navigation principale (mobile)">
+    {
+      NAV.map((item) =>
+        item.children ? (
+          <details class="dgroup" open={isActive(item) ? true : undefined}>
+            <summary class:list={[isActive(item) && 'is-active']}>
+              {item.label}
+              <Icon name="chevron" size={20} class="chev" />
+            </summary>
+            <ul>
+              {item.children.map((c) => (
+                <li>
+                  <a href={c.href} aria-current={isCurrent(c.href) ? 'page' : undefined}>
+                    <Icon name={(c.icon ?? 'arrow') as IconName} size={18} />
+                    {c.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ) : (
+          <a class:list={['dlink', isActive(item) && 'is-active']} href={item.href}>
+            {item.label}
+          </a>
+        )
+      )
+    }
+  </nav>
+
+  <div class="drawer-foot">
+    <a class="btn btn-lg" href="/estimation/"><Icon name="chart" size={18} /> Estimer mon bien</a>
+    <a class="btn btn-lg btn-navy" href={`tel:${contact.phoneE164}`}>
+      <Icon name="phone" size={18} /> <span class="tnum">{contact.phone}</span>
+    </a>
+    <div class="drawer-info">
+      <p><Icon name="pin" size={16} /> {contact.street}, {contact.postalCode} {contact.city}</p>
+      <ul>
+        {contact.hours.map((h) => <li>{h}</li>)}
+      </ul>
+      <p class="drawer-social">
+        {
+          SOCIAL.map((s) => (
+            <a href={s.url} rel="me noopener" target="_blank">
+              <Icon name={socialIcon(s.label)} size={18} /> {s.label}
+            </a>
+          ))
+        }
+      </p>
+    </div>
+  </div>
+</aside>
+
 <script>
+  document.documentElement.classList.add('js-nav');
+
   const header = document.querySelector<HTMLElement>('[data-header]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-nav-item]')];
+
+  /* --- État de la barre : transparente en haut de l'accueil ------------ */
+  const paintBar = () => {
+    if (!header) return;
+    header.classList.toggle('is-top', window.scrollY < 12);
+    header.classList.toggle('is-stuck', window.scrollY > 40);
+  };
+  paintBar();
+  window.addEventListener('scroll', paintBar, { passive: true });
+
+  /* --- Méga-menus -------------------------------------------------------- */
+  let openItem: HTMLElement | null = null;
+  let closeTimer: number | undefined;
+  let openTimer: number | undefined;
+
+  const parts = (item: HTMLElement) => ({
+    trigger: item.querySelector<HTMLButtonElement>('[data-nav-trigger]')!,
+    panel: item.querySelector<HTMLElement>('[data-nav-panel]')!,
+  });
+
+  const close = (item: HTMLElement | null, focusBack = false) => {
+    if (!item) return;
+    const { trigger, panel } = parts(item);
+    trigger.setAttribute('aria-expanded', 'false');
+    panel.hidden = true;
+    if (openItem === item) openItem = null;
+    header?.classList.toggle('menu-active', Boolean(openItem));
+    if (focusBack) trigger.focus();
+  };
+
+  const open = (item: HTMLElement) => {
+    if (openItem && openItem !== item) close(openItem);
+    const { trigger, panel } = parts(item);
+    trigger.setAttribute('aria-expanded', 'true');
+    panel.hidden = false;
+    openItem = item;
+    header?.classList.add('menu-active');
+  };
+
+  for (const item of items) {
+    const { trigger } = parts(item);
+
+    trigger.addEventListener('click', () => {
+      window.clearTimeout(openTimer);
+      openItem === item ? close(item) : open(item);
+    });
+
+    // Survol à la souris, avec un léger délai pour ne pas ouvrir un menu
+    // simplement parce que le pointeur a traversé la barre.
+    item.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      window.clearTimeout(closeTimer);
+      window.clearTimeout(openTimer);
+      openTimer = window.setTimeout(() => open(item), openItem ? 0 : 90);
+    });
+    item.addEventListener('pointerleave', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      window.clearTimeout(openTimer);
+      closeTimer = window.setTimeout(() => close(item), 180);
+    });
+
+    item.addEventListener('focusout', (e) => {
+      const next = e.relatedTarget as Node | null;
+      if (next && !item.contains(next)) close(item);
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && openItem) close(openItem, true);
+  });
+  document.addEventListener('click', (e) => {
+    if (openItem && !openItem.contains(e.target as Node)) close(openItem);
+  });
+
+  /* --- Tiroir mobile ----------------------------------------------------- */
   const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
-  const mobile = document.getElementById('menu-mobile');
+  const drawer = document.querySelector<HTMLElement>('[data-drawer]');
+  const backdrop = document.querySelector<HTMLElement>('[data-backdrop]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-drawer-close]');
 
-  if (header) {
-    const update = () => header.classList.toggle('is-stuck', window.scrollY > 8);
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-  }
+  const setDrawer = (on: boolean) => {
+    if (!drawer || !backdrop || !burger) return;
+    burger.setAttribute('aria-expanded', String(on));
+    document.body.classList.toggle('drawer-open', on);
+    if (on) {
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      requestAnimationFrame(() => {
+        drawer.classList.add('is-open');
+        backdrop.classList.add('is-open');
+      });
+      closeBtn?.focus();
+    } else {
+      drawer.classList.remove('is-open');
+      backdrop.classList.remove('is-open');
+      window.setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 260);
+      burger.focus();
+    }
+  };
 
-  if (burger && mobile) {
-    const setOpen = (open: boolean) => {
-      burger.setAttribute('aria-expanded', String(open));
-      mobile.hidden = !open;
-      document.body.classList.toggle('menu-open', open);
-    };
-    burger.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !mobile.hidden) {
-        setOpen(false);
-        burger.focus();
-      }
-    });
-    window.matchMedia('(min-width: 64rem)').addEventListener('change', (e) => {
-      if (e.matches) setOpen(false);
-    });
-  }
+  burger?.addEventListener('click', () => setDrawer(true));
+  closeBtn?.addEventListener('click', () => setDrawer(false));
+  backdrop?.addEventListener('click', () => setDrawer(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer && !drawer.hidden) setDrawer(false);
+  });
+  window.matchMedia('(min-width: 68.75rem)').addEventListener('change', (e) => {
+    if (e.matches && drawer && !drawer.hidden) setDrawer(false);
+  });
 
-  /* Compteur de la selection, lu depuis le stockage local (cle de ListingCard). */
+  /* --- Compteur de la sélection (clé de ListingCard) --------------------- */
   const badge = document.querySelector<HTMLElement>('[data-fav-count]');
   const paintFav = () => {
     if (!badge) return;
@@ -188,25 +432,86 @@ const isCurrentGroup = (item: (typeof NAV)[number]) =>
 </script>
 
 <style>
+  /* ------------------------------------------------------ Barre d'infos -- */
+  .topbar {
+    display: none;
+    background: var(--navy-950);
+    color: rgb(255 255 255 / 0.78);
+    font-size: 0.8rem;
+  }
+
+  .topbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 2.25rem;
+  }
+
+  .topbar p {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0;
+  }
+
+  .topbar a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .topbar a:hover {
+    color: var(--gold-300);
+  }
+
+  .topbar svg {
+    color: var(--gold-300);
+  }
+
+  .tb-sep {
+    width: 1px;
+    height: 0.9rem;
+    background: rgb(255 255 255 / 0.2);
+  }
+
+  .tb-social {
+    padding: 0.2rem;
+  }
+
+  /* ---------------------------------------------------- Barre principale -- */
   .site-header {
+    --fg: var(--navy-900);
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgb(255 255 255 / 0.96);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+    /* Pas de backdrop-filter : il fait peindre le méga-menu (descendant qui
+       déborde de la barre) à moitié transparent dans Chrome. */
+    background: #ffffff;
+    color: var(--fg);
+    border-bottom: 1px solid var(--line);
+    transition:
+      background var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out);
   }
 
   .site-header.is-stuck {
-    border-bottom-color: var(--line);
-    box-shadow: 0 6px 24px rgb(0 31 65 / 0.06);
+    box-shadow: 0 8px 30px rgb(0 31 65 / 0.08);
+  }
+
+  /* Accueil : transparente sur la photo tant qu'on est en haut. */
+  .site-header[data-transparent].is-top:not(.menu-active) {
+    --fg: #ffffff;
+    background: transparent;
+    border-bottom-color: rgb(255 255 255 / 0.18);
   }
 
   .bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--space-m);
     height: var(--header-height);
   }
@@ -214,282 +519,605 @@ const isCurrentGroup = (item: (typeof NAV)[number]) =>
   .logo {
     flex: none;
     display: block;
+    margin-right: auto;
   }
 
   .logo img {
-    width: 104px;
+    width: 88px;
     height: auto;
   }
 
-  @media (min-width: 64rem) {
-    .logo img {
-      width: 128px;
+  /* --- Navigation ---------------------------------------------------------- */
+  .nav {
+    display: none;
+    align-self: stretch;
+  }
+
+  .nav-list {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    height: 100%;
+    padding: 0 0.95rem;
+    border: 0;
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* Filet or sous l'entrée survolée, ouverte ou active. */
+  .nav-trigger::after {
+    content: '';
+    position: absolute;
+    left: 0.95rem;
+    right: 0.95rem;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--gold-400);
+    transform: scaleX(0);
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .nav-trigger:hover::after,
+  .nav-trigger[aria-expanded='true']::after,
+  .nav-trigger.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .nav-trigger:hover {
+    color: var(--fg);
+  }
+
+  .nav-trigger :global(.chev) {
+    opacity: 0.6;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .nav-trigger[aria-expanded='true'] :global(.chev) {
+    transform: rotate(180deg);
+  }
+
+  /* --- Méga-menu ------------------------------------------------------------ */
+  .panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    color: var(--ink);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 30px 60px -20px rgb(0 31 65 / 0.25);
+    animation: panel-in var(--dur) var(--ease-out);
+  }
+
+  /* Sans JavaScript : ouverture au survol et au focus. */
+  :global(:root:not(.js-nav)) .nav-item:hover > .panel,
+  :global(:root:not(.js-nav)) .nav-item:focus-within > .panel {
+    display: block;
+  }
+
+  /* Glissement seul, sans fondu : le panneau reste opaque à chaque image. */
+  @keyframes panel-in {
+    from {
+      transform: translateY(-8px);
+    }
+    to {
+      transform: none;
     }
   }
 
-  /* --- Menu desktop ------------------------------------------------------- */
-  .nav-desktop {
-    display: none;
+  .panel-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    gap: var(--space-xl);
+    padding-block: var(--space-l);
   }
 
-  .nav-desktop > ul {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    list-style: none;
+  .panel-title {
+    margin: 0 0 var(--space-s);
+    font-size: 0.85rem;
+  }
+
+  .panel-title a {
+    color: var(--gold-700);
+  }
+
+  .panel-links ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem 1rem;
     margin: 0;
     padding: 0;
+    list-style: none;
   }
 
-  .nav-desktop > ul > li {
-    position: relative;
-  }
-
-  .nav-desktop > ul > li > a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.55rem 0.8rem;
-    border-radius: var(--radius-s);
+  .panel-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.8rem;
+    border-radius: var(--radius-m);
     color: var(--navy-900);
-    font-weight: 500;
-    font-size: 0.95rem;
     text-decoration: none;
-    white-space: nowrap;
     transition: background var(--dur-fast) var(--ease-out);
   }
 
-  .nav-desktop > ul > li > a:hover,
-  .nav-desktop > ul > li > a:focus-visible {
+  .panel-link:hover,
+  .panel-link:focus-visible,
+  .panel-link[aria-current='page'] {
     background: var(--sand-50);
-  }
-
-  .nav-desktop > ul > li > a[aria-current='page'] {
-    font-weight: 600;
-    box-shadow: inset 0 -2px 0 var(--gold-400);
-    border-radius: var(--radius-s) var(--radius-s) 0 0;
-  }
-
-  /* --- Sous-menu « L'agence » ---------------------------------------------- */
-  .sub {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 50%;
-    transform: translate(-50%, 6px);
-    min-width: 24rem;
-    padding: 0.5rem;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-m);
-    box-shadow: var(--shadow-l);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), visibility 0s linear var(--dur-fast);
-  }
-
-  .has-sub:hover .sub,
-  .has-sub:focus-within .sub {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, 0);
-    transition-delay: 0s;
-  }
-
-  .sub ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .sub a {
-    display: grid;
-    gap: 0.1rem;
-    padding: 0.6rem 0.75rem;
-    border-radius: var(--radius-s);
-    text-decoration: none;
     color: var(--navy-900);
   }
 
-  .sub a:hover,
-  .sub a:focus-visible,
-  .sub a[aria-current='page'] {
-    background: var(--sand-50);
+  .pl-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: var(--radius-s);
+    background: var(--navy-50);
+    color: var(--navy-800);
+    transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   }
 
-  .sub-label {
+  .panel-link:hover .pl-icon {
+    background: var(--gold-400);
+    color: var(--navy-900);
+  }
+
+  .pl-label {
+    display: block;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.97rem;
   }
 
-  .sub-hint {
-    font-size: 0.8rem;
+  .pl-hint {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.83rem;
     color: var(--ink-muted);
-    line-height: 1.3;
+    line-height: 1.35;
   }
 
-  /* --- Outils a droite ----------------------------------------------------- */
+  /* --- Carte mise en avant -------------------------------------------------- */
+  .feat {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .feat-photo {
+    border: 1px solid var(--line);
+    transition: box-shadow var(--dur) var(--ease-out);
+  }
+
+  .feat-photo:hover {
+    box-shadow: var(--shadow-l);
+    color: inherit;
+  }
+
+  .feat-photo :global(img) {
+    width: 100%;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  .feat-photo:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  .feat-body {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.9rem 1rem 1rem;
+  }
+
+  .feat-kicker {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gold-700);
+  }
+
+  .feat-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--navy-900);
+  }
+
+  .feat-title {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .feat-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+
+  .feat-note strong {
+    color: var(--navy-900);
+  }
+
+  .feat-navy {
+    gap: 0.65rem;
+    padding: 1.4rem;
+    background: var(--navy-900);
+    color: #fff;
+    background-image: radial-gradient(circle at 100% 0%, rgb(224 174 94 / 0.25), transparent 55%);
+  }
+
+  .feat-navy .feat-kicker {
+    color: var(--gold-300);
+  }
+
+  .feat-big {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .feat-text {
+    font-size: 0.88rem;
+    color: rgb(255 255 255 / 0.78);
+  }
+
+  .feat-navy .btn {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+  }
+
+  .feat-proof {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .feat-proof :global(svg) {
+    color: var(--gold-300);
+  }
+
+  .feat-plain {
+    gap: 0.3rem;
+  }
+
+  .feat-plain :global(.feat-img img) {
+    border-radius: var(--radius-m);
+    margin-bottom: 0.6rem;
+  }
+
+  .feat-plain .feat-title {
+    font-weight: 600;
+    color: var(--navy-900);
+  }
+
+  .feat-hours {
+    margin: 0.3rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+  }
+
+  /* --- Outils ---------------------------------------------------------------- */
   .tools {
     display: flex;
     align-items: center;
     gap: 0.35rem;
   }
 
-  .phone,
-  .fav {
+  .tool {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    min-width: 2.5rem;
-    height: 2.5rem;
+    gap: 0.55rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
     padding: 0 0.55rem;
+    border: 0;
     border-radius: var(--radius-s);
-    color: var(--navy-900);
+    background: none;
+    color: var(--fg);
     text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-out);
   }
 
-  .phone:hover,
-  .fav:hover {
-    background: var(--sand-50);
-    color: var(--navy-900);
+  .tool:hover {
+    background: rgb(0 31 65 / 0.06);
+    color: var(--fg);
   }
 
-  .phone-number {
+  .site-header[data-transparent].is-top:not(.menu-active) .tool:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  .tool-phone-text {
     display: none;
+    line-height: 1.15;
+    text-align: left;
   }
 
-  .fav {
-    position: relative;
+  .tool-phone-label {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.7;
+  }
+
+  .tool-phone-text .tnum {
+    font-weight: 700;
+    font-size: 0.95rem;
   }
 
   .fav-count {
     position: absolute;
-    top: 2px;
-    right: 0;
-    min-width: 1.1rem;
-    height: 1.1rem;
+    top: 3px;
+    right: 1px;
+    min-width: 1.15rem;
+    height: 1.15rem;
     padding: 0 0.3rem;
     border-radius: var(--radius-pill);
     background: var(--gold-400);
     color: var(--navy-900);
     font-size: 0.7rem;
-    line-height: 1.1rem;
+    font-weight: 700;
+    line-height: 1.15rem;
     text-align: center;
   }
 
   .cta {
     display: none;
+    margin-left: 0.35rem;
   }
 
-  .burger {
-    display: inline-grid;
+  /* --- Tiroir mobile --------------------------------------------------------- */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    background: rgb(0 19 42 / 0.5);
+    opacity: 0;
+    transition: opacity 0.26s var(--ease-out);
+  }
+
+  .backdrop.is-open {
+    opacity: 1;
+  }
+
+  .drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    width: min(24rem, 100%);
+    background: #fff;
+    box-shadow: -20px 0 50px rgb(0 19 42 / 0.25);
+    transform: translateX(100%);
+    transition: transform 0.26s var(--ease-out);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .drawer.is-open {
+    transform: none;
+  }
+
+  /* `display: flex` ci-dessus l'emporterait sur l'attribut hidden : le tiroir
+     fermé resterait rendu hors écran (ombre sur le bord, liens focusables). */
+  .drawer[hidden],
+  .backdrop[hidden] {
+    display: none;
+  }
+
+  :global(body.drawer-open) {
+    overflow: hidden;
+  }
+
+  .drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .drawer-close {
+    display: grid;
     place-items: center;
     width: 2.75rem;
     height: 2.75rem;
     border: 0;
     border-radius: var(--radius-s);
-    background: transparent;
+    background: var(--sand-50);
     color: var(--navy-900);
     cursor: pointer;
   }
 
-  .burger .i-close,
-  .burger[aria-expanded='true'] .i-open {
-    display: none;
+  .drawer-nav {
+    padding: 0.5rem 1.25rem;
   }
 
-  .burger[aria-expanded='true'] .i-close {
-    display: block;
-  }
-
-  /* --- Menu mobile --------------------------------------------------------- */
-  .nav-mobile {
-    position: fixed;
-    inset: var(--header-height) 0 0 0;
-    overflow: auto;
-    background: #fff;
-    border-top: 1px solid var(--line);
-    padding-block: var(--space-m) var(--space-2xl);
-  }
-
-  :global(body.menu-open) {
-    overflow: hidden;
-  }
-
-  .mobile-list {
-    list-style: none;
-    margin: 0 0 var(--space-m);
-    padding: 0;
-  }
-
-  .mobile-list > li > a {
-    display: block;
-    padding: 0.85rem 0;
+  .dgroup {
     border-bottom: 1px solid var(--line);
+  }
+
+  .dgroup summary,
+  .dlink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: 1.55rem;
     font-weight: 600;
     color: var(--navy-900);
     text-decoration: none;
-  }
-
-  .mobile-list > li > a[aria-current='page'] {
-    color: var(--gold-700);
-  }
-
-  .mobile-sub {
+    cursor: pointer;
     list-style: none;
-    margin: 0;
-    padding: 0.25rem 0 0.5rem;
+  }
+
+  .dlink {
     border-bottom: 1px solid var(--line);
   }
 
-  .mobile-sub a {
-    display: block;
-    padding: 0.45rem 0 0.45rem 1rem;
+  .dgroup summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .dgroup summary.is-active,
+  .dlink.is-active {
+    color: var(--gold-700);
+  }
+
+  .dgroup summary :global(.chev) {
+    color: var(--ink-muted);
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .dgroup[open] summary :global(.chev) {
+    transform: rotate(180deg);
+  }
+
+  .dgroup ul {
+    margin: 0 0 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dgroup li a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.5rem;
+    border-radius: var(--radius-s);
     color: var(--ink-soft);
+    font-weight: 500;
     text-decoration: none;
   }
 
-  .mobile-actions {
-    display: grid;
-    gap: var(--space-2xs);
+  .dgroup li a:hover,
+  .dgroup li a[aria-current='page'] {
+    background: var(--sand-50);
+    color: var(--navy-900);
   }
 
-  .mobile-phone {
+  .dgroup li a :global(svg) {
+    color: var(--gold-600);
+  }
+
+  .drawer-foot {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: auto;
+    padding: 1.25rem;
+    background: var(--sand-50);
+    border-top: 1px solid var(--line);
+  }
+
+  .drawer-info {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  .drawer-info p {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.4rem;
+  }
+
+  .drawer-info ul {
+    margin: 0 0 0.75rem;
+    padding: 0;
+    list-style: none;
+    color: var(--ink-muted);
+  }
+
+  .drawer-social {
+    gap: 1rem !important;
+  }
+
+  .drawer-social a {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
+    gap: 0.35rem;
     font-weight: 600;
     text-decoration: none;
   }
 
-  @media (min-width: 64rem) {
-    .nav-desktop {
-      display: block;
-    }
-
-    .burger,
-    .nav-mobile {
-      display: none !important;
-    }
-
+  /* --- Points de rupture ---------------------------------------------------- */
+  @media (min-width: 40rem) {
     .cta {
       display: inline-flex;
-      margin-left: 0.35rem;
     }
   }
 
-  @media (min-width: 75rem) {
-    .phone-number {
-      display: inline;
+  @media (min-width: 68.75rem) {
+    .topbar {
+      display: block;
+    }
+
+    .logo {
+      margin-right: var(--space-s);
+    }
+
+    .logo img {
+      width: 108px;
+    }
+
+    .nav {
+      display: block;
+      margin-right: auto;
+    }
+
+    .burger {
+      display: none;
+    }
+  }
+
+  @media (min-width: 82rem) {
+    .tool-phone-text {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      animation: none;
     }
   }
 </style>

@@ -104,6 +104,8 @@ const TYPES = [
 
 <style>
   .search {
+    /* Posé sur le hero (texte blanc) : on repart d'une couleur de texte sombre. */
+    color: var(--ink);
     background: #fff;
     border-radius: var(--radius-m);
     box-shadow: var(--shadow-l);
@@ -169,6 +171,10 @@ const TYPES = [
     .f-more:not([hidden]) {
       grid-column: span 1;
     }
+  }
+
+  .f[hidden] {
+    display: none;
   }
 
   .f {

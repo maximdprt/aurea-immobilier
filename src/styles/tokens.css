@@ -100,7 +100,7 @@
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --content-max: 76rem;
   --content-narrow: 46rem;
-  --header-height: 4.75rem;
+  --header-height: 5rem;
 
   /* --- Formes -------------------------------------------------------------- */
   --radius-xs: 4px;

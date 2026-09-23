@@ -248,28 +248,77 @@ export const HOSTING = {
  * vendre, estimer, confier — et non par rubrique interne : c'est ce qu'il
  * cherche en arrivant, et il doit le trouver en un regard.
  */
-export const NAV: readonly {
+export interface NavLink {
   readonly href: string;
   readonly label: string;
-  readonly children?: readonly { readonly href: string; readonly label: string; readonly hint?: string }[];
-}[] = [
-  { href: '/acheter/', label: 'Acheter' },
-  { href: '/louer/', label: 'Louer' },
-  { href: '/vendre/', label: 'Vendre' },
-  { href: '/estimation/', label: 'Estimer' },
-  { href: '/gestion-locative/', label: 'Gestion locative' },
+  readonly hint?: string;
+  /** Nom d'icône de `Icon.astro`. */
+  readonly icon?: string;
+}
+
+export interface NavItem {
+  readonly href: string;
+  readonly label: string;
+  /** Sous-rubriques affichées dans le méga-menu. */
+  readonly children?: readonly NavLink[];
+  /** Carte mise en avant à droite du méga-menu. */
+  readonly feature?: 'achat' | 'vente' | 'location' | 'agence';
+  /** Autres chemins qui rendent l'entrée « active ». */
+  readonly match?: readonly string[];
+}
+
+export const NAV: readonly NavItem[] = [
+  {
+    href: '/acheter/',
+    label: 'Acheter',
+    feature: 'achat',
+    match: ['/acheter/', '/bien/', '/agence-immobiliere/', '/selection/', '/alerte/'],
+    children: [
+      { href: '/acheter/', label: 'Tous les biens à vendre', hint: 'Prix honoraires inclus, DPE affiché', icon: 'home' },
+      { href: '/acheter/?type=maison', label: 'Maisons', hint: 'Avec jardin, de ville ou de campagne', icon: 'garden' },
+      { href: '/acheter/?type=appartement', label: 'Appartements', hint: 'Du studio au grand familial', icon: 'building' },
+      { href: '/alerte/', label: 'Alerte nouveautés', hint: 'Prévenu avant tout le monde', icon: 'bell' },
+      { href: '/selection/', label: 'Ma sélection', hint: 'Les biens que vous avez aimés', icon: 'heart' },
+      { href: '/prix-immobilier-mantes-la-jolie/', label: 'Prix au m² à Mantes', hint: 'Nos ventes, bien par bien', icon: 'chart' },
+    ],
+  },
+  {
+    href: '/vendre/',
+    label: 'Vendre',
+    feature: 'vente',
+    match: ['/vendre/', '/estimation/', '/biens-vendus/', '/honoraires/'],
+    children: [
+      { href: '/estimation/', label: 'Estimation gratuite', hint: 'Avis de valeur écrit sous 48 h', icon: 'chart' },
+      { href: '/vendre/', label: 'Notre méthode de vente', hint: 'Cinq étapes, un seul interlocuteur', icon: 'handshake' },
+      { href: '/biens-vendus/', label: 'Nos réussites', hint: 'Les biens vendus et loués', icon: 'check' },
+      { href: '/honoraires/', label: 'Nos honoraires', hint: 'Le barème, en toute transparence', icon: 'euro' },
+    ],
+  },
+  {
+    href: '/louer/',
+    label: 'Louer',
+    feature: 'location',
+    match: ['/louer/', '/gestion-locative/'],
+    children: [
+      { href: '/louer/', label: 'Biens à louer', hint: 'Loyer charges comprises affiché', icon: 'key' },
+      { href: '/gestion-locative/', label: 'Gestion locative', hint: 'Propriétaires : on s’occupe de tout', icon: 'shield' },
+      { href: '/alerte/', label: 'Alerte location', hint: 'Soyez prévenu des nouveautés', icon: 'bell' },
+    ],
+  },
   {
     href: '/agence/',
     label: 'L’agence',
+    feature: 'agence',
+    match: ['/agence/', '/equipe/', '/avis/', '/actualites/', '/guides/'],
     children: [
-      { href: '/agence/', label: 'Notre agence', hint: 'Qui nous sommes, notre méthode' },
-      { href: '/equipe/', label: 'L’équipe', hint: 'Neuf conseillers, une ligne directe chacun' },
-      { href: '/avis/', label: 'Avis clients', hint: 'Ce que disent nos clients' },
-      { href: '/biens-vendus/', label: 'Nos réussites', hint: 'Les biens vendus et loués' },
-      { href: '/actualites/', label: 'Actualités', hint: 'La vie de l’agence' },
-      { href: '/guides/', label: 'Guides', hint: 'Réponses aux questions fréquentes' },
+      { href: '/agence/', label: 'Notre agence', hint: 'Qui nous sommes, nos engagements', icon: 'building' },
+      { href: '/equipe/', label: 'L’équipe', hint: 'Une ligne directe par conseiller', icon: 'users' },
+      { href: '/avis/', label: 'Avis clients', hint: 'Ce que disent nos clients', icon: 'star' },
+      { href: '/actualites/', label: 'Actualités', hint: 'La vie de l’agence', icon: 'sparkle' },
+      { href: '/guides/', label: 'Guides pratiques', hint: 'Réponses aux questions fréquentes', icon: 'file' },
     ],
   },
+  { href: '/contact/', label: 'Contact' },
 ];
 
 /** Colonne « Services » du pied de page. */
