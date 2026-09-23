@@ -56,7 +56,9 @@ const securityHeaders = [
 function toVercelRedirect(row) {
   const [path, query] = row.source.split('?');
   const entry = {
-    source: path.replace(/\/{2,}/g, '/'),
+    // path-to-regexp : '+', '(', ')', '?', '*' et ':' sont des operateurs ; on
+    // les echappe pour qu'une ancienne URL soit prise au pied de la lettre.
+    source: path.replace(/\/{2,}/g, '/').replace(/[+()?*:]/g, '\\$&'),
     destination: row.destination,
     permanent: row.statusCode === 301,
   };
